@@ -1,0 +1,25 @@
+import { z } from 'zod';
+
+export const MovieScalarFieldEnumSchema = z.enum([
+  'id',
+  'adult',
+  'backdrop_path',
+  'belongs_to_collection',
+  'budget',
+  'homepage',
+  'imdb_id',
+  'original_language',
+  'original_title',
+  'overview',
+  'popularity',
+  'poster_path',
+  'release_date',
+  'revenue',
+  'runtime',
+  'status',
+  'tagline',
+  'title',
+  'video',
+  'vote_average',
+  'vote_count',
+]);

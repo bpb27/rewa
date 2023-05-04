@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// generator zod {
+//   provider = "prisma-zod-generator"
+// }
+
+model Movie {
+  id                    Int                     @id
+  adult                 Boolean
+  backdrop_path         String?
+  belongs_to_collection String?
+  budget                Int
+  homepage              String?
+  imdb_id               String?
+  original_language     String
+  original_title        String
+  overview              String
+  popularity            Float
+  poster_path           String?
+  release_date          DateTime
+  revenue               BigInt
+  runtime               Int
+  status                String
+  tagline               String
+  title                 String
+  video                 Boolean
+  vote_average          Float
+  vote_count            Int
+  cast                  Cast[]
+  crew                  Crew[]
+  genres                GenresOnMovie[]
+  production_companies  ProductionCompanyOnMovie[]
+}
+
+model Cast {
+  adult                Boolean
+  gender               Int
+  known_for_department String?
+  name                 String
+  original_name        String?
+  popularity           Float
+  profile_path         String?
+  character            String?
+  credit_id            String @id
+  order                Int?
+  cast_id              Int?
+  movie_id             Int
+  Movie                Movie   @relation(fields: [movie_id], references: [id])
+}
+
+model Crew {
+  adult                Boolean
+  gender               Int
+  known_for_department String?
+  name                 String
+  original_name        String?
+  popularity           Float
+  profile_path         String?
+  credit_id            String @id
+  department           String?
+  job                  String?
+  movie_id             Int
+  Movie                Movie   @relation(fields: [movie_id], references: [id])
+}
+
+model Genre {
+  id     Int          @id
+  name   String
+  movies GenresOnMovie[]
+}
+
+model GenresOnMovie {
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId Int
+  genre   Genre  @relation(fields: [genreId], references: [id])
+  genreId Int
+
+  @@id([movieId, genreId])
+}
+
+model ProductionCompany {
+  id             Int                     @id
+  logo_path      String?
+  name           String
+  origin_country String
+  movies         ProductionCompanyOnMovie[]
+}
+
+model ProductionCompanyOnMovie {
+  movie               Movie             @relation(fields: [movieId], references: [id])
+  movieId             Int
+  productionCompany   ProductionCompany @relation(fields: [productionCompanyId], references: [id])
+  productionCompanyId Int
+
+  @@id([movieId, productionCompanyId])
+}
