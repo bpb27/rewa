@@ -15,6 +15,7 @@ export default function Layout({
         {/* <meta property="og:image" content="https://someimage.com"/> */}
         <meta name="og:title" content="Rewa" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div>
         <nav className="p-3 fixed top-0 bg-slate-800 w-full font-semibold text-blue-50 flex space-x-3">
