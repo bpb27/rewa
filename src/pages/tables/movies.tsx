@@ -1,10 +1,8 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import Layout from '~/components/layout';
 import { db } from '~/db/db';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { getByJob, moneyShort, smartSort } from '~/utils';
-import tableStyles from '~/styles/tables.module.scss';
 import { pick, zipObj } from 'remeda';
 import { StaticProps, Streamer } from '~/types';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
@@ -107,7 +105,9 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
   return (
     <Layout title="All movies" className="mt-3 mx-2">
       <div className="flex items-center my-2 py-2">
-        <h2 className="text-xl font-semibold">{movieList.length} movies</h2>
+        <h2 className="text-xl font-semibold">
+          {movieList.length} movie{movieList.length === 1 ? '' : 's'}
+        </h2>
         <input
           className="mx-2 p-1 border-slate-200 border-solid border-2"
           onChange={(e) => setSearch(e.target.value)}
