@@ -3,9 +3,10 @@ import { PropsWithChildren } from 'react';
 import Link from 'next/link';
 
 export default function Layout({
+  className,
   children,
   title,
-}: PropsWithChildren<{ title: string }>) {
+}: PropsWithChildren<{ className?: string; title: string }>) {
   return (
     <>
       <Head>
@@ -18,7 +19,7 @@ export default function Layout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div>
-        <nav className="p-3 fixed top-0 bg-slate-800 w-full font-semibold text-blue-50 flex space-x-3">
+        <nav className="sticky top-0 left-0 right-0 w-full p-3 flex space-x-3 bg-slate-800 font-semibold text-blue-50 ">
           <Link href="/tables/movies">All Movies</Link>
           <Link href="/top/actors">Actors</Link>
           <Link href="/top/directors">Directors</Link>
@@ -26,7 +27,7 @@ export default function Layout({
           <Link href="/top/writers">Writers</Link>
           <Link href="/top/cinematographers">Cinematographers</Link>
         </nav>
-        <div className="mt-12">{children}</div>
+        <div className={className || 'mt-3'}>{children}</div>
       </div>
       ;
     </>

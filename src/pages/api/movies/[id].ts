@@ -7,9 +7,10 @@ export type GetMovieByIdResponse = ReturnType<typeof getMovieById>;
 
 const handler = async (
   req: NextApiRequest,
-  res: NextApiResponse<ReturnType<typeof getMovieById>>
+  res: NextApiResponse<GetMovieByIdResponse>
 ) => {
-  const movie = getMovieById(Number(req.query.id));
+  const id = Number(req.query.id);
+  const movie = getMovieById(id);
   if (movie) {
     res.status(200).json(movie);
   } else {

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { sortByDate, tmdbImage } from '~/utils';
-import { useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { Movie } from '~/components/movie';
 import Layout from '~/components/layout';
 
@@ -49,18 +49,20 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
             <div className="flex items-stretch">
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
-                .map((m) => (
-                  <Image
-                    key={m.id}
-                    src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
-                    alt={`Movie poster for ${m.title}`}
-                    width={50}
-                    height={76}
-                    className="m-1 border-2 border-black cursor-pointer"
-                    onClick={() =>
-                      setSelectedMovie({ personId: person.id, movieId: m.id })
-                    }
-                  />
+                .map((m, k) => (
+                  <DelayedRender key={m.id} delay={(k + 1) * 100 + i * 1000}>
+                    <Image
+                      key={m.id}
+                      src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
+                      alt={`Movie poster for ${m.title}`}
+                      width={50}
+                      height={76}
+                      className="m-1 border-2 border-black cursor-pointer"
+                      onClick={() =>
+                        setSelectedMovie({ personId: person.id, movieId: m.id })
+                      }
+                    />
+                  </DelayedRender>
                 ))}
             </div>
           </div>
@@ -69,3 +71,18 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     </Layout>
   );
 };
+
+const useDelayedRender = (delay: number) => {
+  const [delayed, setDelayed] = useState(true);
+  useEffect(() => {
+    const timeout = setTimeout(() => setDelayed(false), delay);
+    return () => clearTimeout(timeout);
+  }, [delay]);
+  return (fn: any) => !delayed && fn();
+};
+
+const DelayedRender = ({
+  delay,
+  children,
+}: PropsWithChildren<{ delay: number }>) =>
+  useDelayedRender(delay)(() => children);

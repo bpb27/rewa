@@ -239,7 +239,7 @@
     "date": "Mar 2018",
     "url": "https://open.spotify.com/episode/4gU5kJQorBiSfD5PmMCMjY",
     "id": 27,
-    "movieId": 2280
+    "movieId": 115
   },
   {
     "title": "Creed",
@@ -512,7 +512,7 @@
     "date": "Feb 2019",
     "url": "https://open.spotify.com/episode/04yheif00VhIZx8aDowfb4",
     "id": 58,
-    "movieId": 59440
+    "movieId": 11474
   },
   {
     "title": "A Star Is Born",
@@ -723,11 +723,7 @@
   },
   {
     "title": "Fatal Attraction",
-    "hosts": [
-      "Bill Simmons",
-      "Mallory Rubin",
-      "Wesley Morris | The Rewatchables"
-    ],
+    "hosts": ["Bill Simmons", "Mallory Rubin", "Wesley Morris"],
     "date": "Aug 2019",
     "url": "https://open.spotify.com/episode/0EtgOoKFOdGmBdJt3WDWdU",
     "id": 83,
@@ -819,7 +815,7 @@
     "date": "Dec 2019",
     "url": "https://open.spotify.com/episode/4RXoJ5F9fu0C2RgsanQBaQ",
     "id": 94,
-    "movieId": 10673
+    "movieId": 106646
   },
   {
     "title": "Happy Gilmore",
@@ -1200,7 +1196,7 @@
     "date": "Aug 2020",
     "url": "https://open.spotify.com/episode/31qJctZbmXBjFF7H5qphyK",
     "id": 141,
-    "movieId": 13633
+    "movieId": 9737
   },
   {
     "title": "Caddyshack",

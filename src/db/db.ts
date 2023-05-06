@@ -1,23 +1,23 @@
 import moviesJson from './movies.json';
 import episodesJson from './episodes.json';
-import { MoviesJson, EpisodesJson } from '~/types';
+import providersJson from './providers.json';
+import { MoviesJson, EpisodesJson, ProviderJson } from '~/types';
 import { HashUpsertContainer, hashUpsert, topOfHash } from '~/utils';
 
-const episodes = episodesJson as Episodes;
-const movies = (moviesJson as Movies).map((m) => ({
+const movies = (moviesJson as MoviesJson).map((m) => ({
   ...m,
-  episode: episodes.find((e) => e.movieId === m.id) || null,
+  episode:
+    (episodesJson as EpisodesJson).find((e) => e.movieId === m.id) || null,
+  providers:
+    (providersJson as ProviderJson).find((p) => p.id === m.id)?.providers || [],
 }));
 
-type Movies = MoviesJson;
-type Movie = Movies[number] & { episode?: Episode | null };
+type Movie = (typeof movies)[number];
 type PartialMovie = Partial<Movie>;
 type Actor = Movie['credits']['cast'][number];
 type PartialActor = Partial<Actor>;
 type Crew = Movie['credits']['crew'][number];
 type PartialCrew = Partial<Crew>;
-type Episodes = EpisodesJson;
-type Episode = Episodes[number];
 
 type MovieMapper<TFilteredMovie extends PartialMovie> = (
   movie: Movie

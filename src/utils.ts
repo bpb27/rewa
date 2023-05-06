@@ -25,10 +25,10 @@ export const moneyShort = (x: number) => {
   const nwc = numberWithCommas(x).split(',');
   if (x >= 1000000000) {
     const decimal = `.${nwc[1].slice(0, 2)}`;
-    return `$${nwc[0]}${decimal !== '.00' ? decimal : ''} billion`;
+    return `$${nwc[0]}${decimal !== '.00' ? decimal : ''}b`;
   } else if (x >= 1000000) {
     const decimal = `.${nwc[1].slice(0, 1)}`;
-    return `$${nwc[0]}${decimal !== '.0' ? decimal : ''} million`;
+    return `$${nwc[0]}${decimal !== '.0' ? decimal : ''}m`;
   } else {
     return `$${nwc[0]}k`;
   }
