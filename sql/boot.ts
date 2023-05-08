@@ -1,340 +1,222 @@
-const { omit, pick } = require('remeda');
-const Database = require('better-sqlite3');
-const movieJson = require('../src/db/movies.json');
+import { pick } from 'remeda';
+import Database from 'better-sqlite3';
+import movieJson from '../src/db/movies.json';
+import episodesJson from '../src/db/episodes.json';
+import streamersJson from '../src/db/streamers.json';
+import streamersOnMoviesJson from '../src/db/providers.json';
+import { MoviesJson, EpisodesJson } from '../src/types';
+import {
+  creatProductionCompaniesSql,
+  createActorsOnMoviesTableSql,
+  createActorsTableSql,
+  createCrewOnMoviesSql,
+  createCrewTableSql,
+  createEpisodesTableSql,
+  createGenresOnMoviesTableSql,
+  createGenresTableSql,
+  createHostsOnEpisodesSql,
+  createHostsTableSql,
+  createMoviesTableSql,
+  createProductionCompaniesOnMoviesSql,
+  createStreamersOnMoviesTable,
+  createStreamersTableSql,
+} from './create-tables';
 
-interface Movie {
-  budget: number;
+const movies = movieJson as MoviesJson;
+const episodes = episodesJson as EpisodesJson;
+const streamers = streamersJson as {
+  logo_path: string;
+  provider_name: string;
   id: number;
-  imdb_id: string;
-  overview: string;
-  poster_path: string;
-  release_date: string;
-  revenue: number;
-  runtime: number;
-  status: string;
-  tagline: string;
-  title: string;
-  genres: {
-    name: string;
-  }[];
-  production_companies: {
-    id: number;
-    name: string;
-    tmdb_id: number;
-    logo_path?: string;
-  }[];
-  credits: {
-    cast: {
-      gender: number;
-      id: number;
-      name: string;
-      profile_path?: string;
-      character: string;
-      credit_id: string;
-      order: number;
-    }[];
-    crew: {
-      gender: number;
-      id: number;
-      known_for_department: string;
-      name: string;
-      profile_path?: string;
-      credit_id: string;
-      department: string;
-      job: string;
-    }[];
-  };
-}
+}[];
+const streamersOnMovies = streamersOnMoviesJson as {
+  id: number;
+  providers: string[];
+}[];
 
-const movies = movieJson as Movie[];
-
-const db = new Database('./db.sqlite', {
+const db = new Database('./sql/db.sqlite', {
   readonly: false,
   timeout: 5000,
   // verbose: console.log,
 });
 
+const insert = (table: string, fields: string[]) =>
+  `
+    INSERT OR IGNORE INTO ${table} (
+        ${fields.join(',')}
+    ) VALUES (
+        ${fields.map((f) => '@' + f).join(',')}
+    )
+`;
+
 db.pragma('journal_mode = WAL');
 
-// TODO: release_date should be a date
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS movies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  budget INTEGER NOT NULL,
-  tmdb_id INTEGER NOT NULL UNIQUE,
-  imdb_id TEXT NOT NULL UNIQUE,
-  overview TEXT NOT NULL,
-  poster_path TEXT NOT NULL,
-  release_date TEXT NOT NULL,
-  revenue INTEGER NOT NULL,
-  runtime INTEGER NOT NULL,
-  tagline TEXT NOT NULL,
-  title TEXT NOT NULL
-)
-`
-).run();
+// primary tables
+db.prepare(createMoviesTableSql).run();
+db.prepare(createActorsTableSql).run();
+db.prepare(createCrewTableSql).run();
+db.prepare(createGenresTableSql).run();
+db.prepare(creatProductionCompaniesSql).run();
+db.prepare(createStreamersTableSql).run();
+db.prepare(createEpisodesTableSql).run();
+db.prepare(createHostsTableSql).run();
+// join tables
+db.prepare(createActorsOnMoviesTableSql).run();
+db.prepare(createCrewOnMoviesSql).run();
+db.prepare(createGenresOnMoviesTableSql).run();
+db.prepare(createProductionCompaniesOnMoviesSql).run();
+db.prepare(createStreamersOnMoviesTable).run();
+db.prepare(createHostsOnEpisodesSql).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS actors (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  gender INTEGER NOT NULL,
-  tmdb_id INTEGER NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  profile_path TEXT
+const insertMovie = db.prepare(
+  insert('movies', [
+    'budget',
+    'tmdb_id',
+    'imdb_id',
+    'overview',
+    'poster_path',
+    'release_date',
+    'revenue',
+    'runtime',
+    'tagline',
+    'title',
+  ])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS actors_on_movies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  movie_id INTEGER,
-  actor_id INTEGER,
-  character TEXT NOT NULL,
-  credit_id TEXT NOT NULL UNIQUE,
-  credit_order INTEGER NOT NULL,
-  FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, actor_id)
+const insertGenre = db.prepare(insert('genres', ['name']));
+
+const insertGenreOnMovie = db.prepare(
+  insert('genres_on_movies', ['movie_id', 'genre_id'])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS crew (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  gender INTEGER NOT NULL,
-  tmdb_id INTEGER NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  profile_path TEXT
+const insertProductionCompany = db.prepare(
+  insert('production_companies', ['name', 'tmdb_id', 'logo_path'])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS crew_on_movies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  movie_id INTEGER,
-  crew_id INTEGER,
-  known_for_department TEXT NOT NULL,
-  credit_id TEXT NOT NULL UNIQUE,
-  department TEXT NOT NULL,
-  job TEXT NOT NULL,
-  FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (crew_id) REFERENCES crew (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, crew_id)
+const insertProductionCompanyOnMovie = db.prepare(
+  insert('production_companies_on_movies', [
+    'movie_id',
+    'production_company_id',
+  ])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS genres (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL UNIQUE
+const insertActor = db.prepare(
+  insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path'])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS genres_on_movies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  movie_id INTEGER,
-  genre_id INTEGER,
-  FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (genre_id) REFERENCES genres (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, genre_id)
+const insertActorOnMovie = db.prepare(
+  insert('actors_on_movies', [
+    'movie_id',
+    'actor_id',
+    'character',
+    'credit_id',
+    'credit_order',
+  ])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS production_companies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  tmdb_id INTEGER NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  logo_path TEXT
+const insertCrew = db.prepare(
+  insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path'])
 );
-`
-).run();
 
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS production_companies_on_movies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  movie_id INTEGER,
-  production_company_id INTEGER,
-  FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (production_company_id) REFERENCES production_companies (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, production_company_id)
+const insertCrewOnMovie = db.prepare(
+  insert('crew_on_movies', [
+    'movie_id',
+    'crew_id',
+    'known_for_department',
+    'credit_id',
+    'department',
+    'job',
+  ])
 );
-`
-).run();
 
-const insertMovie = db.prepare(`
-  INSERT OR IGNORE INTO movies
-  (
-    budget,
-    tmdb_id,
-    imdb_id,
-    overview,
-    poster_path,
-    release_date,
-    revenue,
-    runtime,
-    tagline,
-    title
-  )
-  VALUES (
-    @budget,
-    @tmdb_id,
-    @imdb_id,
-    @overview,
-    @poster_path,
-    @release_date,
-    @revenue,
-    @runtime,
-    @tagline,
-    @title
-  )
-`);
+const insertEpisode = db.prepare(
+  insert('episodes', [
+    'title',
+    'episode_order',
+    'date',
+    'spotify_url',
+    'movie_id',
+  ])
+);
 
-const insertGenre = db.prepare(`
-  INSERT OR IGNORE INTO genres (name) VALUES (@name)
-`);
+const insertHostOnEpisode = db.prepare(
+  insert('hosts_on_episodes', ['host_id', 'episode_id'])
+);
 
-const insertGenreOnMovie = db.prepare(`
-  INSERT OR IGNORE INTO genres_on_movies (movie_id,genre_id) VALUES (@movie_id,@genre_id)
-`);
+const insertStreamer = db.prepare(
+  insert('streamers', ['tmdb_id', 'name', 'logo_path'])
+);
 
-const insertProductionCompany = db.prepare(`
-  INSERT OR IGNORE INTO production_companies (
-    name, tmdb_id, logo_path
-  )
-  VALUES (
-    @name, @tmdb_id, @logo_path
-  )
-`);
+const insertStreamerOnMovie = db.prepare(
+  insert('streamers_on_movies', ['streamer_id', 'movie_id'])
+);
 
-const insertProductionCompanyOnMovie = db.prepare(`
-  INSERT OR IGNORE INTO production_companies_on_movies (
-    movie_id, production_company_id
-  )
-  VALUES (
-    @movie_id, @production_company_id
-  )
-`);
+const insertHost = db.prepare(insert('hosts', ['name']));
 
-const insertActor = db.prepare(`
-  INSERT OR IGNORE INTO actors (
-    gender,
-    tmdb_id,
-    name,
-    profile_path
-  )
-  VALUES (
-    @gender,
-    @tmdb_id,
-    @name,
-    @profile_path
-  )
-`);
-
-const insertActorOnMovie = db.prepare(`
-  INSERT OR IGNORE INTO actors_on_movies (
-    movie_id,
-    actor_id,
-    character,
-    credit_id,
-    credit_order
-  )
-  VALUES (
-    @movie_id,
-    @actor_id,
-    @character,
-    @credit_id,
-    @credit_order
-  )
-`);
-
-const insertCrew = db.prepare(`
-  INSERT OR IGNORE INTO crew (
-    gender,
-    tmdb_id,
-    name,
-    profile_path
-  )
-  VALUES (
-    @gender,
-    @tmdb_id,
-    @name,
-    @profile_path
-  )
-`);
-
-const insertCrewOnMovie = db.prepare(`
-  INSERT OR IGNORE INTO crew_on_movies (
-    movie_id,
-    crew_id,
-    known_for_department,
-    credit_id,
-    department,
-    job
-  )
-  VALUES (
-    @movie_id,
-    @crew_id,
-    @known_for_department,
-    @credit_id,
-    @department,
-    @job
-  )
-`);
-
-const getMovieByTmdbId = db.prepare(`
+const getMovieByTmdbId = db.prepare<number>(`
   SELECT id AS movie_id FROM movies WHERE tmdb_id = ?;
 `);
 
-const getGenreByName = db.prepare(`
+const getGenreByName = db.prepare<string>(`
   SELECT id AS genre_id FROM genres WHERE name = ?;
 `);
 
-const getCompanyByTmdbId = db.prepare(`
+const getCompanyByTmdbId = db.prepare<number>(`
   SELECT id AS production_company_id FROM production_companies WHERE tmdb_id = ?;
 `);
 
-const getActorByTmdbId = db.prepare(`
+const getActorByTmdbId = db.prepare<number>(`
   SELECT id AS actor_id FROM actors WHERE tmdb_id = ?;
 `);
 
-const getCrewByTmdbId = db.prepare(`
+const getCrewByTmdbId = db.prepare<number>(`
   SELECT id AS crew_id FROM crew WHERE tmdb_id = ?;
 `);
 
-const insertMovies = db.transaction((movies: Movie[]) => {
-  for (const movie of movies) {
-    const moviePayload = omit(movie, [
-      'credits',
-      'genres',
-      'production_companies',
-    ]);
-    insertMovie.run(moviePayload);
-    const { movie_id } = getMovieByTmdbId.get(moviePayload.tmdb_id);
+const getHostByName = db.prepare<string>(`
+  SELECT id AS host_id FROM hosts WHERE name = ?;
+`);
 
+const getEpisodeByUrl = db.prepare<string>(`
+  SELECT id AS episode_id FROM episodes WHERE spotify_url = ?;
+`);
+
+const getStreamerByName = db.prepare<string>(`
+  SELECT id AS streamer_id FROM streamers WHERE name = ?;
+`);
+
+const insertMovies = db.transaction((movies: MoviesJson) => {
+  for (const movie of movies) {
+    const moviePayload = {
+      ...pick(movie, [
+        'budget',
+        'imdb_id',
+        'overview',
+        'poster_path',
+        'release_date',
+        'revenue',
+        'runtime',
+        'tagline',
+        'title',
+      ]),
+      tmdb_id: movie.id,
+    };
+    insertMovie.run(moviePayload);
+    const { movie_id } = getMovieByTmdbId.get(moviePayload.tmdb_id) as {
+      movie_id: number;
+    };
+
+    // GENRES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const genre of movie.genres) {
       const genrePayload = pick(genre, ['name']);
       insertGenre.run(genrePayload);
-      const { genre_id } = getGenreByName.get(genrePayload.name);
+      const { genre_id } = getGenreByName.get(genrePayload.name) as {
+        genre_id: number;
+      };
       insertGenreOnMovie.run({ movie_id, genre_id });
     }
 
+    // PROD COMPANIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const company of movie.production_companies) {
       const companyPayload = {
         ...pick(company, ['name', 'logo_path']),
@@ -343,17 +225,20 @@ const insertMovies = db.transaction((movies: Movie[]) => {
       insertProductionCompany.run(companyPayload);
       const { production_company_id } = getCompanyByTmdbId.get(
         companyPayload.tmdb_id
-      );
+      ) as { production_company_id: number };
       insertProductionCompanyOnMovie.run({ movie_id, production_company_id });
     }
 
+    // ACTORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const actor of movie.credits.cast) {
       const actorPayload = {
         ...pick(actor, ['gender', 'name', 'profile_path']),
         tmdb_id: actor.id,
       };
       insertActor.run(actorPayload);
-      const { actor_id } = getActorByTmdbId.get(actorPayload.tmdb_id);
+      const { actor_id } = getActorByTmdbId.get(actorPayload.tmdb_id) as {
+        actor_id: number;
+      };
       const actorOnMoviePayload = {
         actor_id,
         movie_id,
@@ -364,13 +249,16 @@ const insertMovies = db.transaction((movies: Movie[]) => {
       insertActorOnMovie.run(actorOnMoviePayload);
     }
 
+    // CREW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const crew of movie.credits.crew) {
       const crewPayload = {
         ...pick(crew, ['gender', 'name', 'profile_path']),
         tmdb_id: crew.id,
       };
       insertCrew.run(crewPayload);
-      const { crew_id } = getCrewByTmdbId.get(crewPayload.tmdb_id);
+      const { crew_id } = getCrewByTmdbId.get(crewPayload.tmdb_id) as {
+        crew_id: number;
+      };
       const crewOnMoviePayload = {
         crew_id,
         movie_id,
@@ -381,27 +269,62 @@ const insertMovies = db.transaction((movies: Movie[]) => {
       };
       insertCrewOnMovie.run(crewOnMoviePayload);
     }
+
+    // EPISODES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    const episode = episodes.find((e) => e.movieId === moviePayload.tmdb_id);
+    if (episode) {
+      const episodePayload = {
+        title: episode.title,
+        episode_order: episode.id,
+        date: episode.date,
+        spotify_url: episode.url,
+        movie_id,
+      };
+      insertEpisode.run(episodePayload);
+      const { episode_id } = getEpisodeByUrl.get(
+        episodePayload.spotify_url
+      ) as { episode_id: number };
+
+      for (const host of episode.hosts) {
+        const hostPayload = { name: host };
+        insertHost.run(hostPayload);
+        const { host_id } = getHostByName.get(hostPayload.name) as {
+          host_id: number;
+        };
+        const hostOnEpisodePayload = { host_id, episode_id };
+        insertHostOnEpisode.run(hostOnEpisodePayload);
+      }
+    }
+
+    // STREAMERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    for (const streamer of streamers) {
+      const streamerPayload = {
+        tmdb_id: streamer.id,
+        logo_path: streamer.logo_path,
+        name: streamer.provider_name,
+      };
+      insertStreamer.run(streamerPayload);
+    }
+
+    // STREAMERS_ON_MOVIE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    const soms = streamersOnMovies.find(
+      (s) => s.id === moviePayload.tmdb_id
+    )?.providers;
+
+    if (soms) {
+      for (const streamerName of soms) {
+        const { streamer_id } = getStreamerByName.get(streamerName) as {
+          streamer_id: number;
+        };
+        if (streamer_id) {
+          const streamerOnMoviePayload = { movie_id, streamer_id };
+          insertStreamerOnMovie.run(streamerOnMoviePayload);
+        }
+      }
+    }
   }
 });
 
-insertMovies(
-  movies.map((movie) => ({
-    ...pick(movie, [
-      'budget',
-      'credits',
-      'genres',
-      'production_companies',
-      'imdb_id',
-      'overview',
-      'poster_path',
-      'release_date',
-      'revenue',
-      'runtime',
-      'tagline',
-      'title',
-    ]),
-    tmdb_id: movie.id,
-  }))
-);
+insertMovies(movies);
 
 db.close();
