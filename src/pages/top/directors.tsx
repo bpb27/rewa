@@ -1,20 +1,14 @@
-import { db } from '~/db/db';
-import { pick } from 'remeda';
 import { TopCategory } from '~/components/top-category';
+import { getCrew } from '~/db/top-people';
 import { StaticProps } from '~/types';
 
-export const getStaticProps = () => {
-  const directors = db.topCrew(
-    35,
-    'director',
-    (crew) => pick(crew, ['id', 'name', 'profile_path']),
-    (movie) => pick(movie, ['id', 'title', 'poster_path', 'release_date'])
-  );
-  return { props: { directors } };
+export const getStaticProps = async () => {
+  const people = await getCrew('director');
+  return { props: { people } };
 };
 
 export default function TopDirectors({
-  directors,
+  people,
 }: StaticProps<typeof getStaticProps>) {
-  return <TopCategory people={directors} title="Top Directors" />;
+  return <TopCategory people={people} title="Top Directors" />;
 }

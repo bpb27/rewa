@@ -7,7 +7,7 @@ import Layout from '~/components/layout';
 type TopCategoryProps = {
   people: {
     id: number;
-    profile_path?: string;
+    profile_path?: string | null;
     name: string;
     movies: {
       id: number;
