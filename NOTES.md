@@ -1,16 +1,16 @@
 TODO
 
 - single script to add a new movie + episode
-- determine db or settle for JSON
 - update streamer list cronjob or something
-- missing data - budget, episodes
 - imdb rating / rotten mater rating
 - responsiveness
 - general design
 - academy awards stuff (not available via TMDB)
-- cool animation for top category movie poster rendering
+- cool animation for top category movie poster rendering (bar then poster reveal?)
 - maybe try next app router
-- mayber get more into react server components
+- maybe get more into react server components
+- maybe viz sensor on table so not rendering 280+ rows at once
+- other filter components like year slider, host checklist/typeahead
 
 # IMDB list of all rewatchables movies
 

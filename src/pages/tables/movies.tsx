@@ -19,7 +19,7 @@ export const getStaticProps = async () => {
       imdb_id: true,
       poster_path: true,
       release_date: true,
-      revenue: true,
+      revenue: true, // NB: stored in DB as / 1000 due to BigInt shit
       runtime: true,
       title: true,
       actors_on_movies: {
@@ -75,10 +75,6 @@ export const getStaticProps = async () => {
   };
 };
 
-type TokenType = 'director' | 'actor' | 'year' | 'host' | 'streamer';
-type BaseToken = { id: number; name: string; type: TokenType };
-type Token<TObject extends BaseToken = BaseToken> = TObject;
-
 export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
   type Movie = (typeof movies)[0];
   type SortProp = keyof typeof sorting;
@@ -88,9 +84,12 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [orderBy, setOrderBy] = useState<SortProp>('title');
 
-  // TODO: remove if already present + reusable matchToken function for filtering
   const addToken = (newToken: Token) => {
-    setTokens(uniqBy([...tokens, newToken], (t) => t.id + t.type));
+    if (hasToken(tokens, newToken)) {
+      setTokens(removeToken(tokens, newToken));
+    } else {
+      setTokens([...tokens, newToken]);
+    }
   };
 
   const sorting = {
@@ -109,13 +108,13 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
     const list = smartSort([...movies], sorting[orderBy]);
     if (!asc) list.reverse();
 
-    return list.filter((movie) => {
-      const directorTokens = tokens.filter((t) => t.type === 'director');
-      const actorTokens = tokens.filter((t) => t.type === 'actor');
-      const streamerTokens = tokens.filter((t) => t.type === 'streamer');
-      const hostTokens = tokens.filter((t) => t.type === 'host');
-      const yearTokens = tokens.filter((t) => t.type === 'year');
+    const directorTokens = tokens.filter((t) => t.type === 'director');
+    const actorTokens = tokens.filter((t) => t.type === 'actor');
+    const streamerTokens = tokens.filter((t) => t.type === 'streamer');
+    const hostTokens = tokens.filter((t) => t.type === 'host');
+    const yearTokens = tokens.filter((t) => t.type === 'year');
 
+    return list.filter((movie) => {
       const actorIds = movie.actorIds;
       const directorIds = movie.crew.map((c) => c.id);
       const streamerIds = movie.streamers.map((c) => c.id);
@@ -138,7 +137,7 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
 
       return true;
     });
-  }, [asc, orderBy, search, movies, tokens]);
+  }, [asc, movies, orderBy, search, tokens]);
 
   return (
     <Layout title="All movies" className="mt-3 mx-2">
@@ -171,14 +170,12 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
         </button>
       </div>
       <div className="my-2">
-        {tokens.map(({ id, name, type }) => (
+        {tokens.map((token) => (
           <TableToken
-            key={`${id}-${type}`}
-            onClick={() =>
-              setTokens(tokens.filter((t) => t.id !== id && t.type !== type))
-            }
+            key={`${token.id}-${token.type}`}
+            onClick={() => setTokens(removeToken(tokens, token))}
           >
-            {name}
+            {token.name}
           </TableToken>
         ))}
       </div>
@@ -297,9 +294,7 @@ const ClickableField = ({ fields, setter, type }: ClickableFieldProps) => {
         <div
           className="cursor-pointer"
           key={item.name}
-          onClick={() => {
-            setter({ ...item, type });
-          }}
+          onClick={() => setter({ ...item, type })}
         >
           {item.name}&nbsp;
         </div>
@@ -307,3 +302,13 @@ const ClickableField = ({ fields, setter, type }: ClickableFieldProps) => {
     </>
   );
 };
+
+type TokenType = 'director' | 'actor' | 'year' | 'host' | 'streamer';
+type BaseToken = { id: number; name: string; type: TokenType };
+type Token<TObject extends BaseToken = BaseToken> = TObject;
+
+const removeToken = (tokens: Token[], { id, type }: Token) =>
+  tokens.filter((t) => !(t.type === type && t.id === id));
+
+const hasToken = (tokens: Token[], { id, type }: Token) =>
+  !!tokens.find((t) => t.type === type && t.id === id);
