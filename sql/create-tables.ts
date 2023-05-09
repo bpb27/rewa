@@ -33,8 +33,7 @@ CREATE TABLE IF NOT EXISTS actors_on_movies (
   credit_id TEXT NOT NULL UNIQUE,
   credit_order INTEGER NOT NULL,
   FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, actor_id)
+  FOREIGN KEY (actor_id) REFERENCES actors (id) ON DELETE CASCADE
 );
 `;
 
@@ -58,8 +57,7 @@ CREATE TABLE IF NOT EXISTS crew_on_movies (
   department TEXT NOT NULL,
   job TEXT NOT NULL,
   FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (crew_id) REFERENCES crew (id) ON DELETE CASCADE,
-  UNIQUE (movie_id, crew_id)
+  FOREIGN KEY (crew_id) REFERENCES crew (id) ON DELETE CASCADE
 );
 `;
 

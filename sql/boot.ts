@@ -194,12 +194,12 @@ const insertMovies = db.transaction((movies: MoviesJson) => {
         'overview',
         'poster_path',
         'release_date',
-        'revenue',
         'runtime',
         'tagline',
         'title',
       ]),
       tmdb_id: movie.id,
+      revenue: movie.revenue / 1000,
     };
     insertMovie.run(moviePayload);
     const { movie_id } = getMovieByTmdbId.get(moviePayload.tmdb_id) as {

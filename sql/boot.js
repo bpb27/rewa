@@ -114,11 +114,10 @@ var insertMovies = db.transaction(function (movies) {
             'overview',
             'poster_path',
             'release_date',
-            'revenue',
             'runtime',
             'tagline',
             'title',
-        ])), { tmdb_id: movie.id });
+        ])), { tmdb_id: movie.id, revenue: movie.revenue / 1000 });
         insertMovie.run(moviePayload);
         var movie_id = getMovieByTmdbId.get(moviePayload.tmdb_id).movie_id;
         // GENRES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

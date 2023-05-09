@@ -1,36 +1,73 @@
 import Image from 'next/image';
 import Layout from '~/components/layout';
-import { db } from '~/db/db';
 import { PropsWithChildren, useMemo, useState } from 'react';
-import { getByJob, moneyShort, smartSort } from '~/utils';
-import { pick, zipObj } from 'remeda';
-import { StaticProps, Streamer } from '~/types';
+import { moneyShort, smartSort } from '~/utils';
+import { mapValues, omit, uniqBy } from 'remeda';
+import { StaticProps } from '~/types';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+const selectIdAndName = { select: { id: true, name: true } };
 
 export const getStaticProps = async () => {
-  const movies = db.movieByQuery('', (movie) => ({
-    ...pick(movie, [
-      'budget',
-      'id',
-      'imdb_id',
-      'poster_path',
-      'providers',
-      'release_date',
-      'revenue',
-      'runtime',
-      'title',
+  const data = await prisma.movies.findMany({
+    orderBy: { title: 'asc' },
+    select: {
+      budget: true,
+      id: true,
+      imdb_id: true,
+      poster_path: true,
+      release_date: true,
+      revenue: true,
+      runtime: true,
+      title: true,
+      actors_on_movies: {
+        orderBy: { credit_order: 'asc' },
+        select: { actors: selectIdAndName },
+      },
+      crew_on_movies: {
+        where: { job: 'Director' },
+        select: {
+          job: true,
+          crew: selectIdAndName,
+        },
+      },
+      episodes: {
+        select: {
+          id: true,
+          spotify_url: true,
+          episode_order: true,
+          hosts_on_episodes: { select: { hosts: selectIdAndName } },
+        },
+      },
+      genres_on_movies: {
+        select: { genres: selectIdAndName },
+      },
+      streamers_on_movies: {
+        select: { streamers: selectIdAndName },
+      },
+    },
+  });
+
+  // TODO: fix bang by filtering nulls?
+  const movies = data.map((movie) => ({
+    ...omit(movie, [
+      'actors_on_movies',
+      'crew_on_movies',
+      'genres_on_movies',
+      'streamers_on_movies',
     ]),
-    episodeNumber: movie.episode?.id || 0,
-    hosts: movie.episode?.hosts || [],
-    episodeUrl: movie.episode?.url || null,
-    profit: movie.revenue - movie.budget,
-    director: getByJob('director', movie.credits.crew)[0]?.name || '',
-    directors: getByJob('director', movie.credits.crew).map((c) => c.name),
-    writers: getByJob('writer', movie.credits.crew).map((c) => c.name),
-    topCast: movie.credits.cast
-      .sort((a, b) => a.order - b.order)
-      .slice(0, 3)
-      .map((c) => c.name),
+    year: new Date(movie.release_date).getFullYear().toString(),
+    actors: movie.actors_on_movies.map((jt) => jt.actors!).slice(0, 3),
+    actorIds: movie.actors_on_movies.map((jt) => jt.actors?.id),
+    crew: movie.crew_on_movies.map((jt) => ({ ...jt.crew!, job: jt.job })),
+    genres: movie.genres_on_movies.map((jt) => jt.genres!),
+    streamers: movie.streamers_on_movies.map((jt) => jt.streamers!),
+    episode: movie.episodes.map((ep) => ({
+      ...omit(ep, ['hosts_on_episodes']),
+      hosts: ep.hosts_on_episodes.map((jt) => jt.hosts!),
+    }))[0],
   }));
 
   return {
@@ -38,69 +75,70 @@ export const getStaticProps = async () => {
   };
 };
 
-type SortableProp = (typeof sortables)[number];
-const sortables = [
-  'budget',
-  'director',
-  'episodeNumber',
-  'profit',
-  'release_date',
-  'revenue',
-  'runtime',
-  'title',
-] as const;
-const SORT = zipObj(sortables, sortables);
+type TokenType = 'director' | 'actor' | 'year' | 'host' | 'streamer';
+type BaseToken = { id: number; name: string; type: TokenType };
+type Token<TObject extends BaseToken = BaseToken> = TObject;
 
 export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
+  type Movie = (typeof movies)[0];
+  type SortProp = keyof typeof sorting;
+
   const [asc, setAsc] = useState(true);
-  const [orderBy, setOrderBy] = useState<SortableProp>('title');
   const [search, setSearch] = useState('');
-  const [directorTokens, setDirectorTokens] = useState<string[]>([]);
-  const [yearTokens, setYearTokens] = useState<string[]>([]);
-  const [hostTokens, setHostTokens] = useState<string[]>([]);
-  const [streamingTokens, setStreamingTokens] = useState<Streamer[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [orderBy, setOrderBy] = useState<SortProp>('title');
+
+  // TODO: remove if already present + reusable matchToken function for filtering
+  const addToken = (newToken: Token) => {
+    setTokens(uniqBy([...tokens, newToken], (t) => t.id + t.type));
+  };
+
+  const sorting = {
+    budget: (m: Movie) => m.budget,
+    director: (m: Movie) => m.crew[0]?.name,
+    episodeNumber: (m: Movie) => m.episode.episode_order,
+    profit: (m: Movie) => (m.revenue * 1000) / m.budget,
+    release_date: (m: Movie) => m.release_date,
+    revenue: (m: Movie) => m.revenue,
+    runtime: (m: Movie) => m.runtime,
+    title: (m: Movie) => m.title,
+  };
+  const sortProps = mapValues(sorting, (_value, key) => key);
 
   const movieList = useMemo(() => {
-    const list = smartSort([...movies], orderBy);
+    const list = smartSort([...movies], sorting[orderBy]);
     if (!asc) list.reverse();
 
     return list.filter((movie) => {
-      if (search && !movie.title.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
+      const directorTokens = tokens.filter((t) => t.type === 'director');
+      const actorTokens = tokens.filter((t) => t.type === 'actor');
+      const streamerTokens = tokens.filter((t) => t.type === 'streamer');
+      const hostTokens = tokens.filter((t) => t.type === 'host');
+      const yearTokens = tokens.filter((t) => t.type === 'year');
+
+      const actorIds = movie.actorIds;
+      const directorIds = movie.crew.map((c) => c.id);
+      const streamerIds = movie.streamers.map((c) => c.id);
+      const hostIds = movie.episode.hosts.map((c) => c.id);
+      const yearIds = [Number(movie.year)];
+
       if (
-        directorTokens.length &&
-        !directorTokens.every((token) => movie.directors.includes(token))
+        !directorTokens.every((t) => directorIds.includes(t.id)) ||
+        !actorTokens.every((t) => actorIds.includes(t.id)) ||
+        !streamerTokens.every((t) => streamerIds.includes(t.id)) ||
+        !hostTokens.every((t) => hostIds.includes(t.id)) ||
+        !yearTokens.every((t) => yearIds.includes(t.id))
       ) {
         return false;
       }
-      if (
-        hostTokens.length &&
-        !hostTokens.every((token) => movie.hosts.includes(token))
-      ) {
+
+      if (!movie.title.toLowerCase().includes(search.toLowerCase())) {
         return false;
       }
-      if (
-        streamingTokens.length &&
-        !streamingTokens.every((token) => movie.providers.includes(token))
-      ) {
-        return false;
-      }
-      if (yearTokens.length && !movie.release_date.includes(yearTokens[0])) {
-        return false;
-      }
+
       return true;
     });
-  }, [
-    asc,
-    orderBy,
-    search,
-    movies,
-    directorTokens,
-    yearTokens,
-    hostTokens,
-    streamingTokens,
-  ]);
+  }, [asc, orderBy, search, movies, tokens]);
 
   return (
     <Layout title="All movies" className="mt-3 mx-2">
@@ -116,54 +154,31 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
         />
         <select
           className="p-2"
-          onChange={(e) => setOrderBy(e.target.value as SortableProp)}
+          onChange={(e) => setOrderBy(e.target.value as SortProp)}
           value={orderBy}
         >
-          <option value={SORT.title}>Title</option>
-          <option value={SORT.release_date}>Year</option>
-          <option value={SORT.director}>Director</option>
-          <option value={SORT.episodeNumber}>Episode</option>
-          <option value={SORT.runtime}>Runtime</option>
-          <option value={SORT.revenue}>Box Office</option>
-          <option value={SORT.budget}>Budget</option>
-          <option value={SORT.profit}>Profit</option>
+          <option value={sortProps.title}>Title</option>
+          <option value={sortProps.release_date}>Year</option>
+          <option value={sortProps.episodeNumber}>Episode</option>
+          <option value={sortProps.runtime}>Runtime</option>
+          <option value={sortProps.revenue}>Box Office</option>
+          <option value={sortProps.budget}>Budget</option>
+          <option value={sortProps.profit}>Profit %</option>
+          <option value={sortProps.director}>Director</option>
         </select>
         <button className="text-lg ml-2" onClick={() => setAsc(!asc)}>
           {asc ? <span>&#8593;</span> : <span>&#8595;</span>}
         </button>
       </div>
       <div className="my-2">
-        {yearTokens.map((year) => (
-          <TableToken key={year} onClick={() => setYearTokens([])}>
-            {year}
-          </TableToken>
-        ))}
-        {directorTokens.map((director) => (
+        {tokens.map(({ id, name, type }) => (
           <TableToken
-            key={director}
+            key={`${id}-${type}`}
             onClick={() =>
-              setDirectorTokens(directorTokens.filter((h) => h !== director))
+              setTokens(tokens.filter((t) => t.id !== id && t.type !== type))
             }
           >
-            {director}
-          </TableToken>
-        ))}
-        {hostTokens.map((host) => (
-          <TableToken
-            key={host}
-            onClick={() => setHostTokens(hostTokens.filter((h) => h !== host))}
-          >
-            {host}
-          </TableToken>
-        ))}
-        {streamingTokens.map((streamer) => (
-          <TableToken
-            key={streamer}
-            onClick={() =>
-              setStreamingTokens(streamingTokens.filter((s) => s !== streamer))
-            }
-          >
-            {streamer}
+            {name}
           </TableToken>
         ))}
       </div>
@@ -201,35 +216,37 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
               <td className="md:max-w-2xl">{m.title}</td>
               <td>
                 <ClickableField
-                  currentTokens={yearTokens}
-                  fields={[new Date(m.release_date).getFullYear().toString()]}
-                  setter={setYearTokens}
+                  fields={[{ id: Number(m.year), name: m.year }]}
+                  setter={addToken}
+                  type="year"
                 />
               </td>
               <td>
                 <ClickableField
-                  currentTokens={directorTokens}
-                  fields={m.directors}
-                  setter={setDirectorTokens}
-                />
-              </td>
-              <td>
-                {m.topCast.map((c) => (
-                  <div key={c}>{c}</div>
-                ))}
-              </td>
-              <td>
-                <ClickableField
-                  currentTokens={hostTokens}
-                  fields={m.hosts}
-                  setter={setHostTokens}
+                  fields={m.crew}
+                  setter={addToken}
+                  type="director"
                 />
               </td>
               <td>
                 <ClickableField
-                  currentTokens={streamingTokens}
-                  fields={m.providers}
-                  setter={setStreamingTokens}
+                  fields={m.actors}
+                  setter={addToken}
+                  type="actor"
+                />
+              </td>
+              <td>
+                <ClickableField
+                  fields={m.episode.hosts}
+                  setter={addToken}
+                  type="host"
+                />
+              </td>
+              <td>
+                <ClickableField
+                  fields={m.streamers}
+                  setter={addToken}
+                  type="streamer"
                 />
               </td>
               <td>
@@ -237,12 +254,14 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
                   <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
                 </div>
                 <div>
-                  {m.episodeUrl && (
-                    <SpotifyLink url={m.episodeUrl}>Spotify</SpotifyLink>
+                  {m.episode.spotify_url && (
+                    <SpotifyLink url={m.episode.spotify_url}>
+                      Spotify
+                    </SpotifyLink>
                   )}
                 </div>
               </td>
-              <td>{moneyShort(m.revenue)}</td>
+              <td>{moneyShort(m.revenue * 1000)}</td>
               <td>{moneyShort(m.budget)}</td>
               <td>{m.runtime} mins</td>
             </tr>
@@ -266,27 +285,23 @@ const TableToken = ({ children, onClick }: TableTokenProps) => (
 );
 
 type ClickableFieldProps = {
-  fields: string[];
-  currentTokens: string[];
-  setter: (v: any[]) => void;
+  fields: Omit<Token, 'type'>[];
+  setter: (v: Token) => void;
+  type: TokenType;
 };
 
-const ClickableField = ({
-  currentTokens,
-  fields,
-  setter,
-}: ClickableFieldProps) => {
+const ClickableField = ({ fields, setter, type }: ClickableFieldProps) => {
   return (
     <>
       {fields.map((item) => (
         <div
           className="cursor-pointer"
-          key={item}
+          key={item.name}
           onClick={() => {
-            if (!currentTokens.includes(item)) setter([...currentTokens, item]);
+            setter({ ...item, type });
           }}
         >
-          {item}&nbsp;
+          {item.name}&nbsp;
         </div>
       ))}
     </>

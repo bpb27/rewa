@@ -42,11 +42,11 @@ type SortableObject = {
 
 export const smartSort = <TEntry extends SortableObject>(
   arr: TEntry[],
-  property: keyof TEntry
+  getter: (item: TEntry) => any
 ): TEntry[] => {
   return arr.sort((a: TEntry, b: TEntry) => {
-    const aValue = a[property];
-    const bValue = b[property];
+    const aValue = getter(a);
+    const bValue = getter(b);
     if (aValue === undefined || aValue === null) return 1;
     if (bValue === undefined || bValue === null) return -1;
 
