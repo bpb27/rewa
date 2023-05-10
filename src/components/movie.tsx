@@ -11,15 +11,12 @@ type Props = {
 
 export const Movie = ({ movieId, personId, onClose }: Props) => {
   const { data, error, isLoading } = useSWR<GetMovieByIdResponse>(
-    `/api/movies/${movieId}`,
+    `/api/movies/${movieId}?${personId ? `actorId${personId}` : ''}`,
     fetcher
   );
 
-  if (!data) return null;
-
-  // TODO: make sure this doesn't incorrectly render
-  const role = data.credits.cast.find((c) => c.id === personId);
-  const director = data.credits.crew.find((c) => c.job === 'Director');
+  if (!data || !data.movie) return null;
+  const { actor, movie } = data;
 
   // TODO: image loader, standardized width
   return (
@@ -30,28 +27,28 @@ export const Movie = ({ movieId, personId, onClose }: Props) => {
       >
         Close
       </button>
-      <h1 className="text-2xl font-bold underline">{data.title}</h1>
+      <h1 className="text-2xl font-bold underline">{movie.title}</h1>
       <p>
-        {formatDate(data.release_date)} - {data.runtime}mins
+        {formatDate(movie.release_date)} - {movie.runtime}mins
       </p>
-      {director && <p>Directed by {director.name}</p>}
+      {/* {director && <p>Directed by {director.name}</p>} */}
       <Image
-        src={`https://image.tmdb.org/t/p/original${data.poster_path}`}
-        alt={`Movie poster for ${data.title}`}
+        src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+        alt={`Movie poster for ${movie.title}`}
         className="m-1 border-2 border-black"
         {...moviePosterSize(200)}
       />
-      {role && <p>{role.character}</p>}
-      <p>{data.tagline}</p>
+      {actor && <p>{actor.character}</p>}
+      <p>{movie.tagline}</p>
       <a
-        href={`https://www.imdb.com/title/${data.imdb_id}/`}
+        href={`https://www.imdb.com/title/${movie.imdb_id}/`}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-block p-3 bg-yellow-200 rounded-md mr-3 font-semibold w-full"
       >
         Movie on IMDB
       </a>
-      {data.episode && (
+      {/* {data.episode && (
         <a
           href={data.episode.url}
           target="_blank"
@@ -60,7 +57,7 @@ export const Movie = ({ movieId, personId, onClose }: Props) => {
         >
           Episode on Spotify
         </a>
-      )}
+      )} */}
     </div>
   );
 };
