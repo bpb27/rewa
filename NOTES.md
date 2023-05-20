@@ -1,5 +1,7 @@
 TODO
 
+- API calls are failing - maybe something w/ sqlite extra files? seem to disappear on build command
+  - definitely a db read error - maybe move to supabase - can still use prisma, but get to use postgres
 - single script to add a new movie + episode
 - imdb rating / rotten mater rating
 - responsiveness

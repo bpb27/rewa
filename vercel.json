@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/search/movies.ts": {
+      "includeFiles": "sql/**"
+    }
+  }
+}
