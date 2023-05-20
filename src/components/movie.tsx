@@ -11,7 +11,7 @@ type Props = {
 
 export const Movie = ({ movieId, personId, onClose }: Props) => {
   const { data, error, isLoading } = useSWR<GetMovieByIdResponse>(
-    `/api/movies/${movieId}?${personId ? `actorId${personId}` : ''}`,
+    `/api/movies/${movieId}?${personId ? `actorId=${personId}` : ''}`,
     fetcher
   );
 

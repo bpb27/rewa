@@ -30,7 +30,6 @@ export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
         placeholder="Search titles, actors, hosts"
         type="search"
         value={search}
-        onBlur={(e) => console.log(e)}
       />
       {showingDropdown && (
         <ul className="absolute z-2 w-full mt-2 bg-white border rounded-lg shadow-lg">

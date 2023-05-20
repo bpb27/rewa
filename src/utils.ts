@@ -1,3 +1,5 @@
+import { useState, useEffect, RefObject, useRef } from 'react';
+
 export const tmdbImage = (path: string) =>
   `https://image.tmdb.org/t/p/original${path}`;
 
@@ -123,8 +125,6 @@ export const fetcher = async (url: string) => {
   return data;
 };
 
-import { useState, useEffect } from 'react';
-
 export const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -140,3 +140,34 @@ export const useDebounce = (value: string, delay: number) => {
 
   return debouncedValue;
 };
+
+export function useVizSensor(
+  elementRef: RefObject<Element>,
+  options: IntersectionObserverInit & { callback?: () => void }
+) {
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    if (observer.current) observer.current.disconnect();
+
+    const callback = options.callback
+      ? options.callback
+      : () => {
+          console.log('Default callback: Element is visible');
+        };
+
+    const observerOptions = { ...options };
+    delete observerOptions.callback;
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        callback();
+      }
+    }, observerOptions);
+
+    const { current: currentObserver } = observer;
+    if (elementRef.current) currentObserver.observe(elementRef.current);
+
+    return () => currentObserver.disconnect();
+  }, [elementRef, options]);
+}

@@ -5,6 +5,7 @@ TODO
 - responsiveness
 - general design
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
+- clear button in input, or fix onBlur sitch
 - cool animation for top category movie poster rendering (bar then poster reveal?)
 - better movie sidebar in top
 - maybe try next app router

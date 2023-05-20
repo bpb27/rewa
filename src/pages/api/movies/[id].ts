@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
 import { omit } from 'remeda';
+import { Prisma } from '~/prisma';
 
-const prisma = new PrismaClient();
+const prisma = Prisma.getPrisma();
 
 const getMovieById = async (movieId: number, actorId?: number) => {
   const movie = await prisma.movies.findFirst({

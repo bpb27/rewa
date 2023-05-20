@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
+import { Prisma } from '~/prisma';
 
-const prisma = new PrismaClient();
+const prisma = Prisma.getPrisma();
 
 const searchMovies = async (searchString: string) => {
   const movies = await prisma.movies.findMany({

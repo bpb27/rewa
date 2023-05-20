@@ -1,14 +1,14 @@
 import Image from 'next/image';
 import Layout from '~/components/layout';
-import { PropsWithChildren, useMemo, useState } from 'react';
-import { moneyShort, smartSort } from '~/utils';
+import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { moneyShort, smartSort, useVizSensor } from '~/utils';
 import { mapValues, omit } from 'remeda';
 import { StaticProps } from '~/types';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { PrismaClient } from '@prisma/client';
 import { FullTypeahead } from '~/components/full-typeahead';
+import { Prisma } from '~/prisma';
 
-const prisma = new PrismaClient();
+const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
 
 export const getStaticProps = async () => {
@@ -84,6 +84,16 @@ export default function Movies({ movies }: Props) {
   const [asc, setAsc] = useState(true);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [orderBy, setOrderBy] = useState<SortProp>('title');
+  const [rowNumber, setRowNumber] = useState(20);
+  const vizSensorRef = useRef<HTMLDivElement>(null);
+
+  useVizSensor(vizSensorRef, {
+    rootMargin: '0px',
+    threshold: 0.1,
+    callback: () => {
+      setRowNumber(rowNumber + 20);
+    },
+  });
 
   const addToken = (newToken: Token) => {
     if (hasToken(tokens, newToken)) {
@@ -130,6 +140,10 @@ export default function Movies({ movies }: Props) {
     });
   }, [asc, movies, orderBy, tokens]);
 
+  useEffect(() => {
+    setRowNumber(20);
+  }, [movieList.length]);
+
   const sortProps = mapValues(sorting, (_value, key) => key);
   return (
     <Layout title="All movies">
@@ -140,7 +154,9 @@ export default function Movies({ movies }: Props) {
         <FullTypeahead onSelect={(item) => addToken(item)} />
         <select
           className="p-2"
-          onChange={(e) => setOrderBy(e.target.value as SortProp)}
+          onChange={(e) => {
+            setOrderBy(e.target.value as SortProp);
+          }}
           value={orderBy}
         >
           <option value={sortProps.title}>Title</option>
@@ -184,7 +200,7 @@ export default function Movies({ movies }: Props) {
           </tr>
         </thead>
         <tbody>
-          {movieList.map((m, i) => (
+          {movieList.slice(0, rowNumber).map((m, i) => (
             <tr
               key={m.id}
               className={`${(i + 1) % 2 && 'bg-slate-100'} text-left`}
@@ -260,6 +276,7 @@ export default function Movies({ movies }: Props) {
           ))}
         </tbody>
       </table>
+      <div ref={vizSensorRef}></div>
     </Layout>
   );
 }

@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import { uniqBy } from 'remeda';
+import { Prisma } from '~/prisma';
 
-const prisma = new PrismaClient();
+const prisma = Prisma.getPrisma();
 
 const TAKE = 30;
 
