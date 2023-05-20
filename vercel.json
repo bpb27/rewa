@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/search/movies.ts": {
+    "api/search/movie.ts": {
       "includeFiles": "sql/**"
     }
   }
