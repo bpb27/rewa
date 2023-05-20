@@ -1,9 +1,9 @@
 import { pick } from 'remeda';
 import Database from 'better-sqlite3';
-import movieJson from '../src/database/movies.json';
-import episodesJson from '../src/database/episodes.json';
-import streamersJson from '../src/database/streamers.json';
-import streamersOnMoviesJson from '../src/database/providers.json';
+import movieJson from '../scraping/jsonstuff/movies.json';
+import episodesJson from '../scraping/jsonstuff/episodes.json';
+import streamersJson from '../scraping/jsonstuff/streamers.json';
+import streamersOnMoviesJson from '../scraping/jsonstuff/providers.json';
 import { MoviesJson, EpisodesJson } from '../src/types';
 import {
   creatProductionCompaniesSql,
