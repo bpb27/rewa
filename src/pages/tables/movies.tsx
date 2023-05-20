@@ -2,10 +2,11 @@ import Image from 'next/image';
 import Layout from '~/components/layout';
 import { PropsWithChildren, useMemo, useState } from 'react';
 import { moneyShort, smartSort } from '~/utils';
-import { mapValues, omit, uniqBy } from 'remeda';
+import { mapValues, omit } from 'remeda';
 import { StaticProps } from '~/types';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { PrismaClient } from '@prisma/client';
+import { FullTypeahead } from '~/components/full-typeahead';
 
 const prisma = new PrismaClient();
 const selectIdAndName = { select: { id: true, name: true } };
@@ -75,12 +76,12 @@ export const getStaticProps = async () => {
   };
 };
 
-export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
-  type Movie = (typeof movies)[0];
-  type SortProp = keyof typeof sorting;
+type Props = StaticProps<typeof getStaticProps>;
+type Movie = Props['movies'][number];
+type SortProp = keyof typeof sorting;
 
+export default function Movies({ movies }: Props) {
   const [asc, setAsc] = useState(true);
-  const [search, setSearch] = useState('');
   const [tokens, setTokens] = useState<Token[]>([]);
   const [orderBy, setOrderBy] = useState<SortProp>('title');
 
@@ -92,65 +93,51 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
     }
   };
 
-  const sorting = {
-    budget: (m: Movie) => m.budget,
-    director: (m: Movie) => m.crew[0]?.name,
-    episodeNumber: (m: Movie) => m.episode.episode_order,
-    profit: (m: Movie) => (m.revenue * 1000) / m.budget,
-    release_date: (m: Movie) => m.release_date,
-    revenue: (m: Movie) => m.revenue,
-    runtime: (m: Movie) => m.runtime,
-    title: (m: Movie) => m.title,
-  };
-  const sortProps = mapValues(sorting, (_value, key) => key);
-
   const movieList = useMemo(() => {
     const list = smartSort([...movies], sorting[orderBy]);
     if (!asc) list.reverse();
 
+    const movieTokens = tokens.filter((t) => t.type === 'movie');
     const directorTokens = tokens.filter((t) => t.type === 'director');
     const actorTokens = tokens.filter((t) => t.type === 'actor');
     const streamerTokens = tokens.filter((t) => t.type === 'streamer');
     const hostTokens = tokens.filter((t) => t.type === 'host');
     const yearTokens = tokens.filter((t) => t.type === 'year');
+    const genreTokens = tokens.filter((t) => t.type === 'genres');
 
     return list.filter((movie) => {
       const actorIds = movie.actorIds;
       const directorIds = movie.crew.map((c) => c.id);
       const streamerIds = movie.streamers.map((c) => c.id);
       const hostIds = movie.episode.hosts.map((c) => c.id);
+      const genreIds = movie.genres.map((c) => c.id);
       const yearIds = [Number(movie.year)];
+      const movieIds = [movie.id];
 
       if (
         !directorTokens.every((t) => directorIds.includes(t.id)) ||
         !actorTokens.every((t) => actorIds.includes(t.id)) ||
         !streamerTokens.every((t) => streamerIds.includes(t.id)) ||
         !hostTokens.every((t) => hostIds.includes(t.id)) ||
-        !yearTokens.every((t) => yearIds.includes(t.id))
+        !yearTokens.every((t) => yearIds.includes(t.id)) ||
+        !genreTokens.every((t) => genreIds.includes(t.id)) ||
+        !movieTokens.every((t) => movieIds.includes(t.id))
       ) {
-        return false;
-      }
-
-      if (!movie.title.toLowerCase().includes(search.toLowerCase())) {
         return false;
       }
 
       return true;
     });
-  }, [asc, movies, orderBy, search, tokens]);
+  }, [asc, movies, orderBy, tokens]);
 
+  const sortProps = mapValues(sorting, (_value, key) => key);
   return (
-    <Layout title="All movies" className="mt-3 mx-2">
-      <div className="flex items-center my-2 py-2">
+    <Layout title="All movies">
+      <div className="flex items-center mt-3 mb-2 py-2">
         <h2 className="text-xl font-semibold">
           {movieList.length} movie{movieList.length === 1 ? '' : 's'}
         </h2>
-        <input
-          className="mx-2 p-1 border-slate-200 border-solid border-2"
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by title"
-          value={search}
-        />
+        <FullTypeahead onSelect={(item) => addToken(item)} />
         <select
           className="p-2"
           onChange={(e) => setOrderBy(e.target.value as SortProp)}
@@ -179,7 +166,7 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
           </TableToken>
         ))}
       </div>
-      <table className="w-full">
+      <table className="w-full overflow-x-auto">
         <thead>
           <tr className="text-left [&>th]:pr-6">
             <th>Poster</th>
@@ -193,6 +180,7 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
             <th>Box Office</th>
             <th>Budget</th>
             <th>Runtime</th>
+            <th>Genres</th>
           </tr>
         </thead>
         <tbody>
@@ -261,6 +249,13 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
               <td>{moneyShort(m.revenue * 1000)}</td>
               <td>{moneyShort(m.budget)}</td>
               <td>{m.runtime} mins</td>
+              <td>
+                <ClickableField
+                  fields={m.genres}
+                  setter={addToken}
+                  type="genres"
+                />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -268,6 +263,17 @@ export default function Movies({ movies }: StaticProps<typeof getStaticProps>) {
     </Layout>
   );
 }
+
+const sorting = Object.freeze({
+  budget: (m: Movie) => m.budget,
+  director: (m: Movie) => m.crew[0]?.name,
+  episodeNumber: (m: Movie) => m.episode.episode_order,
+  profit: (m: Movie) => (m.revenue * 1000) / m.budget,
+  release_date: (m: Movie) => m.release_date,
+  revenue: (m: Movie) => m.revenue,
+  runtime: (m: Movie) => m.runtime,
+  title: (m: Movie) => m.title,
+});
 
 type TableTokenProps = PropsWithChildren<{ onClick: (...args: any[]) => void }>;
 
@@ -292,7 +298,7 @@ const ClickableField = ({ fields, setter, type }: ClickableFieldProps) => {
     <>
       {fields.map((item) => (
         <div
-          className="cursor-pointer"
+          className="cursor-pointer hover:font-semibold"
           key={item.name}
           onClick={() => setter({ ...item, type })}
         >
@@ -303,7 +309,14 @@ const ClickableField = ({ fields, setter, type }: ClickableFieldProps) => {
   );
 };
 
-type TokenType = 'director' | 'actor' | 'year' | 'host' | 'streamer';
+type TokenType =
+  | 'director'
+  | 'actor'
+  | 'year'
+  | 'host'
+  | 'streamer'
+  | 'genres'
+  | 'movie';
 type BaseToken = { id: number; name: string; type: TokenType };
 type Token<TObject extends BaseToken = BaseToken> = TObject;
 

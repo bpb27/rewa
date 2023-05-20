@@ -1,6 +1,5 @@
 TODO
 
-- convert top to prisma
 - single script to add a new movie + episode
 - imdb rating / rotten mater rating
 - responsiveness
@@ -13,6 +12,15 @@ TODO
 - maybe viz sensor on table so not rendering 280+ rows at once
 - other filter components like year slider, host checklist/typeahead
 - placeholder image for most appearance deeper cut guys
+- person most involved list
+- search bar on top cat page
+- year bar
+- nav menu blocked by search input (position relative something something)
+
+DATA probs
+
+- tony scott is listed as director for top gun maverick
+- van lathan' is a host
 
 # IMDB list of all rewatchables movies
 

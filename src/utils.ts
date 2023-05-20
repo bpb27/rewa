@@ -122,3 +122,21 @@ export const fetcher = async (url: string) => {
   const data = await response.json();
   return data;
 };
+
+import { useState, useEffect } from 'react';
+
+export const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};

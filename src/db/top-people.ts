@@ -3,7 +3,7 @@ import { uniqBy } from 'remeda';
 
 const prisma = new PrismaClient();
 
-const TAKE = 10;
+const TAKE = 30;
 
 const MOVIE_SELECT = {
   select: {
