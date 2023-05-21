@@ -16,9 +16,20 @@ import fs from 'fs';
 // `);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  // const response = getMovieById.get(1);
   const files = fs.readdirSync(path.join(process.cwd(), 'database'));
-  res.status(200).json(files);
+  const dbPath = path.join(process.cwd(), 'database/db.sqlite');
+
+  const db = new Database(dbPath, {
+    readonly: false,
+    timeout: 5000,
+    verbose: console.log,
+  });
+
+  const getMovieById = db.prepare<number>(`
+    SELECT title FROM movies WHERE id = ?;
+  `);
+  const response = getMovieById.get(1);
+  res.status(200).json({ files, response });
 };
 
 export default handler;
