@@ -1,6 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { omit } from 'remeda';
 import { Prisma } from '~/prisma';
+import fs from 'fs';
+
+const db = fs.readFile('src/database/db.sqlite', (error) => {
+  if (error) console.log('Unable to find db');
+});
 
 const prisma = Prisma.getPrisma();
 
