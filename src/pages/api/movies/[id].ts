@@ -20,8 +20,7 @@ const printDirectoryStructure = (dirPath: string, prefix = '') => {
 
 const db = fs.readFile('src/database/db.sqlite', (error) => {
   if (error) console.log('Unable to find db');
-  printDirectoryStructure('../');
-  printDirectoryStructure('/var/task');
+  printDirectoryStructure('/var/task/.next/server');
 });
 
 const prisma = Prisma.getPrisma();
