@@ -1,6 +1,6 @@
 import { TopCategory } from '~/components/top-category';
 import { StaticProps } from '~/types';
-import { getActors } from '~/database/top-people';
+import { getActors } from '~/top-people';
 
 export const getStaticProps = async () => {
   const people = await getActors();

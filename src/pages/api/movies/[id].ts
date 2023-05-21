@@ -1,27 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { omit } from 'remeda';
 import { Prisma } from '~/prisma';
-import fs from 'fs';
-import path from 'path';
-
-const printDirectoryStructure = (dirPath: string, prefix = '') => {
-  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-
-  entries.forEach((entry) => {
-    const fullPath = path.join(dirPath, entry.name);
-    if (entry.isDirectory()) {
-      console.log(`${prefix}${entry.name}/`);
-      printDirectoryStructure(fullPath, `${prefix}${entry.name}/`);
-    } else {
-      console.log(`${prefix}${entry.name}`);
-    }
-  });
-};
-
-const db = fs.readFile('src/database/db.sqlite', (error) => {
-  if (error) console.log('Unable to find db');
-  printDirectoryStructure('/var/task/.next/server');
-});
 
 const prisma = Prisma.getPrisma();
 
