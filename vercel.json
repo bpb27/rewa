@@ -1,10 +1,10 @@
 {
   "functions": {
     "pages/api/test.ts": {
-      "includeFiles": "database/**"
+      "includeFiles": "prisma/**"
     },
     "pages/api/**/*.ts": {
-      "includeFiles": "database/**"
+      "includeFiles": "prisma/**"
     }
   }
 }

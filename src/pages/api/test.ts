@@ -16,8 +16,8 @@ import fs from 'fs';
 // `);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  const files = fs.readdirSync(path.join(process.cwd(), 'database'));
-  const dbPath = path.join(process.cwd(), 'database/db.sqlite');
+  const files = fs.readdirSync(path.join(process.cwd(), 'prisma'));
+  const dbPath = path.join(process.cwd(), 'prisma/db.sqlite');
 
   const db = new Database(dbPath, {
     readonly: false,
