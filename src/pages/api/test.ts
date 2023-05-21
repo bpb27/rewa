@@ -2,8 +2,11 @@ import Database from 'better-sqlite3';
 import { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 
-const projectRoot = process.cwd();
-const dbPath = path.join(projectRoot, 'src/database/db.sqlite');
+const dbPath =
+  process.env.NODE_ENV === 'production'
+    ? path.resolve('./db.sqlite') // In production, the file is in the root directory
+    : path.join(process.cwd(), 'src/database/db.sqlite'); // In development, use the path from the project root
+
 console.log(dbPath);
 const db = new Database(dbPath, {
   readonly: false,
