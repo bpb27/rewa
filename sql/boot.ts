@@ -34,7 +34,7 @@ const streamersOnMovies = streamersOnMoviesJson as {
   providers: string[];
 }[];
 
-const db = new Database('./database/db.sqlite', {
+const db = new Database('./prisma/db.sqlite', {
   readonly: false,
   timeout: 5000,
   // verbose: console.log,
