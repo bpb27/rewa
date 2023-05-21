@@ -1,8 +1,5 @@
 {
   "functions": {
-    "pages/api/test.ts": {
-      "includeFiles": "prisma/**"
-    },
     "pages/api/**/*.ts": {
       "includeFiles": "prisma/**"
     }
