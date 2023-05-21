@@ -4,7 +4,7 @@ import path from 'path';
 
 const dbPath =
   process.env.NODE_ENV === 'production'
-    ? path.resolve('./db.sqlite') // In production, the file is in the root directory
+    ? path.resolve('/var/task/db.sqlite') // In production, the file is in the root directory
     : path.join(process.cwd(), 'src/database/db.sqlite'); // In development, use the path from the project root
 
 console.log(dbPath);
