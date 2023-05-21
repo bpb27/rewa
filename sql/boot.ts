@@ -34,7 +34,7 @@ const streamersOnMovies = streamersOnMoviesJson as {
   providers: string[];
 }[];
 
-const db = new Database('./sql/db.sqlite', {
+const db = new Database('./database/db.sqlite', {
   readonly: false,
   timeout: 5000,
   // verbose: console.log,
@@ -49,7 +49,7 @@ const insert = (table: string, fields: string[]) =>
     )
 `;
 
-db.pragma('journal_mode = WAL');
+// db.pragma('journal_mode = WAL');
 
 // primary tables
 db.prepare(createMoviesTableSql).run();
