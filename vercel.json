@@ -1,5 +1,8 @@
 {
   "functions": {
+    "pages/api/test.ts": {
+      "includeFiles": "database/**"
+    },
     "pages/api/**/*.ts": {
       "includeFiles": "database/**"
     }

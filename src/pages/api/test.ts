@@ -4,7 +4,6 @@ import path from 'path';
 
 const dbPath = path.join(process.cwd(), 'database/db.sqlite');
 
-console.log(dbPath);
 const db = new Database(dbPath, {
   readonly: false,
   timeout: 5000,
