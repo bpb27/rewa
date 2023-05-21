@@ -5,9 +5,10 @@ import fs from 'fs';
 
 const dbPath = path.join(process.cwd(), 'database/db.sqlite');
 
-console.log('******* DIRNAME ', fs.readdirSync(__dirname));
-console.log('******* CWD ', fs.readdirSync(process.cwd()));
-console.log('******* DBPATH', dbPath);
+console.log(
+  '******* CWD ',
+  fs.readdirSync(path.join(process.cwd(), 'database'))
+);
 
 const db = new Database(dbPath, {
   readonly: false,
