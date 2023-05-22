@@ -7,6 +7,15 @@ const prisma = Prisma.getPrisma();
 const getMovieById = async (movieId: number, actorId?: number) => {
   const movie = await prisma.movies.findFirst({
     where: { id: movieId },
+    include: {
+      episodes: {
+        include: {
+          hosts_on_episodes: {
+            include: { hosts: true },
+          },
+        },
+      },
+    },
   });
   let actor = null;
   if (actorId) {

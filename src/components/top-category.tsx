@@ -23,7 +23,7 @@ type TopCategoryProps = {
 export const TopCategory = ({ people, title }: TopCategoryProps) => {
   const [selectedMovie, setSelectedMovie] = useState<
     { movieId: number; personId: number } | undefined
-  >({ movieId: people[0].movies[0].id, personId: people[0].id });
+  >(undefined);
 
   const linkClass =
     'p-2 text-blue-50 bg-slate-600 hover:bg-slate-500 font-semibold sm:m-1 sm:rounded';
@@ -42,7 +42,10 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
         <Link href="/top/writers" className={linkClass}>
           Writers
         </Link>
-        <Link href="/top/cinematographers" className={linkClass}>
+        <Link
+          href="/top/cinematographers"
+          className={`${linkClass} hidden sm:inline-block`}
+        >
           Cinematographers
         </Link>
       </div>
@@ -74,14 +77,14 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
             <div className="overflow-x-scroll hide-scrollbar flex space-x-2">
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
-                .map((m, k) => (
+                .map((m) => (
                   <Image
                     key={m.id}
                     src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
                     alt={`Movie poster for ${m.title}`}
                     width={40}
                     height={60}
-                    className="m-1 border-2 border-black cursor-pointer"
+                    className="m-1 border-2 border-black cursor-pointer scale-100 hover:scale-110 hover:drop-shadow-xl"
                     onClick={() =>
                       setSelectedMovie({ personId: person.id, movieId: m.id })
                     }

@@ -4,7 +4,11 @@ import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { moneyShort, smartSort, useVizSensor } from '~/utils';
 import { mapValues, omit } from 'remeda';
 import { StaticProps } from '~/types';
-import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import {
+  ExternalLinkIcon,
+  ImdbLink,
+  SpotifyLink,
+} from '~/components/external-links';
 import { FullTypeahead } from '~/components/full-typeahead';
 import { Prisma } from '~/prisma';
 
@@ -88,7 +92,7 @@ export default function Movies({ movies }: Props) {
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
   useVizSensor(vizSensorRef, {
-    rootMargin: '0px',
+    rootMargin: '200px',
     threshold: 0.1,
     callback: () => {
       setRowNumber(rowNumber + 20);
