@@ -14,10 +14,6 @@ TODO
 - search bar on top cat page
 - year bar
 
-DATA probs
-
-- tony scott is listed as director for top gun maverick
-
 # IMDB list of all rewatchables movies
 
 https://www.imdb.com/list/ls099792855/?sort=list_order,desc&st_dt=&mode=detail&page=3

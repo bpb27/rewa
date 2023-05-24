@@ -3,8 +3,6 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-const TAKE = 30;
-
 const MOVIE_SELECT = {
   select: {
     id: true,
@@ -40,7 +38,7 @@ export const getActors = async () => {
         actor_id: 'desc',
       },
     },
-    take: TAKE,
+    take: 100,
   });
 
   const allData = await prisma.actors.findMany({
@@ -89,7 +87,7 @@ export const getCrew = async (job: keyof typeof WHERE_JOB) => {
       },
     },
     where: WHERE_JOB[job],
-    take: TAKE,
+    take: 30,
   });
 
   const newData = await prisma.crew_on_movies.findMany({
