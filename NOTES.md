@@ -1,29 +1,22 @@
 TODO
 
-- API calls are failing - maybe something w/ sqlite extra files? seem to disappear on build command
-  - definitely a db read error - maybe move to supabase - can still use prisma, but get to use postgres
+- sidebar scroll
+- probably card view for table on mobile
 - single script to add a new movie + episode
-- imdb rating / rotten mater rating
-- responsiveness
-- general design
+- imdb rating / rottenmater rating
+- table top bar responsiveness
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - clear button in input, or fix onBlur sitch
-- cool animation for top category movie poster rendering (bar then poster reveal?)
-- better movie sidebar in top
-- maybe try next app router
-- maybe get more into react server components
-- maybe viz sensor on table so not rendering 280+ rows at once
+- more stuff to movie sidebar
 - other filter components like year slider, host checklist/typeahead
-- placeholder image for most appearance deeper cut guys
+  - could do a filters sidebar
 - person most involved list
 - search bar on top cat page
 - year bar
-- nav menu blocked by search input (position relative something something)
 
 DATA probs
 
 - tony scott is listed as director for top gun maverick
-- van lathan' is a host
 
 # IMDB list of all rewatchables movies
 

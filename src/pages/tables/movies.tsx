@@ -151,7 +151,7 @@ export default function Movies({ movies }: Props) {
   const sortProps = mapValues(sorting, (_value, key) => key);
   return (
     <Layout title="All movies">
-      <div className="flex items-center mt-3 mb-2 py-2">
+      <div className="mb-2 mt-3 flex items-center py-2">
         <h2 className="text-xl font-semibold">
           {movieList.length} movie{movieList.length === 1 ? '' : 's'}
         </h2>
@@ -172,7 +172,7 @@ export default function Movies({ movies }: Props) {
           <option value={sortProps.profit}>Profit %</option>
           <option value={sortProps.director}>Director</option>
         </select>
-        <button className="text-lg ml-2" onClick={() => setAsc(!asc)}>
+        <button className="ml-2 text-lg" onClick={() => setAsc(!asc)}>
           {asc ? <span>&#8593;</span> : <span>&#8595;</span>}
         </button>
       </div>
@@ -215,7 +215,7 @@ export default function Movies({ movies }: Props) {
                   alt={`Movie poster for ${m.title}`}
                   width={42}
                   height={64}
-                  className="border-slate-500 border-solid border-2"
+                  className="border-2 border-solid border-slate-500"
                 />
               </td>
               <td className="md:max-w-2xl">{m.title}</td>
@@ -300,7 +300,7 @@ type TableTokenProps = PropsWithChildren<{ onClick: (...args: any[]) => void }>;
 
 const TableToken = ({ children, onClick }: TableTokenProps) => (
   <button
-    className="p-1 mr-2 border-2 border-slate-700 rounded-md"
+    className="mr-2 rounded-md border-2 border-slate-700 p-1"
     onClick={() => onClick()}
   >
     {children}

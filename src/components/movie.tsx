@@ -21,9 +21,9 @@ export const Movie = ({ movieId, personId, onClose }: Props) => {
   const episode = movie.episodes[0];
 
   return (
-    <div className="fixed top-8 right-0 z-10 p-5 text-center bg-slate-100 h-full w-3/4 md:w-1/2 lg:w-1/4 border-l-4">
+    <div className="fixed right-0 top-8 z-10 h-full w-3/4 border-l-4 bg-slate-100 p-5 text-center md:w-1/2 lg:w-1/4">
       <button
-        className="p-2 bg-red-400 border-red-500 border-2 rounded-md font-semibold w-full mb-3"
+        className="mb-3 w-full rounded-md border-2 border-red-500 bg-red-400 p-2 font-semibold"
         onClick={() => onClose()}
       >
         Close
@@ -45,14 +45,14 @@ export const Movie = ({ movieId, personId, onClose }: Props) => {
       <p className="mb-3">{movie.tagline}</p>
       <ImdbLink
         id={movie.imdb_id}
-        className="my-2 flex items-center justify-center p-2 bg-yellow-200 rounded-md mr-3 font-semibold w-full border-yellow-300 border-2 text-center"
+        className="my-2 mr-3 flex w-full items-center justify-center rounded-md border-2 border-yellow-300 bg-yellow-200 p-2 text-center font-semibold"
       >
         IMDB <ExternalLinkIcon className="ml-2" />
       </ImdbLink>
       {episode && (
         <SpotifyLink
           url={episode.spotify_url}
-          className="my-2 flex items-center justify-center p-2 bg-green-200 rounded-md mr-3 font-semibold w-full border-green-300 border-2 text-center"
+          className="my-2 mr-3 flex w-full items-center justify-center rounded-md border-2 border-green-300 bg-green-200 p-2 text-center font-semibold"
         >
           Spotify <ExternalLinkIcon className="ml-2" />
         </SpotifyLink>

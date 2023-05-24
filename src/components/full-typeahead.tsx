@@ -23,19 +23,19 @@ export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
   }, [results.data, search]);
 
   return (
-    <div className="relative max-w-md mx-4">
+    <div className="relative mx-4 max-w-md">
       <input
-        className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+        className="w-full rounded-lg border px-3 py-2 text-gray-700 focus:outline-none"
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search titles, actors, hosts"
         type="search"
         value={search}
       />
       {showingDropdown && (
-        <ul className="absolute z-2 w-full mt-2 bg-white border rounded-lg shadow-lg">
+        <ul className="z-2 absolute mt-2 w-full rounded-lg border bg-white shadow-lg">
           {(results.data || []).map((item) => (
             <li
-              className="p-2 border-b hover:bg-slate-200 cursor-pointer"
+              className="cursor-pointer border-b p-2 hover:bg-slate-200"
               key={`${item.type}-${item.id}`}
               onClick={() => {
                 onSelect(item);
@@ -49,7 +49,7 @@ export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
             </li>
           ))}
           {results.data?.length === 0 && (
-            <li className="p-2 border-b">
+            <li className="border-b p-2">
               <div className="flex justify-between">
                 <span>No results</span>
               </div>

@@ -29,7 +29,7 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     'p-2 text-blue-50 bg-slate-600 hover:bg-slate-500 font-semibold sm:m-1 sm:rounded';
   return (
     <Layout title={title}>
-      <div className="flex justify-center text-sm md:text-base mb-2">
+      <div className="mb-2 flex justify-center text-sm md:text-base">
         <Link href="/top/actors" className={linkClass}>
           Actors
         </Link>
@@ -55,26 +55,25 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
       {people.map((person, i) => (
         <div
           key={person.id}
-          className="flex flex-col sm:flex-row items-start sm:items-center mb-8"
+          className="mb-8 flex flex-col items-start sm:flex-row sm:items-center"
         >
-          {/* TODO: need a placeholder image if empty */}
           {person.profile_path ? (
-            <div className="hidden sm:block sm:w-[130px] sm:h-[200px] relative mb-4 sm:mb-0 sm:mr-4">
+            <div className="relative mb-4 hidden sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
               <Image
-                className="w-full h-full object-cover rounded"
+                className="h-full w-full rounded object-cover"
                 src={tmdbImage(person.profile_path)}
                 alt={`Image of ${person.name}`}
                 fill
               />
             </div>
           ) : (
-            <div className="hidden sm:block bg-gradient-to-r from-gray-200 to-gray-500 sm:w-[130px] sm:h-[200px] relative mb-4 sm:mb-0 sm:mr-4"></div>
+            <div className="relative mb-4 hidden bg-gradient-to-r from-gray-200 to-gray-500 sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]"></div>
           )}
-          <div className="flex flex-col content-center w-full">
+          <div className="flex w-full flex-col content-center">
             <h3 className="mb-2 text-lg sm:text-xl">
               #{i + 1} {person.name} with {person.movies.length} movies
             </h3>
-            <div className="overflow-x-scroll hide-scrollbar flex space-x-2">
+            <div className="hide-scrollbar flex space-x-2 overflow-x-scroll">
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
                 .map((m) => (
@@ -84,7 +83,7 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
                     alt={`Movie poster for ${m.title}`}
                     width={40}
                     height={60}
-                    className="m-1 border-2 border-black cursor-pointer scale-100 hover:scale-110 hover:drop-shadow-xl"
+                    className="m-1 scale-100 cursor-pointer border-2 border-black hover:scale-110 hover:drop-shadow-xl"
                     onClick={() =>
                       setSelectedMovie({ personId: person.id, movieId: m.id })
                     }

@@ -77,8 +77,6 @@ export const getActors = async () => {
   return people;
 };
 
-// TODO: not filtering properly if they had multiple crew roles
-// quick fix using uniqBy for now
 export const getCrew = async (job: keyof typeof WHERE_JOB) => {
   const top = await prisma.crew_on_movies.groupBy({
     by: ['crew_id'],
@@ -94,36 +92,51 @@ export const getCrew = async (job: keyof typeof WHERE_JOB) => {
     take: TAKE,
   });
 
-  const allData = await prisma.crew.findMany({
+  const newData = await prisma.crew_on_movies.findMany({
     where: {
-      id: {
-        in: top.map((p) => p.crew_id!),
+      AND: {
+        crew_id: {
+          in: top.map((p) => p.crew_id!),
+        },
+        ...WHERE_JOB[job],
       },
     },
-    select: {
-      name: true,
-      id: true,
-      profile_path: true,
-      crew_on_movies: {
-        select: { job: true, movies: MOVIE_SELECT },
+    include: {
+      crew: {
+        select: {
+          id: true,
+          name: true,
+          profile_path: true,
+        },
       },
+      movies: { select: MOVIE_SELECT.select },
     },
   });
 
-  const people = allData
-    .map((item) => ({
-      id: item.id,
-      name: item.name,
-      profile_path: item.profile_path,
-      movies: uniqBy(
-        item.crew_on_movies.map((movie) => ({
-          ...movie.movies!,
-          job: movie.job,
-        })),
-        (movie) => movie.id
-      ),
-    }))
-    .sort((a, b) => b.movies.length - a.movies.length);
+  const parsed = newData.reduce<{
+    [id: number]: {
+      person: NonNullable<(typeof newData)[number]['crew']>;
+      movies: NonNullable<(typeof newData)[number]['movies']>[];
+    };
+  }>((hash, item) => {
+    if (!item.crew || !item.movies) return hash;
+    if (hash[item.crew.id]) {
+      hash[item.crew.id].movies.push(item.movies);
+    } else {
+      hash[item.crew.id] = {
+        person: item.crew,
+        movies: [item.movies],
+      };
+    }
+    return hash;
+  }, {});
 
-  return people;
+  const response = Object.values(parsed)
+    .sort((a, b) => b.movies.length - a.movies.length)
+    .map((entry) => ({
+      ...entry.person,
+      movies: entry.movies,
+    }));
+
+  return response;
 };

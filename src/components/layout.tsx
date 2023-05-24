@@ -18,11 +18,11 @@ export default function Layout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div>
-        <nav className="fixed z-[9999] top-0 left-0 right-0 w-full p-3 flex space-x-3 bg-slate-800 font-semibold text-blue-50 ">
+        <nav className="fixed left-0 right-0 top-0 z-[9999] flex w-full space-x-3 bg-slate-800 p-3 font-semibold text-blue-50 ">
           <Link href="/tables/movies">All Movies</Link>
           <Link href="/top/actors">Most Appearances</Link>
         </nav>
-        <div className="mt-12 mx-2">{children}</div>
+        <div className="mx-2 mt-12">{children}</div>
       </div>
     </>
   );
