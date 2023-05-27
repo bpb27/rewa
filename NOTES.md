@@ -1,18 +1,21 @@
-TODO
+# TODO
 
-- sidebar scroll
-- probably card view for table on mobile
 - single script to add a new movie + episode
-- imdb rating / rottenmater rating
+- sidebar scroll
+- card view for table on mobile
 - table top bar responsiveness
-- academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - clear button in input, or fix onBlur sitch
 - more stuff to movie sidebar
-- other filter components like year slider, host checklist/typeahead
-  - could do a filters sidebar
+- meta props for sharing
+
+# NICE TO HAVE
+
+- imdb rating / rottenmater rating
+- academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
+- other filter components like year slider, host checklist/typeahead (or filter sidebar)
 - person most involved list
-- search bar on top cat page
-- year bar
+- ditch css modules?
+- actor viz sensor + search? search on other pages?
 
 # IMDB list of all rewatchables movies
 
