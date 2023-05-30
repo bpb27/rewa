@@ -1,7 +1,7 @@
 const fs = require('fs');
 const movies = require('../src/db/movies.json');
 
-const apiKey = 'b8baa6afbf679be5272316804b397b28';
+const apiKey = '';
 
 const relevantProviders = [
   'Netflix',

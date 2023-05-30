@@ -1,7 +1,7 @@
 const fs = require('fs');
 const ids = require('./tmdb-ids.json');
 
-const apiKey = 'b8baa6afbf679be5272316804b397b28';
+const apiKey = '';
 
 async function exchangeId(id) {
   const response = await fetch(

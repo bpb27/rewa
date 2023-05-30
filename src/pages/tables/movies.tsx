@@ -152,7 +152,7 @@ export default function Movies({ movies }: Props) {
   return (
     <Layout title="All movies">
       <div className="mb-2 mt-3 flex items-center py-2">
-        <h2 className="text-xl font-semibold">
+        <h2 className="font-semibold sm:text-xl">
           {movieList.length} movie{movieList.length === 1 ? '' : 's'}
         </h2>
         <FullTypeahead onSelect={(item) => addToken(item)} />
@@ -186,100 +186,102 @@ export default function Movies({ movies }: Props) {
           </TableToken>
         ))}
       </div>
-      <table className="w-full overflow-x-auto">
-        <thead>
-          <tr className="text-left [&>th]:pr-6">
-            <th>Poster</th>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Director</th>
-            <th>Top Cast</th>
-            <th>Hosts</th>
-            <th>Streaming</th>
-            <th>Links</th>
-            <th>Box Office</th>
-            <th>Budget</th>
-            <th>Runtime</th>
-            <th>Genres</th>
-          </tr>
-        </thead>
-        <tbody>
-          {movieList.slice(0, rowNumber).map((m, i) => (
-            <tr
-              key={m.id}
-              className={`${(i + 1) % 2 && 'bg-slate-100'} text-left`}
-            >
-              <td>
-                <Image
-                  src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
-                  alt={`Movie poster for ${m.title}`}
-                  width={42}
-                  height={64}
-                  className="border-2 border-solid border-slate-500"
-                />
-              </td>
-              <td className="md:max-w-2xl">{m.title}</td>
-              <td>
-                <ClickableField
-                  fields={[{ id: Number(m.year), name: m.year }]}
-                  setter={addToken}
-                  type="year"
-                />
-              </td>
-              <td>
-                <ClickableField
-                  fields={m.crew}
-                  setter={addToken}
-                  type="director"
-                />
-              </td>
-              <td>
-                <ClickableField
-                  fields={m.actors}
-                  setter={addToken}
-                  type="actor"
-                />
-              </td>
-              <td>
-                <ClickableField
-                  fields={m.episode.hosts}
-                  setter={addToken}
-                  type="host"
-                />
-              </td>
-              <td>
-                <ClickableField
-                  fields={m.streamers}
-                  setter={addToken}
-                  type="streamer"
-                />
-              </td>
-              <td>
-                <div>
-                  <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
-                </div>
-                <div>
-                  {m.episode.spotify_url && (
-                    <SpotifyLink url={m.episode.spotify_url}>
-                      Spotify
-                    </SpotifyLink>
-                  )}
-                </div>
-              </td>
-              <td>{moneyShort(m.revenue * 1000)}</td>
-              <td>{moneyShort(m.budget)}</td>
-              <td>{m.runtime} mins</td>
-              <td>
-                <ClickableField
-                  fields={m.genres}
-                  setter={addToken}
-                  type="genres"
-                />
-              </td>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left [&>th]:pr-6">
+              <th>Poster</th>
+              <th>Title</th>
+              <th>Year</th>
+              <th>Director</th>
+              <th>Top Cast</th>
+              <th>Hosts</th>
+              <th>Streaming</th>
+              <th>Links</th>
+              <th>Box Office</th>
+              <th>Budget</th>
+              <th>Runtime</th>
+              <th>Genres</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {movieList.slice(0, rowNumber).map((m, i) => (
+              <tr
+                key={m.id}
+                className={`${(i + 1) % 2 && 'bg-slate-100'} text-left`}
+              >
+                <td>
+                  <Image
+                    src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
+                    alt={`Movie poster for ${m.title}`}
+                    width={42}
+                    height={64}
+                    className="border-2 border-solid border-slate-500"
+                  />
+                </td>
+                <td className="md:max-w-2xl">{m.title}</td>
+                <td>
+                  <ClickableField
+                    fields={[{ id: Number(m.year), name: m.year }]}
+                    setter={addToken}
+                    type="year"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={m.crew}
+                    setter={addToken}
+                    type="director"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={m.actors}
+                    setter={addToken}
+                    type="actor"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={m.episode.hosts}
+                    setter={addToken}
+                    type="host"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={m.streamers}
+                    setter={addToken}
+                    type="streamer"
+                  />
+                </td>
+                <td>
+                  <div>
+                    <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
+                  </div>
+                  <div>
+                    {m.episode.spotify_url && (
+                      <SpotifyLink url={m.episode.spotify_url}>
+                        Spotify
+                      </SpotifyLink>
+                    )}
+                  </div>
+                </td>
+                <td>{moneyShort(m.revenue * 1000)}</td>
+                <td>{moneyShort(m.budget)}</td>
+                <td>{m.runtime} mins</td>
+                <td>
+                  <ClickableField
+                    fields={m.genres}
+                    setter={addToken}
+                    type="genres"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div ref={vizSensorRef}></div>
     </Layout>
   );
