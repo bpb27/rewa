@@ -85,9 +85,9 @@ type Movie = Props['movies'][number];
 type SortProp = keyof typeof sorting;
 
 export default function Movies({ movies }: Props) {
-  const [asc, setAsc] = useState(true);
+  const [asc, setAsc] = useState(false);
   const [tokens, setTokens] = useState<Token[]>([]);
-  const [orderBy, setOrderBy] = useState<SortProp>('title');
+  const [orderBy, setOrderBy] = useState<SortProp>('episodeNumber');
   const [rowNumber, setRowNumber] = useState(20);
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
@@ -118,6 +118,9 @@ export default function Movies({ movies }: Props) {
     const hostTokens = tokens.filter((t) => t.type === 'host');
     const yearTokens = tokens.filter((t) => t.type === 'year');
     const genreTokens = tokens.filter((t) => t.type === 'genres');
+    const runtimeTokens = tokens.filter((t) => t.type === 'runtime');
+    const budgetTokens = tokens.filter((t) => t.type === 'budget');
+    const revenueTokens = tokens.filter((t) => t.type === 'revenue');
 
     return list.filter((movie) => {
       const actorIds = movie.actorIds;
@@ -135,7 +138,12 @@ export default function Movies({ movies }: Props) {
         !hostTokens.every((t) => hostIds.includes(t.id)) ||
         !yearTokens.every((t) => yearIds.includes(t.id)) ||
         !genreTokens.every((t) => genreIds.includes(t.id)) ||
-        !movieTokens.every((t) => movieIds.includes(t.id))
+        !movieTokens.every((t) => movieIds.includes(t.id)) ||
+        !runtimeTokens.every((t) => Math.abs(t.id - movie.runtime) <= 10) ||
+        !budgetTokens.every((t) => Math.abs(t.id - movie.budget) <= 10000000) ||
+        !revenueTokens.every(
+          (t) => Math.abs(t.id - movie.revenue * 1000) <= 10000000
+        )
       ) {
         return false;
       }
@@ -264,9 +272,32 @@ export default function Movies({ movies }: Props) {
                     type="streamer"
                   />
                 </td>
-                <td>{moneyShort(m.revenue * 1000)}</td>
-                <td>{moneyShort(m.budget)}</td>
-                <td>{m.runtime} mins</td>
+                <td>
+                  <ClickableField
+                    fields={[
+                      {
+                        name: `${moneyShort(m.revenue * 1000)}`,
+                        id: m.revenue * 1000,
+                      },
+                    ]}
+                    setter={addToken}
+                    type="revenue"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={[{ name: `${moneyShort(m.budget)}`, id: m.budget }]}
+                    setter={addToken}
+                    type="budget"
+                  />
+                </td>
+                <td>
+                  <ClickableField
+                    fields={[{ name: `${m.runtime} mins`, id: m.runtime }]}
+                    setter={addToken}
+                    type="runtime"
+                  />
+                </td>
                 <td>
                   <ClickableField
                     fields={m.genres}
@@ -348,7 +379,11 @@ type TokenType =
   | 'host'
   | 'streamer'
   | 'genres'
-  | 'movie';
+  | 'movie'
+  | 'runtime'
+  | 'budget'
+  | 'revenue';
+
 type BaseToken = { id: number; name: string; type: TokenType };
 type Token<TObject extends BaseToken = BaseToken> = TObject;
 
