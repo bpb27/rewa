@@ -289,10 +289,17 @@ const newStuff = [
     date: 'May 2023',
     url: 'https://open.spotify.com/episode/5diUkuzO9UnUMTAfYgg7Hc?si=532fe3d465aa4c94',
   },
+  {
+    tmdbId: 36557,
+    id: 296, // used for order
+    title: 'Casino Royale',
+    hosts: ['Bill Simmons', 'Sean Fennessey', 'Amanda Dobbins'],
+    date: 'Jun 2023',
+    url: 'https://open.spotify.com/episode/3F3Tfs0DucGECikYcqJz0E?si=ZkDXQQoERfyfvWpw4qcPgw',
+  },
 ];
 
 const fetchFromTmdb = async () => {
-  console.log(process.env);
   const { tmdbId, ...episode } = newStuff[newStuff.length - 1];
   const findUrl = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${process.env.TMDB_API_KEY}&append_to_response=credits`;
   const response = await fetch(findUrl);
