@@ -171,3 +171,24 @@ export function useVizSensor(
     return () => currentObserver.disconnect();
   }, [elementRef, options]);
 }
+
+export const topRanks = (people: { movies: any[] }[]) => {
+  const ranks = Object.entries(
+    people
+      .map((person) => ({ total: person.movies.length }))
+      .reduce(
+        (hash, entry) => ({
+          ...hash,
+          [entry.total]: hash[entry.total] ? hash[entry.total] + 1 : 1,
+        }),
+        {} as { [num: number]: number }
+      )
+  )
+    .sort((a, b) => Number(b[0]) - Number(a[0]))
+    .map(([total, count], i) => ({
+      total: Number(total),
+      count,
+      display: i + 1,
+    }));
+  return (totalMovies: number) => ranks.find((r) => r.total === totalMovies)!;
+};

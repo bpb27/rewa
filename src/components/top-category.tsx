@@ -1,9 +1,10 @@
 import Image from 'next/image';
-import { sortByDate, tmdbImage } from '~/utils';
+import { sortByDate, tmdbImage, topRanks } from '~/utils';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Movie } from '~/components/movie';
 import Layout from '~/components/layout';
 import Link from 'next/link';
+import { uniqBy } from 'remeda';
 
 type TopCategoryProps = {
   people: {
@@ -24,6 +25,8 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
   const [selectedMovie, setSelectedMovie] = useState<
     { movieId: number; personId: number } | undefined
   >(undefined);
+
+  // const getRank = topRanks(people);
 
   const linkClass =
     'p-2 text-blue-50 bg-slate-600 hover:bg-slate-500 font-semibold sm:m-1 sm:rounded';
@@ -52,6 +55,7 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
       {selectedMovie && (
         <Movie {...selectedMovie} onClose={() => setSelectedMovie(undefined)} />
       )}
+      {/* maybe throw some separators in hear denoting each group */}
       {people.map((person, i) => (
         <div
           key={person.id}

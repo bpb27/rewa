@@ -151,30 +151,32 @@ export default function Movies({ movies }: Props) {
   const sortProps = mapValues(sorting, (_value, key) => key);
   return (
     <Layout title="All movies">
-      <div className="mb-2 mt-3 flex items-center py-2">
-        <h2 className="font-semibold sm:text-xl">
-          {movieList.length} movie{movieList.length === 1 ? '' : 's'}
-        </h2>
+      <div className="mb-2 mt-3 flex flex-col py-2">
         <FullTypeahead onSelect={(item) => addToken(item)} />
-        <select
-          className="p-2"
-          onChange={(e) => {
-            setOrderBy(e.target.value as SortProp);
-          }}
-          value={orderBy}
-        >
-          <option value={sortProps.title}>Title</option>
-          <option value={sortProps.release_date}>Year</option>
-          <option value={sortProps.episodeNumber}>Episode</option>
-          <option value={sortProps.runtime}>Runtime</option>
-          <option value={sortProps.revenue}>Box Office</option>
-          <option value={sortProps.budget}>Budget</option>
-          <option value={sortProps.profit}>Profit %</option>
-          <option value={sortProps.director}>Director</option>
-        </select>
-        <button className="ml-2 text-lg" onClick={() => setAsc(!asc)}>
-          {asc ? <span>&#8593;</span> : <span>&#8595;</span>}
-        </button>
+        <div className="mt-3 flex items-center">
+          <h2 className="text-xl font-semibold">
+            {movieList.length} movie{movieList.length === 1 ? '' : 's'}
+          </h2>
+          <select
+            className="text-md ml-4 rounded-md border-2 border-slate-400 bg-inherit p-2"
+            onChange={(e) => {
+              setOrderBy(e.target.value as SortProp);
+            }}
+            value={orderBy}
+          >
+            <option value={sortProps.title}>Title</option>
+            <option value={sortProps.release_date}>Year</option>
+            <option value={sortProps.episodeNumber}>Episode</option>
+            <option value={sortProps.runtime}>Runtime</option>
+            <option value={sortProps.revenue}>Box Office</option>
+            <option value={sortProps.budget}>Budget</option>
+            <option value={sortProps.profit}>Profit %</option>
+            <option value={sortProps.director}>Director</option>
+          </select>
+          <button className="ml-2 text-xl" onClick={() => setAsc(!asc)}>
+            {asc ? <span>&#8593;</span> : <span>&#8595;</span>}
+          </button>
+        </div>
       </div>
       <div className="my-2">
         {tokens.map((token) => (
@@ -197,18 +199,25 @@ export default function Movies({ movies }: Props) {
               <th>Top Cast</th>
               <th>Hosts</th>
               <th>Streaming</th>
-              <th>Links</th>
               <th>Box Office</th>
               <th>Budget</th>
               <th>Runtime</th>
               <th>Genres</th>
+              <th>
+                <div className="flex">
+                  Links
+                  <ExternalLinkIcon className="ml-2" />
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
             {movieList.slice(0, rowNumber).map((m, i) => (
               <tr
                 key={m.id}
-                className={`${(i + 1) % 2 && 'bg-slate-100'} text-left`}
+                className={`${
+                  (i + 1) % 2 && 'bg-slate-100'
+                } border-t-2 border-slate-200 text-left`}
               >
                 <td>
                   <Image
@@ -219,7 +228,7 @@ export default function Movies({ movies }: Props) {
                     className="border-2 border-solid border-slate-500"
                   />
                 </td>
-                <td className="md:max-w-2xl">{m.title}</td>
+                <td className="max-w-[200px]">{m.title}</td>
                 <td>
                   <ClickableField
                     fields={[{ id: Number(m.year), name: m.year }]}
@@ -255,6 +264,16 @@ export default function Movies({ movies }: Props) {
                     type="streamer"
                   />
                 </td>
+                <td>{moneyShort(m.revenue * 1000)}</td>
+                <td>{moneyShort(m.budget)}</td>
+                <td>{m.runtime} mins</td>
+                <td>
+                  <ClickableField
+                    fields={m.genres}
+                    setter={addToken}
+                    type="genres"
+                  />
+                </td>
                 <td>
                   <div>
                     <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
@@ -266,16 +285,6 @@ export default function Movies({ movies }: Props) {
                       </SpotifyLink>
                     )}
                   </div>
-                </td>
-                <td>{moneyShort(m.revenue * 1000)}</td>
-                <td>{moneyShort(m.budget)}</td>
-                <td>{m.runtime} mins</td>
-                <td>
-                  <ClickableField
-                    fields={m.genres}
-                    setter={addToken}
-                    type="genres"
-                  />
                 </td>
               </tr>
             ))}
@@ -302,7 +311,7 @@ type TableTokenProps = PropsWithChildren<{ onClick: (...args: any[]) => void }>;
 
 const TableToken = ({ children, onClick }: TableTokenProps) => (
   <button
-    className="mr-2 rounded-md border-2 border-slate-700 p-1"
+    className="mr-2 rounded-md border-2 border-slate-400 p-1"
     onClick={() => onClick()}
   >
     {children}

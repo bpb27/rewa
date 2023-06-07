@@ -1,15 +1,15 @@
 # TODO
 
-- single script to add a new movie + episode
 - sidebar scroll
 - card view for table on mobile
-- table top bar responsiveness
 - clear button in input, or fix onBlur sitch
 - more stuff to movie sidebar
 - meta props for sharing
 
 # NICE TO HAVE
 
+- crew search
+- BO budget runtime tokens (+- some range)
 - imdb rating / rottenmater rating
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - other filter components like year slider, host checklist/typeahead (or filter sidebar)
