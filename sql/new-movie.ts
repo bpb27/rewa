@@ -242,73 +242,65 @@ const addMovieToDb = (
 
 const newStuff = [
   {
-    tmdbId: 348,
-    id: 290, // used for order
-    title: 'Alien',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
-    date: 'Apr 2023',
-    url: 'https://open.spotify.com/episode/0bgut3QgV9XVJjzlwQ6aVq?si=0e34fff4ee4b4d1d',
-  },
-  {
-    tmdbId: 9091,
-    id: 291, // used for order
-    title: 'Sudden Death',
-    hosts: ['Bill Simmons', 'Kyle Brandt'],
-    date: 'Apr 2023',
-    url: 'https://open.spotify.com/episode/5ilFHvtxYCFLd4EeV0SHyi?si=a91e938987d343b1',
-  },
-  {
-    tmdbId: 1726,
-    id: 292, // used for order
-    title: 'Iron Man',
-    hosts: ['Bill Simmons', 'Van Lathan'],
-    date: 'May 2023',
-    url: 'https://open.spotify.com/episode/4IaxEwI3JX8kJF6UJplOKc?si=f434c996dba44f34',
-  },
-  {
-    tmdbId: 212778,
-    id: 293, // used for order
-    title: 'Chef',
-    hosts: ['Bill Simmons', 'Dave Chang'],
-    date: 'May 2023',
-    url: 'https://open.spotify.com/episode/3L48V9WL8zebjURkG3Ppw0?si=ddb6158c5e994934',
-  },
-  {
-    tmdbId: 1621,
-    id: 294, // used for order
-    title: 'Trading Places',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
-    date: 'May 2023',
-    url: 'https://open.spotify.com/episode/4kFoMhwMoG2EhydKLhGxio?si=4ef05f887bc94d4c',
-  },
-  {
-    tmdbId: 16980,
-    id: 295, // used for order
-    title: 'The Last Days of Disco',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
-    date: 'May 2023',
-    url: 'https://open.spotify.com/episode/5diUkuzO9UnUMTAfYgg7Hc?si=532fe3d465aa4c94',
-  },
-  {
-    tmdbId: 36557,
-    id: 296, // used for order
-    title: 'Casino Royale',
-    hosts: ['Bill Simmons', 'Sean Fennessey', 'Amanda Dobbins'],
+    tmdbId: 8467,
+    id: 297,
+    title: 'Dumb and Dumber',
+    hosts: ['Bill Simmons', 'Jennifer Lawrence'],
     date: 'Jun 2023',
-    url: 'https://open.spotify.com/episode/3F3Tfs0DucGECikYcqJz0E?si=ZkDXQQoERfyfvWpw4qcPgw',
+    url: 'https://open.spotify.com/episode/6C9jxg9Of5v8oftOzhR1oD',
+  },
+  {
+    tmdbId: 1372,
+    id: 298,
+    title: 'Blood Diamond',
+    hosts: ['Bill Simmons', 'Chris Ryan'],
+    date: 'Jun 2023',
+    url: 'https://open.spotify.com/episode/4ZQbXA9KMZbz3CwVgByMpJ?si=2B-FTggaTmG4WMefHRvcWQ',
+  },
+  {
+    tmdbId: 89,
+    id: 299,
+    title: 'Indiana Jones and the Last Crusade',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
+    date: 'Jun 2023',
+    url: 'https://open.spotify.com/episode/6ZrQw9dZpYng54JdlFCAr2?si=1dGINULFR1CoYV3FD6jFpw',
+  },
+  {
+    tmdbId: 109414,
+    id: 300,
+    title: 'This is the End',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Craig Horlbeck'],
+    date: 'Jun 2023',
+    url: 'https://open.spotify.com/episode/4JRMlMSCWlLAjvnUjp8qEp?si=aRXDQwOtRbKGXCl7Q52NbA',
+  },
+  {
+    tmdbId: 1592,
+    id: 301,
+    title: 'Primal Fear',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
+    date: 'Jul 2023',
+    url: 'https://open.spotify.com/episode/5g76DSMUAEHl2LRD1lLpgm?si=R_1ODhEfTVGSgANq50_mpA',
+  },
+  {
+    tmdbId: 1645,
+    id: 302,
+    title: 'A Time to Kill',
+    hosts: ['Bill Simmons', 'Wesley Morris'],
+    date: 'Jul 2023',
+    url: 'https://open.spotify.com/episode/1pfAZLhFv4QHlLnD77aJi8?si=iKxbRcWmQ-SlMI-l0jLG6A',
   },
 ];
 
 const fetchFromTmdb = async () => {
-  const { tmdbId, ...episode } = newStuff[newStuff.length - 1];
+  const { tmdbId, ...episode } = newStuff[5];
   const findUrl = `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${process.env.TMDB_API_KEY}&append_to_response=credits`;
   const response = await fetch(findUrl);
   const movie = await response.json();
-  const run = false;
+  const run = true;
   if (run) {
     addMovieToDb(movie, episode);
   } else {
-    console.log(movie);
+    console.log('DRY RUN', movie);
   }
   db.close();
 };
