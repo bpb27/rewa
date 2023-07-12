@@ -63,8 +63,8 @@ const run = async () => {
 
   movies.forEach(async (movie, i) => {
     await delay(100);
-    console.log('inserting for ', movie.title);
     const streamers = await getStreamersForMovie(movie.tmdb_id);
+    console.log('inserting for ', movie.title, streamers);
     streamers.forEach((streamer) => {
       const { streamer_id } = getStreamerByName.get(streamer) as {
         streamer_id: number;

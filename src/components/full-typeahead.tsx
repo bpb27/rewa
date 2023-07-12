@@ -25,14 +25,17 @@ export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
   return (
     <div className="relative w-full">
       <input
-        className="w-full rounded-lg border-2 border-slate-400 p-4 text-xl text-gray-700 focus:outline-none"
+        className="w-full rounded-sm border-2 border-slate-400 p-4 text-xl text-gray-700 focus:outline-none sm:rounded-lg"
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search titles, actors, hosts"
         type="search"
         value={search}
       />
       {showingDropdown && (
-        <ul className="z-2 absolute mt-2 w-full rounded-lg border bg-white shadow-lg">
+        <ul
+          className="z-2 absolute mt-2 w-full rounded-lg border bg-white shadow-lg"
+          onBlur={() => showDropdown(false)}
+        >
           {(results.data || []).map((item) => (
             <li
               className="cursor-pointer border-b p-2 hover:bg-slate-200"
