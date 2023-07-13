@@ -1,65 +1,68 @@
+import { Clapperboard, Mic, User2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { GetMoviesBySearchResponse } from '~/pages/api/search/movie';
-import { fetcher, useDebounce } from '~/utils';
+import { capitalize, fetcher, useDebounce } from '~/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '~/components/ui/command';
+import { groupBy } from 'remeda';
 
 type FullTypeaheadProps = {
   onSelect: (selection: GetMoviesBySearchResponse[number]) => void;
 };
 
-export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
+export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
   const [search, setSearch] = useState('');
-  const [showingDropdown, showDropdown] = useState(false);
   const debouncedSearch = useDebounce(search, 500);
 
-  const results = useSWR<GetMoviesBySearchResponse>(
-    `/api/search/movie?search=${debouncedSearch}`,
+  const { data } = useSWR<GetMoviesBySearchResponse>(
+    debouncedSearch ? `/api/search/movie?search=${debouncedSearch}` : null,
     fetcher
   );
 
-  useEffect(() => {
-    if (!search) showDropdown(false);
-    if (search && results.data) showDropdown(true);
-  }, [results.data, search]);
+  const byCategory = Object.entries(groupBy(data || [], (item) => item.type));
 
   return (
-    <div className="relative w-full">
-      <input
-        className="w-full rounded-sm border-2 border-slate-400 p-4 text-xl text-gray-700 focus:outline-none sm:rounded-lg"
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search titles, actors, hosts"
-        type="search"
-        value={search}
-      />
-      {showingDropdown && (
-        <ul
-          className="z-2 absolute mt-2 w-full rounded-lg border bg-white shadow-lg"
-          onBlur={() => showDropdown(false)}
-        >
-          {(results.data || []).map((item) => (
-            <li
-              className="cursor-pointer border-b p-2 hover:bg-slate-200"
-              key={`${item.type}-${item.id}`}
-              onClick={() => {
-                onSelect(item);
-                setSearch('');
-              }}
-            >
-              <div className="flex justify-between">
-                <span>{item.name}</span>
-                <span className="text-xs text-gray-500">{item.type}</span>
-              </div>
-            </li>
-          ))}
-          {results.data?.length === 0 && (
-            <li className="border-b p-2">
-              <div className="flex justify-between">
-                <span>No results</span>
-              </div>
-            </li>
-          )}
-        </ul>
-      )}
+    <div className="relative">
+      <Command className="rounded-lg border shadow-md" shouldFilter={false}>
+        <CommandInput
+          className="py-7 text-lg"
+          placeholder="Search titles, actors, hosts..."
+          onValueChange={setSearch}
+          value={search}
+        />
+        <CommandList className="absolute left-0 top-full z-10 w-full bg-white">
+          {data?.length === 0 && <CommandEmpty>No results found.</CommandEmpty>}
+          {search &&
+            byCategory.map(([categoryName, entries]) => (
+              <CommandGroup
+                heading={capitalize(categoryName)}
+                key={categoryName}
+              >
+                {entries.map((item) => (
+                  <CommandItem
+                    key={`${item.id}-${item.type}`}
+                    onSelect={() => {
+                      onSelect(item);
+                      setSearch('');
+                    }}
+                  >
+                    {item.type === 'movie' && <Clapperboard />}
+                    {item.type === 'actor' && <User2 />}
+                    {item.type === 'host' && <Mic />}
+                    <span className="ml-2">{item.name}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+        </CommandList>
+      </Command>
     </div>
   );
-};
+}

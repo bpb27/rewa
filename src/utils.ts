@@ -192,3 +192,5 @@ export const topRanks = (people: { movies: any[] }[]) => {
     }));
   return (totalMovies: number) => ranks.find((r) => r.total === totalMovies)!;
 };
+
+export const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);

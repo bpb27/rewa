@@ -1,16 +1,21 @@
+import { ArrowDown, ArrowUp, ExternalLink, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import Layout from '~/components/layout';
-import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { moneyShort, smartSort, useVizSensor } from '~/utils';
 import { mapValues, omit } from 'remeda';
 import { StaticProps } from '~/types';
-import {
-  ExternalLinkIcon,
-  ImdbLink,
-  SpotifyLink,
-} from '~/components/external-links';
+import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { FullTypeahead } from '~/components/full-typeahead';
 import { Prisma } from '~/prisma';
+import { Button } from '~/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select';
 
 const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
@@ -161,40 +166,48 @@ export default function Movies({ movies }: Props) {
     <Layout title="All movies">
       <div className="mb-2 mt-3 flex flex-col py-2">
         <FullTypeahead onSelect={(item) => addToken(item)} />
+        <div>
+          {tokens.length > 0 && (
+            <Button variant="outline" onClick={() => setTokens([])}>
+              Clear <XCircle className="ml-2 text-slate-600" />
+            </Button>
+          )}
+          {tokens.map((token) => (
+            <Button
+              variant="outline"
+              key={`${token.id}-${token.type}`}
+              onClick={() => setTokens(removeToken(tokens, token))}
+            >
+              {token.name}
+            </Button>
+          ))}
+        </div>
         <div className="mt-3 flex items-center">
           <h2 className="text-xl font-semibold">
             {movieList.length} movie{movieList.length === 1 ? '' : 's'}
           </h2>
-          <select
-            className="text-md ml-4 rounded-md border-2 border-slate-400 bg-inherit p-2"
-            onChange={(e) => {
-              setOrderBy(e.target.value as SortProp);
-            }}
+          <Select
             value={orderBy}
+            onValueChange={(value) => setOrderBy(value as SortProp)}
           >
-            <option value={sortProps.title}>Title</option>
-            <option value={sortProps.release_date}>Year</option>
-            <option value={sortProps.episodeNumber}>Episode</option>
-            <option value={sortProps.runtime}>Runtime</option>
-            <option value={sortProps.revenue}>Box Office</option>
-            <option value={sortProps.budget}>Budget</option>
-            <option value={sortProps.profit}>Profit %</option>
-            <option value={sortProps.director}>Director</option>
-          </select>
-          <button className="ml-2 text-xl" onClick={() => setAsc(!asc)}>
-            {asc ? <span>&#8593;</span> : <span>&#8595;</span>}
-          </button>
+            <SelectTrigger className="w-[180px]" margin="ml-4">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={sortProps.title}>Title</SelectItem>
+              <SelectItem value={sortProps.release_date}>Year</SelectItem>
+              <SelectItem value={sortProps.episodeNumber}>Episode</SelectItem>
+              <SelectItem value={sortProps.runtime}>Runtime</SelectItem>
+              <SelectItem value={sortProps.revenue}>Box Office</SelectItem>
+              <SelectItem value={sortProps.budget}>Budget</SelectItem>
+              <SelectItem value={sortProps.profit}>Profit %</SelectItem>
+              <SelectItem value={sortProps.director}>Director</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button onClick={() => setAsc(!asc)} variant="secondary" margin="m-2">
+            {asc ? <ArrowUp /> : <ArrowDown />}
+          </Button>
         </div>
-      </div>
-      <div className="my-2">
-        {tokens.map((token) => (
-          <TableToken
-            key={`${token.id}-${token.type}`}
-            onClick={() => setTokens(removeToken(tokens, token))}
-          >
-            {token.name}
-          </TableToken>
-        ))}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -214,7 +227,7 @@ export default function Movies({ movies }: Props) {
               <th>
                 <div className="flex">
                   Links
-                  <ExternalLinkIcon className="ml-2" />
+                  <ExternalLink className="ml-2" />
                 </div>
               </th>
             </tr>
@@ -337,18 +350,6 @@ const sorting = Object.freeze({
   runtime: (m: Movie) => m.runtime,
   title: (m: Movie) => m.title,
 });
-
-type TableTokenProps = PropsWithChildren<{ onClick: (...args: any[]) => void }>;
-
-const TableToken = ({ children, onClick }: TableTokenProps) => (
-  <button
-    className="mr-2 rounded-md border-2 border-slate-400 p-1"
-    onClick={() => onClick()}
-  >
-    {children}
-    <span className="ml-2">&times;</span>
-  </button>
-);
 
 type ClickableFieldProps = {
   fields: Omit<Token, 'type'>[];
