@@ -1,0 +1,31 @@
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  CalendarDaysIcon,
+  CircleDollarSignIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  MicIcon,
+  RectangleVerticalIcon,
+  StarIcon,
+  TableIcon,
+  TvIcon,
+  VideoIcon,
+  XCircleIcon,
+} from 'lucide-react';
+
+export const Icon = {
+  ArrowDown: ArrowDownIcon,
+  ArrowUp: ArrowUpIcon,
+  Card: RectangleVerticalIcon,
+  Close: XCircleIcon,
+  Table: TableIcon,
+  Calendar: CalendarDaysIcon,
+  Clock: ClockIcon,
+  Dollar: CircleDollarSignIcon,
+  Link: ExternalLinkIcon,
+  Mic: MicIcon,
+  Star: StarIcon,
+  Tv: TvIcon,
+  Video: VideoIcon,
+};

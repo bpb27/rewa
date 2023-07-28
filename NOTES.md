@@ -1,5 +1,14 @@
 # TODO
 
+# comps and css
+
+- tailwind + shadcn is kinda overkill
+- try unocss
+- make simple / reusable UI components
+- forwardRef and variants are interesting
+- give all UI elements margin + padding
+- make a simple flex container
+
 - sidebar scroll
 - card view for table on mobile
 - clear button in input, or fix onBlur sitch
@@ -8,8 +17,7 @@
 
 # NICE TO HAVE
 
-- crew search
-- BO budget runtime tokens (+- some range)
+- search: director, year, streamer, maybe full crew
 - imdb rating / rottenmater rating
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - other filter components like year slider, host checklist/typeahead (or filter sidebar)
