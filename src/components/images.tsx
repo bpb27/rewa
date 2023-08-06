@@ -22,3 +22,18 @@ export const MovieCardPoster = ({
     {...moviePosterSize(100)}
   />
 );
+
+export const MovieTablePoster = ({
+  poster_path,
+  title,
+}: {
+  poster_path: string;
+  title: string;
+}) => (
+  <Image
+    className="border-2 border-solid border-slate-500"
+    src={`https://image.tmdb.org/t/p/original${poster_path}`}
+    alt={`Movie poster for ${title}`}
+    {...moviePosterSize(62)}
+  />
+);

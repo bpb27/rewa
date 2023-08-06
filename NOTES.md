@@ -2,17 +2,18 @@
 
 # comps and css
 
-- tailwind + shadcn is kinda overkill
-- try unocss
-- make simple / reusable UI components
-- forwardRef and variants are interesting
-- give all UI elements margin + padding
-- make a simple flex container
-
+- extract prisma movie select logic (needed for item below)
+- make MoviePanel that uses MovieCard
 - sidebar scroll
-- card view for table on mobile
-- clear button in input, or fix onBlur sitch
-- more stuff to movie sidebar
+- make custom popover for type ahead (and nav)
+- cleanup utils folder
+- text components
+- clickable table header sort?
+- render card on mobile by default?
+- delete components/ui
+- standard button variant
+- real nav w/ dropdown
+- probably remove css modules
 - meta props for sharing
 
 # NICE TO HAVE

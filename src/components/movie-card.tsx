@@ -1,105 +1,105 @@
-import { formatDate } from '~/utils';
-import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon } from './icons';
-import { Button } from '~/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardSeparator,
-  CardTitle,
-} from '~/components/ui/card';
-import { Token } from '~/utils/token';
-import { Movie } from '~/pages/tables/movies';
-import { MovieCardPoster, TheaterBackground } from './images';
-import { PropsWithChildren } from 'react';
+import { ImdbLink, SpotifyLink } from "~/components/external-links";
+import { Icon } from "~/components/icons";
+import { MovieCardPoster, TheaterBackground } from "~/components/images";
+import { Movie } from "~/pages/tables/movies";
+import { formatDate } from "~/utils";
+import { Token } from "~/utils/token";
+import { PropsWithChildren } from "react";
 
 interface MovieCardProps extends Movie {
-  onClickField: (token: Token) => void;
+  onTokenClick: (token: Token) => void;
 }
 
-export default function MovieCard(movie: MovieCardProps) {
-  const handleClick = movie.onClickField;
-
+export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
   return (
-    <Card className="mb-5 flex w-[350px] flex-col">
-      <CardHeader className="items-center">
-        <CardTitle>{movie.title}</CardTitle>
+    <div className="mb-5 flex w-[350px] flex-col rounded-lg border-2 border-slate-600 bg-slate-100 text-slate-950 shadow-lg">
+      <div className="flex flex-col items-center space-y-1.5 p-5">
+        <h3 className="text-2xl font-semibold leading-none tracking-tight">{movie.title}</h3>
         <TheaterBackground>
           <MovieCardPoster {...movie} />
         </TheaterBackground>
-        <CardDescription>{movie.tagline}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col">
-        {movie.hosts.map((host) => (
-          <Field key={host.id} item={host} onClick={handleClick} />
+        <p className="text-sm text-slate-500">{movie.tagline}</p>
+      </div>
+      <div className="flex flex-col p-6 pt-0">
+        {movie.hosts.map(host => (
+          <ClickableField key={host.id} item={host} onClick={onTokenClick} />
         ))}
-        <CardSeparator />
-        {movie.directors.map((director) => (
-          <Field key={director.id} item={director} onClick={handleClick} />
+        <Separator />
+        {movie.directors.map(director => (
+          <ClickableField key={director.id} item={director} onClick={onTokenClick} />
         ))}
-        {movie.actors.slice(0, 2).map((actor) => (
-          <Field key={actor.id} item={actor} onClick={handleClick} />
+        {movie.actors.slice(0, 2).map(actor => (
+          <ClickableField key={actor.id} item={actor} onClick={onTokenClick} />
         ))}
-        <CardSeparator />
-        <Field item={movie.year} onClick={handleClick}>
+        <Separator />
+        <ClickableField item={movie.year} onClick={onTokenClick}>
           <span>{formatDate(movie.release_date)}</span>
-        </Field>
-        <Field item={movie.runtime} onClick={handleClick} />
-        <Field item={movie.budget} onClick={() => {}}>
-          <span onClick={() => handleClick(movie.budget)} className="mr-1">
+        </ClickableField>
+        <ClickableField item={movie.runtime} onClick={onTokenClick} />
+        <ClickableField item={movie.budget} onClick={() => {}}>
+          <span onClick={() => onTokenClick(movie.budget)} className="mr-1">
             {movie.budget.name}
           </span>
           <span>/</span>
-          <span onClick={() => handleClick(movie.revenue)} className="ml-1">
+          <span onClick={() => onTokenClick(movie.revenue)} className="ml-1">
             {movie.revenue.name}
           </span>
-        </Field>
-        {movie.streamers.length > 0 && <CardSeparator />}
-        {movie.streamers.map((streamer) => (
-          <Field key={streamer.id} item={streamer} onClick={handleClick} />
-        ))}
-      </CardContent>
-      <CardFooter className="justify-center">
-        <Button asChild variant="outline" margin="mr-3">
-          <ImdbLink id={movie.imdb_id}>
-            <Icon.Link size={20} className="mr-2" /> IMDB
+        </ClickableField>
+        <Separator />
+        <div className="my-1 flex">
+          <Icon.Link className="mr-2" />{" "}
+          <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
+            IMDB
           </ImdbLink>
-        </Button>
-        <Button asChild variant="outline" margin="mr-3">
-          <SpotifyLink url={movie.episode.spotify_url}>
-            <Icon.Link size={20} className="mr-2" /> Spotify
+          <span>/</span>
+          <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
+            Spotify
           </SpotifyLink>
-        </Button>
-      </CardFooter>
-    </Card>
+        </div>
+        {movie.streamers.length > 0 && <Separator />}
+        {movie.streamers.map(streamer => (
+          <ClickableField key={streamer.id} item={streamer} onClick={onTokenClick} />
+        ))}
+      </div>
+    </div>
   );
-}
+};
 
-const Field = ({
-  children,
-  item,
-  onClick,
-}: PropsWithChildren<{
+type MovieCardsProps = {
+  movies: Movie[];
+  onTokenClick: (token: Token) => void;
+};
+
+export const MovieCards = ({ movies, onTokenClick }: MovieCardsProps) => (
+  <div className="flex flex-wrap justify-evenly">
+    {movies.map(movie => (
+      <MovieCard {...movie} key={movie.id} onTokenClick={onTokenClick} />
+    ))}
+  </div>
+);
+
+type ClickableFieldProps = PropsWithChildren<{
   item: Token;
   onClick: (t: Token) => void;
-}>) => {
+}>;
+
+const ClickableField = ({ children, item, onClick }: ClickableFieldProps) => {
   return (
     <div
       className="my-1 flex cursor-pointer hover:underline"
       key={item.id}
       onClick={() => onClick(item)}
     >
-      {item.type === 'host' && <Icon.Mic className="mr-2" />}
-      {item.type === 'director' && <Icon.Video className="mr-2" />}
-      {item.type === 'actor' && <Icon.Star className="mr-2" />}
-      {item.type === 'year' && <Icon.Calendar className="mr-2" />}
-      {item.type === 'runtime' && <Icon.Clock className="mr-2" />}
-      {item.type === 'streamer' && <Icon.Tv className="mr-2" />}
-      {item.type === 'budget' && <Icon.Dollar className="mr-2" />}
+      {item.type === "host" && <Icon.Mic className="mr-2" />}
+      {item.type === "director" && <Icon.Video className="mr-2" />}
+      {item.type === "actor" && <Icon.Star className="mr-2" />}
+      {item.type === "year" && <Icon.Calendar className="mr-2" />}
+      {item.type === "runtime" && <Icon.Clock className="mr-2" />}
+      {item.type === "streamer" && <Icon.Tv className="mr-2" />}
+      {item.type === "budget" && <Icon.Dollar className="mr-2" />}
       {children ? children : <span>{item.name}</span>}
     </div>
   );
 };
+
+const Separator = () => <hr className="my-2 border-slate-400" />;
