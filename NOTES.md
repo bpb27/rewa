@@ -1,15 +1,24 @@
 # TODO
 
+# comps and css
+
+- extract prisma movie select logic (needed for item below)
+- make MoviePanel that uses MovieCard
 - sidebar scroll
-- card view for table on mobile
-- clear button in input, or fix onBlur sitch
-- more stuff to movie sidebar
+- make custom popover for type ahead (and nav)
+- cleanup utils folder
+- text components
+- clickable table header sort?
+- render card on mobile by default?
+- delete components/ui
+- standard button variant
+- real nav w/ dropdown
+- probably remove css modules
 - meta props for sharing
 
 # NICE TO HAVE
 
-- crew search
-- BO budget runtime tokens (+- some range)
+- search: director, year, streamer, maybe full crew
 - imdb rating / rottenmater rating
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - other filter components like year slider, host checklist/typeahead (or filter sidebar)

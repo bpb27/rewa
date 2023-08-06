@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import { ExternalLinkIcon } from 'lucide-react';
 import useSWR from 'swr';
 import { GetMovieByIdResponse } from '~/pages/api/movies/[id]';
 import { fetcher, formatDate, moviePosterSize } from '~/utils';
-import { ExternalLinkIcon, ImdbLink, SpotifyLink } from './external-links';
+import { ImdbLink, SpotifyLink } from './external-links';
 
 type Props = {
   personId?: number;
