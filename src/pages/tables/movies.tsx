@@ -171,20 +171,20 @@ export default function Movies({ movies }: MoviesProps) {
         <FullTypeahead onSelect={item => toggleToken(item)} />
         <div className="mt-1 flex space-x-2">
           {tokens.length > 0 && (
-            <>
-              <Button onClick={() => setTokens([])} variant="token">
-                <Icon.Close className="mr-2" />
-                Clear
-              </Button>
-              <Button
-                className="flex"
-                variant="token"
-                onClick={() => setTokenMode(tokenMode === "and" ? "or" : "and")}
-              >
-                <Icon.Filter className="mr-2" />
-                {tokenMode === "and" ? "And" : "Or"}
-              </Button>
-            </>
+            <Button onClick={() => setTokens([])} variant="token">
+              <Icon.Close className="mr-2" />
+              Clear
+            </Button>
+          )}
+          {tokens.length > 1 && (
+            <Button
+              className="flex"
+              variant="token"
+              onClick={() => setTokenMode(tokenMode === "and" ? "or" : "and")}
+            >
+              <Icon.Filter className="mr-2" />
+              {tokenMode === "and" ? "And" : "Or"}
+            </Button>
           )}
           {tokens.map(token => (
             <Button
