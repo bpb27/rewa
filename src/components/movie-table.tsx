@@ -23,7 +23,7 @@ export const MovieTable = ({ movies, onTokenClick }: MovieTableProps) => {
             <th>Top Cast</th>
             <th>Hosts</th>
             <th>Streaming</th>
-            <th>Box Office</th>
+            <th className="min-w-[90px]">Box Office</th>
             <th>Budget</th>
             <th>Runtime</th>
             <th>Genres</th>

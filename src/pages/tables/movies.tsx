@@ -9,7 +9,7 @@ import { Prisma } from "~/prisma";
 import { MovieCards } from "~/components/movie-card";
 import { useVizSensor } from "~/utils/use-viz-sensor";
 import { sortingUtils, type SortProp } from "~/utils/sorting";
-import { tokenUtils, Token } from "~/utils/token";
+import { tokenUtils, Token, TokenMode } from "~/utils/token";
 import { MovieTable } from "~/components/movie-table";
 import { Button } from "~/components/ui/button";
 import { Select } from "~/components/ui/select";
@@ -136,16 +136,17 @@ export type Movie = MoviesProps["movies"][number];
 export default function Movies({ movies }: MoviesProps) {
   const [asc, setAsc] = useState(false);
   const [rowNumber, setRowNumber] = useState(20);
+  const [tokenMode, setTokenMode] = useState<TokenMode>("or");
   const [tokens, setTokens] = useState<Token[]>([]);
   const [orderBy, setOrderBy] = useState<SortProp>("episodeNumber");
   const [displayType, setDisplayType] = useState<"table" | "card">("table");
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
   const movieList = useMemo(() => {
-    const filtered = movies.filter(movie => tokenUtils.filter(tokens, movie));
+    const filtered = movies.filter(movie => tokenUtils.filter(tokens, movie, tokenMode));
     const sorted = smartSort([...filtered], sortingUtils.fns[orderBy], asc);
     return sorted;
-  }, [asc, movies, orderBy, tokens]);
+  }, [asc, movies, orderBy, tokens, tokenMode]);
 
   useVizSensor(vizSensorRef, {
     rootMargin: "200px",
@@ -168,15 +169,25 @@ export default function Movies({ movies }: MoviesProps) {
     <Layout title="All movies">
       <div className="mb-1 mt-3 flex flex-col py-2">
         <FullTypeahead onSelect={item => toggleToken(item)} />
-        <div className="mt-1">
+        <div className="mt-1 flex space-x-2">
           {tokens.length > 0 && (
-            <Button className="mr-1" onClick={() => setTokens([])} variant="token">
-              Clear <Icon.Close className="ml-2" />
-            </Button>
+            <>
+              <Button onClick={() => setTokens([])} variant="token">
+                <Icon.Close className="mr-2" />
+                Clear
+              </Button>
+              <Button
+                className="flex"
+                variant="token"
+                onClick={() => setTokenMode(tokenMode === "and" ? "or" : "and")}
+              >
+                <Icon.Filter className="mr-2" />
+                {tokenMode === "and" ? "And" : "Or"}
+              </Button>
+            </>
           )}
           {tokens.map(token => (
             <Button
-              className="mx-1"
               key={`${token.id}-${token.type}`}
               onClick={() => toggleToken(token)}
               variant="token"
@@ -186,8 +197,8 @@ export default function Movies({ movies }: MoviesProps) {
           ))}
         </div>
         <div className="mt-3 flex items-center justify-center">
-          <h2 className="mr-3 text-xl font-semibold">
-            {movieList.length} movie{movieList.length === 1 ? "" : "s"}
+          <h2 className="mr-3 flex items-center text-xl font-semibold tracking-wide">
+            {movieList.length} <Icon.Movie className="ml-1" />
           </h2>
           <Select
             onSelect={value => setOrderBy(value as SortProp)}

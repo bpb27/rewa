@@ -5,14 +5,10 @@
 - extract prisma movie select logic (needed for item below)
 - make MoviePanel that uses MovieCard
 - sidebar scroll
-- make custom popover for type ahead (and nav)
 - cleanup utils folder
 - text components
 - clickable table header sort?
 - render card on mobile by default?
-- delete components/ui
-- standard button variant
-- real nav w/ dropdown
 - probably remove css modules
 - meta props for sharing
 
