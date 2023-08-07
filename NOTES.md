@@ -1,16 +1,10 @@
 # TODO
 
-# comps and css
+# comps
 
 - extract prisma movie select logic (needed for item below)
-- make MoviePanel that uses MovieCard
-- sidebar scroll
+- make MoviePanel that uses MovieCard + scrollable
 - cleanup utils folder
-- text components
-- clickable table header sort?
-- render card on mobile by default?
-- probably remove css modules
-- meta props for sharing
 
 # NICE TO HAVE
 
@@ -21,6 +15,10 @@
 - person most involved list
 - ditch css modules?
 - actor viz sensor + search? search on other pages?
+- probably remove css modules
+- render card on mobile by default?
+- clickable table header sort?
+- text components
 
 # IMDB list of all rewatchables movies
 
