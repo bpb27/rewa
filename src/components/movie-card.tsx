@@ -90,13 +90,13 @@ const ClickableField = ({ children, item, onClick }: ClickableFieldProps) => {
       key={item.id}
       onClick={() => onClick(item)}
     >
-      {item.type === "host" && <Icon.Mic className="mr-2" />}
-      {item.type === "director" && <Icon.Video className="mr-2" />}
-      {item.type === "actor" && <Icon.Star className="mr-2" />}
-      {item.type === "year" && <Icon.Calendar className="mr-2" />}
-      {item.type === "runtime" && <Icon.Clock className="mr-2" />}
-      {item.type === "streamer" && <Icon.Tv className="mr-2" />}
-      {item.type === "budget" && <Icon.Dollar className="mr-2" />}
+      {item.type === "host" && <Icon.Mic className="mr-2 text-green-700" />}
+      {item.type === "director" && <Icon.Video className="mr-2 text-yellow-500" />}
+      {item.type === "actor" && <Icon.Star className="mr-2 text-yellow-500" />}
+      {item.type === "year" && <Icon.Calendar className="mr-2 text-blue-800" />}
+      {item.type === "runtime" && <Icon.Clock className="mr-2 text-blue-800" />}
+      {item.type === "streamer" && <Icon.Tv className="mr-2 text-red-700" />}
+      {item.type === "budget" && <Icon.Dollar className="mr-2 text-blue-800" />}
       {children ? children : <span>{item.name}</span>}
     </div>
   );
