@@ -111,17 +111,17 @@ export const getStaticProps = async () => {
 
     return {
       ...pick(movie, ["id", "imdb_id", "poster_path", "release_date", "tagline", "title"]),
-      budget,
-      revenue,
-      runtime,
-      year,
       episode: pick(episode, ["episode_order", "id", "spotify_url"]),
       actors: actors.slice(0, 3),
       actorIds: actors.map(a => a.id),
-      hosts,
+      budget,
       directors,
       genres,
+      hosts,
+      revenue,
+      runtime,
       streamers,
+      year,
     };
   });
 

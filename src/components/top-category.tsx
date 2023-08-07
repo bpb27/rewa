@@ -26,6 +26,12 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     { movieId: number; personId: number } | undefined
   >(undefined);
 
+  useEffect(() => {
+    if (window.innerWidth > 1100) {
+      setSelectedMovie({ movieId: people[0].movies[0].id, personId: people[0].id });
+    }
+  }, [people]);
+
   // const getRank = topRanks(people);
 
   const linkClass =
