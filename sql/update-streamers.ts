@@ -1,7 +1,11 @@
-import Database from 'better-sqlite3';
-import { createStreamersOnMoviesTable } from './create-tables';
+import Database from "better-sqlite3";
+import { createStreamersOnMoviesTable } from "./create-tables";
 
-const db = new Database('./prisma/db.sqlite', {
+/*
+  THIS script is inconsistent - not sure if it's API-related or DB-write related
+*/
+
+const db = new Database("./prisma/db.sqlite", {
   readonly: false,
   timeout: 5000,
 });
@@ -9,9 +13,9 @@ const db = new Database('./prisma/db.sqlite', {
 const insert = (table: string, fields: string[]) =>
   `
     INSERT OR IGNORE INTO ${table} (
-        ${fields.join(',')}
+        ${fields.join(",")}
     ) VALUES (
-        ${fields.map((f) => '@' + f).join(',')}
+        ${fields.map(f => "@" + f).join(",")}
     )
 `;
 
@@ -24,15 +28,15 @@ const getStreamerByName = db.prepare<string>(`
 `);
 
 const relevantProviders = [
-  'Netflix',
-  'Amazon Prime Video',
-  'Disney Plus',
-  'Apple TV',
-  'Hulu',
-  'HBO Max',
-  'Paramount Plus',
-  'Starz',
-  'Showtime',
+  "Netflix",
+  "Amazon Prime Video",
+  "Disney Plus",
+  "Apple TV",
+  "Hulu",
+  "HBO Max",
+  "Paramount Plus",
+  "Starz",
+  "Showtime",
 ];
 
 async function getStreamersForMovie(id: number) {
@@ -42,17 +46,17 @@ async function getStreamersForMovie(id: number) {
   const data = await response.json();
   const results = data?.results?.US?.flatrate as { provider_name: string }[];
   return (results || [])
-    .filter((p) => relevantProviders.includes(p.provider_name))
-    .map((p) => p.provider_name);
+    .filter(p => relevantProviders.includes(p.provider_name))
+    .map(p => p.provider_name);
 }
 
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 const run = async () => {
-  db.exec('DROP TABLE IF EXISTS streamers_on_movies');
+  db.exec("DROP TABLE IF EXISTS streamers_on_movies");
   db.prepare(createStreamersOnMoviesTable).run();
   const insertStreamerOnMovie = db.prepare(
-    insert('streamers_on_movies', ['streamer_id', 'movie_id'])
+    insert("streamers_on_movies", ["streamer_id", "movie_id"])
   );
 
   const movies = getAllMovies.all() as {
@@ -62,10 +66,10 @@ const run = async () => {
   }[];
 
   movies.forEach(async (movie, i) => {
-    await delay(100);
+    await delay(250);
     const streamers = await getStreamersForMovie(movie.tmdb_id);
-    console.log('inserting for ', movie.title, streamers);
-    streamers.forEach((streamer) => {
+    console.log("inserting for ", movie.title, streamers);
+    streamers.forEach(streamer => {
       const { streamer_id } = getStreamerByName.get(streamer) as {
         streamer_id: number;
       };
