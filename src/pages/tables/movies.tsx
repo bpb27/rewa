@@ -143,7 +143,8 @@ export default function Movies({ movies }: MoviesProps) {
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
   const movieList = useMemo(() => {
-    const filtered = movies.filter(movie => tokenUtils.filter(tokens, movie, tokenMode));
+    const groupedTokens = tokenUtils.groupByType(tokens);
+    const filtered = movies.filter(movie => tokenUtils.filter(groupedTokens, movie, tokenMode));
     const sorted = smartSort([...filtered], sortingUtils.fns[orderBy], asc);
     return sorted;
   }, [asc, movies, orderBy, tokens, tokenMode]);
