@@ -6,7 +6,12 @@ const sortFns = Object.freeze({
   budget: (m: Movie) => m.budget.id,
   director: (m: Movie) => m.directors[0]?.name,
   episodeNumber: (m: Movie) => m.episode.episode_order,
-  profit: (m: Movie) => (m.revenue.id * 1000) / m.budget.id,
+  profit: (m: Movie) => {
+    const budget = m.budget.id;
+    const revenue = m.revenue.id;
+    if (!budget || !revenue) return 0;
+    return (revenue - budget) / budget;
+  },
   release_date: (m: Movie) => m.release_date,
   revenue: (m: Movie) => m.revenue.id,
   runtime: (m: Movie) => m.runtime.id,

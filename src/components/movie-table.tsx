@@ -23,8 +23,8 @@ export const MovieTable = ({ movies, onTokenClick }: MovieTableProps) => {
             <th>Top Cast</th>
             <th>Hosts</th>
             <th>Streaming</th>
-            <th className="min-w-[90px]">Box Office</th>
             <th>Budget</th>
+            <th className="min-w-[90px]">Box Office</th>
             <th>Runtime</th>
             <th>Genres</th>
             <th>
@@ -50,8 +50,8 @@ export const MovieTable = ({ movies, onTokenClick }: MovieTableProps) => {
               <ClickableTd tokens={m.actors} onClick={onTokenClick} />
               <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
               <ClickableTd tokens={m.streamers} onClick={onTokenClick} />
-              <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
               <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
+              <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
               <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
               <ClickableTd tokens={m.genres} onClick={onTokenClick} />
               <td>

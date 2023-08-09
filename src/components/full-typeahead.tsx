@@ -56,9 +56,15 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
         </Button>
         {isLoading && (
           <div className="mt-6">
-            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
-            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
-            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+            <LoadingBar />
+            <LoadingBar />
+            <LoadingBar />
+          </div>
+        )}
+        {!data?.length && !!search && (
+          <div className="mt-3 flex space-x-2">
+            <Icon.FaceMeh />
+            <span>Nah.</span>
           </div>
         )}
         {byCategory.map(([categoryName, entries]) => (
@@ -87,3 +93,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
     </div>
   );
 }
+
+const LoadingBar = () => (
+  <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+);

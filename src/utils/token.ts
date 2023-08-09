@@ -46,6 +46,7 @@ const utils = {
 
 const tenMil = 10000000;
 
+// TODO: when tokenMode === 'or', need to return true on ANY match
 const filterByToken = (tokens: Token[], movie: Movie, mode: TokenMode = "or") => {
   const { byType, ids, matches, within } = utils;
   if (!matches(byType(tokens, "director"), ids(movie.directors), mode)) return false;
