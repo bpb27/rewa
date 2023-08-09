@@ -25,7 +25,7 @@ export const Navbar = () => {
             <Icon.CaretDown
               className={cn(
                 "ml-1",
-                "duration-[250] transition-transform ease-in group-data-[state=open]:-rotate-180"
+                "transition-transform duration-200 ease-in group-data-[state=open]:-rotate-180"
               )}
               aria-hidden
             />

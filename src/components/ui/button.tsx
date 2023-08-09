@@ -10,8 +10,9 @@ type ButtonProps = PropsWithChildren<{
 
 const variants = ({ selected }: { selected?: boolean }) => ({
   icon: cn("h-9 rounded-md bg-slate-100 px-3 text-slate-900", selected && "bg-slate-300/70"),
-  token:
-    "bg-slate-50 hover:bg-slate-200 border border-slate-200 hover:text-slate-900 h-10 px-4 py-2",
+  token: cn(
+    "bg-slate-50 hover:bg-slate-200 border border-slate-200 hover:text-slate-900 h-10 px-4 py-2 whitespace-nowrap"
+  ),
   card: "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2",
 });
 

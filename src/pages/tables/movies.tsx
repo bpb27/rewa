@@ -169,11 +169,11 @@ export default function Movies({ movies }: MoviesProps) {
     <Layout title="All movies">
       <div className="mb-1 mt-3 flex flex-col py-2">
         <FullTypeahead onSelect={item => toggleToken(item)} />
-        <div className="mt-1 flex space-x-2">
+        <div className="mt-1 flex space-x-2 overflow-scroll">
           {tokens.length > 0 && (
             <Button onClick={() => setTokens([])} variant="token">
               <Icon.Close className="mr-2" />
-              Clear
+              Clear ({tokens.length})
             </Button>
           )}
           {tokens.length > 1 && (

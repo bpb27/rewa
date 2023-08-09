@@ -18,7 +18,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data } = useSWR<GetMoviesBySearchResponse>(
+  const { data, isLoading } = useSWR<GetMoviesBySearchResponse>(
     debouncedSearch ? `/api/search/movie?search=${debouncedSearch}` : null,
     fetcher
   );
@@ -42,7 +42,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
         value={search}
       />
       <DialogOverlay
-        className="border border-t-0 border-slate-400 bg-slate-100 p-3 shadow-2xl"
+        className="min-w-[250px] border border-t-0 border-slate-400 bg-slate-100 p-3 shadow-2xl"
         container={resultsContainer}
         isOpen={showResults}
         onClose={() => setShowResults(false)}
@@ -54,6 +54,13 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
         >
           <Icon.Close opacity="50%" />
         </Button>
+        {isLoading && (
+          <div className="mt-6">
+            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+            <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />
+          </div>
+        )}
         {byCategory.map(([categoryName, entries]) => (
           <div key={categoryName} className="mb-2">
             <h6 className="mb-1">{capitalize(categoryName)}</h6>
