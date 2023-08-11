@@ -2,6 +2,7 @@ import Image from "next/image";
 import { sortByDate, tmdbImage, topRanks } from "~/utils";
 import { PropsWithChildren, useEffect, useState } from "react";
 import { Movie } from "~/components/movie";
+import { MovieCardSidebar } from "~/components/movie-card-sidebar";
 import Layout from "~/components/layout";
 import Link from "next/link";
 import { uniqBy } from "remeda";
@@ -38,7 +39,9 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     "p-2 text-blue-50 bg-slate-600 hover:bg-slate-500 font-semibold sm:m-1 sm:rounded";
   return (
     <Layout title={title}>
-      {selectedMovie && <Movie {...selectedMovie} onClose={() => setSelectedMovie(undefined)} />}
+      {selectedMovie && (
+        <MovieCardSidebar {...selectedMovie} onClose={() => setSelectedMovie(undefined)} />
+      )}
       {/* maybe throw some separators in hear denoting each group */}
       {people.map((person, i) => (
         <div key={person.id} className="mb-8 flex flex-col items-start sm:flex-row sm:items-center">

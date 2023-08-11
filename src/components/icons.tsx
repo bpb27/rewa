@@ -24,8 +24,9 @@ import {
 import { ComponentPropsWithoutRef } from "react";
 
 type IconProps = ComponentPropsWithoutRef<typeof ArrowDown>;
+export type IconKey = keyof typeof Icon;
 
-const ConditionalCaret = ({ showing, ...rest }: IconProps & { showing: boolean }) =>
+export const ConditionalCaret = ({ showing, ...rest }: IconProps & { showing: boolean }) =>
   showing ? <ChevronUp {...rest} /> : <ChevronDown {...rest} />;
 
 export const Icon = {
@@ -38,7 +39,6 @@ export const Icon = {
   CaretUp: ChevronUp,
   Clock: Clock,
   Close: XCircle,
-  ConditionalCaret,
   Dollar: CircleDollarSign,
   FaceFrown: Frown,
   FaceMeh: Meh,
