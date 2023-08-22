@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { cn } from "~/lib/utils";
+import { cn } from "~/utils/style";
 
 type DialogOverlayProps = PropsWithChildren<{
   className?: string;

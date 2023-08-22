@@ -3,7 +3,7 @@ import { Icon } from "./icons";
 import { MovieTablePoster } from "./images";
 import { Token } from "~/utils/token";
 import { ImdbLink, SpotifyLink } from "./external-links";
-import { cn } from "~/lib/utils";
+import { cn } from "~/utils/style";
 
 type MovieTableProps = {
   movies: Movie[];
