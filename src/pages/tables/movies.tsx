@@ -141,6 +141,7 @@ export default function Movies({ movies }: MoviesProps) {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [orderBy, setOrderBy] = useState<SortProp>('episodeNumber');
   const [displayType, setDisplayType] = useState<'table' | 'card'>('table');
+  const [loaded, setLoaded] = useState(false);
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
   const movieList = useMemo(() => {
@@ -158,8 +159,15 @@ export default function Movies({ movies }: MoviesProps) {
     },
   });
 
+  // no window when SSR'd so need useEffect to render card view on mobile
   useEffect(() => {
-    setRowNumber(20); // reset on search or filter
+    if (window.innerWidth < 700) setDisplayType('card');
+    setLoaded(true);
+  }, []);
+
+  // reset displayed rows on search or filter
+  useEffect(() => {
+    setRowNumber(20);
   }, [movieList.length]);
 
   const toggleToken = (newToken: Token) => {
@@ -227,12 +235,16 @@ export default function Movies({ movies }: MoviesProps) {
           </Button>
         </div>
       </div>
-      {displayType === 'table' ? (
-        <MovieTable movies={displayedMovies} onTokenClick={toggleToken} />
-      ) : (
-        <MovieCards movies={displayedMovies} onTokenClick={toggleToken} />
-      )}
-      <div ref={vizSensorRef} />
+      {loaded ? (
+        <>
+          {displayType === 'table' ? (
+            <MovieTable movies={displayedMovies} onTokenClick={toggleToken} />
+          ) : (
+            <MovieCards movies={displayedMovies} onTokenClick={toggleToken} />
+          )}
+          <div ref={vizSensorRef} />
+        </>
+      ) : null}
     </Layout>
   );
 }
