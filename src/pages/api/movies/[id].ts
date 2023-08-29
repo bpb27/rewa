@@ -1,6 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { Prisma } from "~/prisma";
-import { formatDate, moneyShort } from "~/utils";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { Prisma } from '~/prisma';
+import { formatDate, moneyShort } from '~/utils/format';
 
 const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
@@ -20,11 +20,11 @@ const getMovieById = async (movieId: number, actorId?: number) => {
       tagline: true,
       actors_on_movies: {
         take: 3,
-        orderBy: { credit_order: "asc" },
+        orderBy: { credit_order: 'asc' },
         select: { actors: selectIdAndName },
       },
       crew_on_movies: {
-        where: { job: "Director" },
+        where: { job: 'Director' },
         select: {
           job: true,
           crew: selectIdAndName,
@@ -49,7 +49,7 @@ const getMovieById = async (movieId: number, actorId?: number) => {
       })
     : null;
 
-  if (!movie) throw new Error("Cant find that shit");
+  if (!movie) throw new Error('Cant find that shit');
   const [episode] = movie.episodes;
   return {
     budget: moneyShort(movie.budget),

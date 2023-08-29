@@ -1,6 +1,6 @@
-import { PropsWithChildren } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { cn } from "~/utils/style";
+import { PropsWithChildren } from 'react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { cn } from '~/utils/style';
 
 type DialogOverlayProps = PropsWithChildren<{
   className?: string;
@@ -21,7 +21,7 @@ export const DialogOverlay = ({
       <Dialog.Content
         onOpenAutoFocus={e => e.preventDefault()}
         onEscapeKeyDown={() => onClose()}
-        className={cn("absolute z-10", className)}
+        className={cn('absolute z-10', className)}
       >
         {children}
       </Dialog.Content>

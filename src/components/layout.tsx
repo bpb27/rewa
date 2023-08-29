@@ -1,12 +1,12 @@
-import Head from "next/head";
-import { PropsWithChildren } from "react";
-import { Navbar } from "./ui/nav";
+import Head from 'next/head';
+import { PropsWithChildren } from 'react';
+import { Navbar } from './ui/nav';
 
-const metaName = "Rewa";
-const metaTitle = "Rewa Movies";
-const metaDesc = "Explore movies from the podcast";
-const metaSite = "https://rewa.vercel.app";
-const metaImg = "https://rewa.vercel.app/site.png";
+const metaName = 'Rewa';
+const metaTitle = 'Rewa Movies';
+const metaDesc = 'Explore movies from the podcast';
+const metaSite = 'https://rewa.vercel.app';
+const metaImg = 'https://rewa.vercel.app/site.png';
 
 export default function Layout({ children, title }: PropsWithChildren<{ title: string }>) {
   return (

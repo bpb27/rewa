@@ -1,5 +1,5 @@
-import { cn } from "~/utils/style";
-import { Icon } from "../icons";
+import { cn } from '~/utils/style';
+import { Icon } from '../icons';
 
 type SelectProps = {
   className?: string;
@@ -10,7 +10,7 @@ type SelectProps = {
 
 export const Select = ({ className, onSelect, options, value }: SelectProps) => {
   return (
-    <div className={cn("relative flex items-center", className)}>
+    <div className={cn('relative flex items-center', className)}>
       <select
         className="flex h-10 appearance-none items-center justify-between rounded-md border border-slate-200 bg-transparent py-2 pl-3 pr-8 text-sm"
         onChange={e => onSelect(e.target.value)}

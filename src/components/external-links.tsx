@@ -7,11 +7,7 @@ export const ImdbLink = ({
   className,
   id,
 }: PropsWithChildren<{ className?: string; id: string }>) => (
-  <a
-    href={`https://www.imdb.com/title/${id}/`}
-    className={className}
-    {...newTab}
-  >
+  <a href={`https://www.imdb.com/title/${id}/`} className={className} {...newTab}>
     {children}
   </a>
 );

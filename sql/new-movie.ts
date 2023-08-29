@@ -1,8 +1,8 @@
-import { pick } from "remeda";
-import Database from "better-sqlite3";
-import { MoviesJson, EpisodesJson } from "../src/types";
+import { pick } from 'remeda';
+import Database from 'better-sqlite3';
+import { MoviesJson, EpisodesJson } from '../src/types';
 
-const db = new Database("./prisma/db.sqlite", {
+const db = new Database('./prisma/db.sqlite', {
   readonly: false,
   timeout: 5000,
 });
@@ -10,65 +10,65 @@ const db = new Database("./prisma/db.sqlite", {
 const insert = (table: string, fields: string[]) =>
   `
     INSERT OR IGNORE INTO ${table} (
-        ${fields.join(",")}
+        ${fields.join(',')}
     ) VALUES (
-        ${fields.map(f => "@" + f).join(",")}
+        ${fields.map(f => '@' + f).join(',')}
     )
 `;
 
 const insertMovie = db.prepare(
-  insert("movies", [
-    "budget",
-    "tmdb_id",
-    "imdb_id",
-    "overview",
-    "poster_path",
-    "release_date",
-    "revenue",
-    "runtime",
-    "tagline",
-    "title",
+  insert('movies', [
+    'budget',
+    'tmdb_id',
+    'imdb_id',
+    'overview',
+    'poster_path',
+    'release_date',
+    'revenue',
+    'runtime',
+    'tagline',
+    'title',
   ])
 );
 
-const insertGenre = db.prepare(insert("genres", ["name"]));
+const insertGenre = db.prepare(insert('genres', ['name']));
 
-const insertGenreOnMovie = db.prepare(insert("genres_on_movies", ["movie_id", "genre_id"]));
+const insertGenreOnMovie = db.prepare(insert('genres_on_movies', ['movie_id', 'genre_id']));
 
 const insertProductionCompany = db.prepare(
-  insert("production_companies", ["name", "tmdb_id", "logo_path"])
+  insert('production_companies', ['name', 'tmdb_id', 'logo_path'])
 );
 
 const insertProductionCompanyOnMovie = db.prepare(
-  insert("production_companies_on_movies", ["movie_id", "production_company_id"])
+  insert('production_companies_on_movies', ['movie_id', 'production_company_id'])
 );
 
-const insertActor = db.prepare(insert("actors", ["gender", "tmdb_id", "name", "profile_path"]));
+const insertActor = db.prepare(insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path']));
 
 const insertActorOnMovie = db.prepare(
-  insert("actors_on_movies", ["movie_id", "actor_id", "character", "credit_id", "credit_order"])
+  insert('actors_on_movies', ['movie_id', 'actor_id', 'character', 'credit_id', 'credit_order'])
 );
 
-const insertCrew = db.prepare(insert("crew", ["gender", "tmdb_id", "name", "profile_path"]));
+const insertCrew = db.prepare(insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path']));
 
 const insertCrewOnMovie = db.prepare(
-  insert("crew_on_movies", [
-    "movie_id",
-    "crew_id",
-    "known_for_department",
-    "credit_id",
-    "department",
-    "job",
+  insert('crew_on_movies', [
+    'movie_id',
+    'crew_id',
+    'known_for_department',
+    'credit_id',
+    'department',
+    'job',
   ])
 );
 
 const insertEpisode = db.prepare(
-  insert("episodes", ["title", "episode_order", "date", "spotify_url", "movie_id"])
+  insert('episodes', ['title', 'episode_order', 'date', 'spotify_url', 'movie_id'])
 );
 
-const insertHostOnEpisode = db.prepare(insert("hosts_on_episodes", ["host_id", "episode_id"]));
+const insertHostOnEpisode = db.prepare(insert('hosts_on_episodes', ['host_id', 'episode_id']));
 
-const insertHost = db.prepare(insert("hosts", ["name"]));
+const insertHost = db.prepare(insert('hosts', ['name']));
 
 const getMovieByTmdbId = db.prepare<number>(`
   SELECT id AS movie_id FROM movies WHERE tmdb_id = ?;
@@ -111,14 +111,14 @@ const addMovieToDb = (
   db.transaction(() => {
     const moviePayload = {
       ...pick(movie, [
-        "budget",
-        "imdb_id",
-        "overview",
-        "poster_path",
-        "release_date",
-        "runtime",
-        "tagline",
-        "title",
+        'budget',
+        'imdb_id',
+        'overview',
+        'poster_path',
+        'release_date',
+        'runtime',
+        'tagline',
+        'title',
       ]),
       tmdb_id: movie.id,
       revenue: movie.revenue / 1000,
@@ -130,7 +130,7 @@ const addMovieToDb = (
 
     // GENRES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const genre of movie.genres) {
-      const genrePayload = pick(genre, ["name"]);
+      const genrePayload = pick(genre, ['name']);
       insertGenre.run(genrePayload);
       const { genre_id } = getGenreByName.get(genrePayload.name) as {
         genre_id: number;
@@ -141,7 +141,7 @@ const addMovieToDb = (
     // PROD COMPANIES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const company of movie.production_companies) {
       const companyPayload = {
-        ...pick(company, ["name", "logo_path"]),
+        ...pick(company, ['name', 'logo_path']),
         tmdb_id: company.id,
       };
       insertProductionCompany.run(companyPayload);
@@ -154,7 +154,7 @@ const addMovieToDb = (
     // ACTORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const actor of movie.credits.cast) {
       const actorPayload = {
-        ...pick(actor, ["gender", "name", "profile_path"]),
+        ...pick(actor, ['gender', 'name', 'profile_path']),
         tmdb_id: actor.id,
       };
       insertActor.run(actorPayload);
@@ -174,7 +174,7 @@ const addMovieToDb = (
     // CREW ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     for (const crew of movie.credits.crew) {
       const crewPayload = {
-        ...pick(crew, ["gender", "name", "profile_path"]),
+        ...pick(crew, ['gender', 'name', 'profile_path']),
         tmdb_id: crew.id,
       };
       insertCrew.run(crewPayload);
@@ -219,36 +219,36 @@ const addMovieToDb = (
 
 const newStuff = [
   {
-    tmdbId: 10377,
-    id: 303,
-    title: "My Cousin Vinny",
-    hosts: ["Bill Simmons", "Chris Ryan", "Wesley Morris"],
-    date: "Jul 2023",
-    url: "https://open.spotify.com/episode/4fYlsW1U509NUKru9NEPOR?si=5d15caab6be34773",
-  },
-  {
-    tmdbId: 17443,
-    id: 304,
-    title: "And Justice For All",
-    hosts: ["Bill Simmons", "Sean Fennessey", "Wesley Morris"],
-    date: "Jul 2023",
-    url: "https://open.spotify.com/episode/5BGkGRgTiYSPpzuOlrAnEI?si=cb23a69152a640db",
-  },
-  {
-    tmdbId: 1813,
-    id: 305,
-    title: "The Devil's Advocate",
-    hosts: ["Bill Simmons", "Chris Ryan", "Van Lathan"],
-    date: "Jul 2023",
-    url: "https://open.spotify.com/episode/48FPEKFGv78ma89dmWqn8m?si=f4ec068d857947d9",
-  },
-  {
     tmdbId: 11153,
     id: 306,
-    title: "Vacation",
-    hosts: ["Bill Simmons", "Chris Ryan", "Van Lathan"],
-    date: "Aug 2023",
-    url: "https://open.spotify.com/episode/0gPQ03lMHYxg9RBpHBtpUX?si=942b6a9db6324d4a",
+    title: 'Vacation',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
+    date: 'Aug 2023',
+    url: 'https://open.spotify.com/episode/0gPQ03lMHYxg9RBpHBtpUX?si=942b6a9db6324d4a',
+  },
+  {
+    tmdbId: 345,
+    id: 307,
+    title: 'Eyes Wide Shut',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Mallory Rubin'],
+    date: 'Aug 2023',
+    url: 'https://open.spotify.com/episode/7wOXmBvBAsmclh3n9tozVv?si=8f21a5d4f3194fd4',
+  },
+  {
+    tmdbId: 796,
+    id: 308,
+    title: 'Cruel Intentions',
+    hosts: ['Bill Simmons', 'Juliet Litman', 'Amanda Dobbins'],
+    date: 'Aug 2023',
+    url: 'https://open.spotify.com/episode/5IOa9Mk8PvNzrWsJnrKaoJ?si=d565f3c79fec4e5b',
+  },
+  {
+    tmdbId: 156022,
+    id: 309,
+    title: 'The Equalizer',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Bill’s Dad'],
+    date: 'Aug 2023',
+    url: 'https://open.spotify.com/episode/3btBdwsf7wqnPA7JrGyPX6?si=ead9153a7e8143f7',
   },
 ];
 
@@ -261,7 +261,7 @@ const fetchFromTmdb = async () => {
   if (run) {
     addMovieToDb(movie, episode);
   } else {
-    console.log("DRY RUN", movie);
+    console.log('DRY RUN', movie);
   }
   db.close();
 };
@@ -270,7 +270,7 @@ const run = async () => {
   try {
     await fetchFromTmdb();
   } catch (e) {
-    console.log("well shit", e);
+    console.log('well shit', e);
     db.close();
   }
 };

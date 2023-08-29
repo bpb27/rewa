@@ -26,9 +26,9 @@ const searchMovies = async (searchString: string) => {
   type Result = { id: number; name: string; type: Type };
 
   const results: Result[] = [
-    ...movies.map((i) => ({ type: 'movie' as Type, id: i.id, name: i.title })),
-    ...hosts.map((i) => ({ type: 'host' as Type, id: i.id, name: i.name })),
-    ...actors.map((i) => ({ type: 'actor' as Type, id: i.id, name: i.name })),
+    ...movies.map(i => ({ type: 'movie' as Type, id: i.id, name: i.title })),
+    ...hosts.map(i => ({ type: 'host' as Type, id: i.id, name: i.name })),
+    ...actors.map(i => ({ type: 'actor' as Type, id: i.id, name: i.name })),
   ];
 
   return results;
@@ -73,14 +73,9 @@ const searchMovies = async (searchString: string) => {
   // });
 };
 
-export type GetMoviesBySearchResponse = NonNullable<
-  Awaited<ReturnType<typeof searchMovies>>
->;
+export type GetMoviesBySearchResponse = NonNullable<Awaited<ReturnType<typeof searchMovies>>>;
 
-const handler = async (
-  req: NextApiRequest,
-  res: NextApiResponse<GetMoviesBySearchResponse>
-) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse<GetMoviesBySearchResponse>) => {
   const { search } = req.query;
   if (typeof search !== 'string') {
     return res.status(200).json([]);

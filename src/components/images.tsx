@@ -1,6 +1,12 @@
-import Image from "next/image";
-import { PropsWithChildren } from "react";
-import { moviePosterSize } from "~/utils";
+import Image from 'next/image';
+import { PropsWithChildren } from 'react';
+
+export const tmdbImage = (path: string) => `https://image.tmdb.org/t/p/original${path}`;
+
+export const moviePosterSize = (width: number) => ({
+  width,
+  height: Math.round(width * 1.66),
+});
 
 export const TheaterBackground = ({ children }: PropsWithChildren<{}>) => (
   <div className="flex w-full justify-center rounded-xl border-2 border-solid border-slate-900 bg-gradient-to-r from-slate-500 via-slate-900 to-slate-500">

@@ -1,9 +1,10 @@
-import Image from "next/image";
-import { sortByDate, tmdbImage, topRanks } from "~/utils";
-import { PropsWithChildren, useEffect, useState } from "react";
-import { MovieCardSidebar } from "~/components/movie-card-sidebar";
-import Layout from "~/components/layout";
-import { rankByTotalMovies } from "~/utils/ranking";
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { tmdbImage } from '~/components/images';
+import { MovieCardSidebar } from '~/components/movie-card-sidebar';
+import Layout from '~/components/layout';
+import { rankByTotalMovies } from '~/utils/ranking';
+import { sortByDate } from '~/utils/sorting';
 
 type TopCategoryProps = {
   people: {
@@ -31,14 +32,11 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     }
   }, [people]);
 
-  console.log(rankByTotalMovies(people));
-
   return (
     <Layout title={title}>
       {selectedMovie && (
         <MovieCardSidebar {...selectedMovie} onClose={() => setSelectedMovie(undefined)} />
       )}
-      {/* maybe throw some separators in hear denoting each group */}
       {rankByTotalMovies(people).map((person, i) => (
         <div key={person.id} className="mb-8 flex flex-col items-start sm:flex-row sm:items-center">
           {person.profile_path ? (
@@ -55,9 +53,8 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
           )}
           <div className="flex w-full flex-col content-center">
             <h3 className="mb-2 text-lg sm:text-xl">
-              #{person.rank}
-              {person.ties > 1 && ` (${person.ties})`} {person.name} with {person.movies.length}{" "}
-              movies
+              #{person.rank} {person.name} with {person.movies.length} movies{' '}
+              <span className="text-gray-400">{person.ties > 1 && ` (T-${person.ties})`}</span>
             </h3>
             <div className="hide-scrollbar flex space-x-2 overflow-x-scroll">
               {person.movies
@@ -80,15 +77,3 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
     </Layout>
   );
 };
-
-const useDelayedRender = (delay: number) => {
-  const [delayed, setDelayed] = useState(true);
-  useEffect(() => {
-    const timeout = setTimeout(() => setDelayed(false), delay);
-    return () => clearTimeout(timeout);
-  }, [delay]);
-  return (fn: any) => !delayed && fn();
-};
-
-const DelayedRender = ({ delay, children }: PropsWithChildren<{ delay: number }>) =>
-  useDelayedRender(delay)(() => children);

@@ -7,8 +7,6 @@ export const getStaticProps = async () => {
   return { props: { people } };
 };
 
-export default function TopWriters({
-  people,
-}: StaticProps<typeof getStaticProps>) {
+export default function TopWriters({ people }: StaticProps<typeof getStaticProps>) {
   return <TopCategory people={people} title="Top Writers" />;
 }

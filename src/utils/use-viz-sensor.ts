@@ -1,4 +1,4 @@
-import { useEffect, RefObject, useRef } from "react";
+import { useEffect, RefObject, useRef } from 'react';
 
 export const useVizSensor = (
   elementRef: RefObject<Element>,
@@ -9,11 +9,7 @@ export const useVizSensor = (
   useEffect(() => {
     if (observer.current) observer.current.disconnect();
 
-    const callback = options.callback
-      ? options.callback
-      : () => {
-          console.log("Default callback: Element is visible");
-        };
+    const callback = options.callback ? options.callback : () => {};
 
     const observerOptions = { ...options };
     delete observerOptions.callback;

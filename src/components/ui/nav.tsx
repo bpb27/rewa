@@ -1,14 +1,14 @@
-import * as Nav from "@radix-ui/react-navigation-menu";
-import { Icon } from "~/components/icons";
-import Link from "next/link";
-import { cn } from "~/utils/style";
+import * as Nav from '@radix-ui/react-navigation-menu';
+import { Icon } from '~/components/icons';
+import Link from 'next/link';
+import { cn } from '~/utils/style';
 
 export const Navbar = () => {
   return (
     <Nav.Root
       className={cn(
-        "fixed left-0 right-0 top-0 z-[9999] w-full flex-row",
-        "space-x-3 bg-slate-800 font-semibold text-blue-50"
+        'fixed left-0 right-0 top-0 z-[9999] w-full flex-row',
+        'space-x-3 bg-slate-800 font-semibold text-blue-50'
       )}
     >
       <Nav.List className="relative flex space-x-3 px-2">
@@ -21,11 +21,11 @@ export const Navbar = () => {
         </Nav.Item>
         <Nav.Item>
           <Nav.Trigger className="group flex py-2">
-            Most Appearances{" "}
+            Most Appearances{' '}
             <Icon.CaretDown
               className={cn(
-                "ml-1",
-                "transition-transform duration-200 ease-in group-data-[state=open]:-rotate-180"
+                'ml-1',
+                'transition-transform duration-200 ease-in group-data-[state=open]:-rotate-180'
               )}
               aria-hidden
             />
@@ -33,11 +33,11 @@ export const Navbar = () => {
           <Nav.Content className="absolute rounded-b-md bg-slate-600 shadow-lg">
             <Menu
               items={[
-                { href: "/top/actors", text: "Actors" },
-                { href: "/top/directors", text: "Directors" },
-                { href: "/top/writers", text: "Writers" },
-                { href: "/top/cinematographers", text: "Cinematographers" },
-                { href: "/top/producers", text: "Producers" },
+                { href: '/top/actors', text: 'Actors' },
+                { href: '/top/directors', text: 'Directors' },
+                { href: '/top/writers', text: 'Writers' },
+                { href: '/top/cinematographers', text: 'Cinematographers' },
+                { href: '/top/producers', text: 'Producers' },
               ]}
             />
           </Nav.Content>

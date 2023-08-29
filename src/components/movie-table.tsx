@@ -1,9 +1,9 @@
-import { Movie } from "~/pages/tables/movies";
-import { Icon } from "./icons";
-import { MovieTablePoster } from "./images";
-import { Token } from "~/utils/token";
-import { ImdbLink, SpotifyLink } from "./external-links";
-import { cn } from "~/utils/style";
+import { Movie } from '~/pages/tables/movies';
+import { Icon } from './icons';
+import { MovieTablePoster } from './images';
+import { Token } from '~/utils/token';
+import { ImdbLink, SpotifyLink } from './external-links';
+import { cn } from '~/utils/style';
 
 type MovieTableProps = {
   movies: Movie[];
@@ -39,7 +39,7 @@ export const MovieTable = ({ movies, onTokenClick }: MovieTableProps) => {
           {movies.map((m, i) => (
             <tr
               key={m.id}
-              className={cn((i + 1) % 2 && "bg-slate-100", "border-t-2 border-slate-200 text-left")}
+              className={cn((i + 1) % 2 && 'bg-slate-100', 'border-t-2 border-slate-200 text-left')}
             >
               <td>
                 <MovieTablePoster title={m.title} poster_path={m.poster_path} />

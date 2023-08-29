@@ -1,10 +1,10 @@
-import { ImdbLink, SpotifyLink } from "~/components/external-links";
-import { Icon } from "~/components/icons";
-import { MovieCardPoster, TheaterBackground } from "~/components/images";
-import { Movie } from "~/pages/tables/movies";
-import { formatDate } from "~/utils";
-import { Token } from "~/utils/token";
-import { PropsWithChildren } from "react";
+import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import { Icon } from '~/components/icons';
+import { MovieCardPoster, TheaterBackground } from '~/components/images';
+import { Movie } from '~/pages/tables/movies';
+import { formatDate } from '~/utils/format';
+import { Token } from '~/utils/token';
+import { PropsWithChildren } from 'react';
 
 interface MovieCardProps extends Movie {
   onTokenClick: (token: Token) => void;
@@ -47,7 +47,7 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
         </ClickableField>
         <Separator />
         <div className="my-1 flex">
-          <Icon.Link className="mr-2" />{" "}
+          <Icon.Link className="mr-2" />{' '}
           <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
             IMDB
           </ImdbLink>
@@ -90,13 +90,13 @@ const ClickableField = ({ children, item, onClick }: ClickableFieldProps) => {
       key={item.id}
       onClick={() => onClick(item)}
     >
-      {item.type === "host" && <Icon.Mic className="mr-2 text-green-700" />}
-      {item.type === "director" && <Icon.Video className="mr-2 text-yellow-500" />}
-      {item.type === "actor" && <Icon.Star className="mr-2 text-yellow-500" />}
-      {item.type === "year" && <Icon.Calendar className="mr-2 text-blue-800" />}
-      {item.type === "runtime" && <Icon.Clock className="mr-2 text-blue-800" />}
-      {item.type === "streamer" && <Icon.Tv className="mr-2 text-red-700" />}
-      {item.type === "budget" && <Icon.Dollar className="mr-2 text-blue-800" />}
+      {item.type === 'host' && <Icon.Mic className="mr-2 text-green-700" />}
+      {item.type === 'director' && <Icon.Video className="mr-2 text-yellow-500" />}
+      {item.type === 'actor' && <Icon.Star className="mr-2 text-yellow-500" />}
+      {item.type === 'year' && <Icon.Calendar className="mr-2 text-blue-800" />}
+      {item.type === 'runtime' && <Icon.Clock className="mr-2 text-blue-800" />}
+      {item.type === 'streamer' && <Icon.Tv className="mr-2 text-red-700" />}
+      {item.type === 'budget' && <Icon.Dollar className="mr-2 text-blue-800" />}
       {children ? children : <span>{item.name}</span>}
     </div>
   );

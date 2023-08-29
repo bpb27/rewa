@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import useSWR from "swr";
-import { GetMoviesBySearchResponse } from "~/pages/api/search/movie";
-import { capitalize, fetcher } from "~/utils";
-import { useDebounce } from "~/utils/use-debounce";
-import { groupBy } from "remeda";
-import { DialogOverlay } from "./ui/dialog";
-import { Icon } from "./icons";
-import { Button } from "./ui/button";
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { GetMoviesBySearchResponse } from '~/pages/api/search/movie';
+import { fetcher } from '~/utils/api';
+import { capitalize } from '~/utils/format';
+import { useDebounce } from '~/utils/use-debounce';
+import { groupBy } from 'remeda';
+import { DialogOverlay } from './ui/dialog';
+import { Icon } from './icons';
+import { Button } from './ui/button';
 
 type FullTypeaheadProps = {
   onSelect: (selection: GetMoviesBySearchResponse[number]) => void;
@@ -15,7 +16,7 @@ type FullTypeaheadProps = {
 export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
   const [resultsContainer, setResultsContainer] = useState<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
   const { data, isLoading } = useSWR<GetMoviesBySearchResponse>(
@@ -74,15 +75,15 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
               {entries.map(item => (
                 <button
                   className="flex text-left hover:underline"
-                  key={[item.id, item.type].join("-")}
+                  key={[item.id, item.type].join('-')}
                   onClick={() => {
                     onSelect(item);
-                    setSearch("");
+                    setSearch('');
                   }}
                 >
-                  {item.type === "movie" && <Icon.Movie />}
-                  {item.type === "actor" && <Icon.Actor />}
-                  {item.type === "host" && <Icon.Mic />}
+                  {item.type === 'movie' && <Icon.Movie />}
+                  {item.type === 'actor' && <Icon.Actor />}
+                  {item.type === 'host' && <Icon.Mic />}
                   <span className="ml-2">{item.name}</span>
                 </button>
               ))}

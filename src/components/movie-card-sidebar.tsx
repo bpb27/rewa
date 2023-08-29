@@ -1,11 +1,11 @@
-import useSWR from "swr";
-import { ImdbLink, SpotifyLink } from "~/components/external-links";
-import { Icon, type IconKey } from "~/components/icons";
-import { MovieCardPoster, TheaterBackground } from "~/components/images";
-import { type GetMovieByIdResponse } from "~/pages/api/movies/[id]";
-import { fetcher } from "~/utils";
-import { Button } from "./ui/button";
-import { PropsWithChildren } from "react";
+import useSWR from 'swr';
+import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import { Icon, type IconKey } from '~/components/icons';
+import { MovieCardPoster, TheaterBackground } from '~/components/images';
+import { type GetMovieByIdResponse } from '~/pages/api/movies/[id]';
+import { fetcher } from '~/utils/api';
+import { Button } from './ui/button';
+import { PropsWithChildren } from 'react';
 
 type MovieCardSidebar = {
   personId?: number;
@@ -15,7 +15,7 @@ type MovieCardSidebar = {
 
 export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSidebar) => {
   const { data: movie } = useSWR<GetMovieByIdResponse>(
-    `/api/movies/${movieId}?${personId ? `actorId=${personId}` : ""}`,
+    `/api/movies/${movieId}?${personId ? `actorId=${personId}` : ''}`,
     fetcher
   );
 
