@@ -39,7 +39,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
       <input
         className="w-full rounded-lg border p-4 text-lg shadow-md outline-none"
         onChange={e => setSearch(e.target.value)}
-        placeholder="Search titles, actors, hosts..."
+        placeholder="Search titles, hosts, actors, directors, streamers..."
         value={search}
       />
       <DialogOverlay
@@ -84,6 +84,8 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
                   {item.type === 'movie' && <Icon.Movie />}
                   {item.type === 'actor' && <Icon.Actor />}
                   {item.type === 'host' && <Icon.Mic />}
+                  {item.type === 'director' && <Icon.Video />}
+                  {item.type === 'streamer' && <Icon.Tv />}
                   <span className="ml-2">{item.name}</span>
                 </button>
               ))}

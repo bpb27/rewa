@@ -1,38 +1,53 @@
-import { Movie } from '~/pages/tables/movies';
-import { Icon } from './icons';
-import { MovieTablePoster } from './images';
-import { Token } from '~/utils/token';
-import { ImdbLink, SpotifyLink } from './external-links';
+import { type Movie } from '~/pages/tables/movies';
+import { type SortProp } from '~/utils/sorting';
 import { cn } from '~/utils/style';
+import { type Token } from '~/utils/token';
+import { ImdbLink, SpotifyLink } from './external-links';
+import { MovieTablePoster } from './images';
+import { Icon } from './icons';
+import { PropsWithChildren } from 'react';
 
 type MovieTableProps = {
   movies: Movie[];
+  onSortClick: (sort: SortProp) => void;
   onTokenClick: (token: Token) => void;
 };
 
-export const MovieTable = ({ movies, onTokenClick }: MovieTableProps) => {
+export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="text-left [&>th]:pr-2">
-            <th>Poster</th>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Director</th>
-            <th>Top Cast</th>
-            <th>Hosts</th>
-            <th>Streaming</th>
-            <th>Budget</th>
-            <th className="min-w-[90px]">Box Office</th>
-            <th>Runtime</th>
-            <th>Genres</th>
-            <th>
+            <TableHeader>Poster</TableHeader>
+            <TableHeader onSort={onSortClick} sort="title">
+              Title
+            </TableHeader>
+            <TableHeader onSort={onSortClick} sort="release_date">
+              Year
+            </TableHeader>
+            <TableHeader onSort={onSortClick} sort="director">
+              Director
+            </TableHeader>
+            <TableHeader>Top Cast</TableHeader>
+            <TableHeader>Hosts</TableHeader>
+            <TableHeader>Streaming</TableHeader>
+            <TableHeader onSort={onSortClick} sort="budget">
+              Budget
+            </TableHeader>
+            <TableHeader onSort={onSortClick} sort="revenue" className="min-w-[90px]">
+              Box Office
+            </TableHeader>
+            <TableHeader onSort={onSortClick} sort="runtime">
+              Runtime
+            </TableHeader>
+            <TableHeader>Genres</TableHeader>
+            <TableHeader>
               <div className="flex">
                 Links
                 <Icon.Link className="ml-2" />
               </div>
-            </th>
+            </TableHeader>
           </tr>
         </thead>
         <tbody>
@@ -72,18 +87,31 @@ type ClickableTdProps = {
   tokens: Token[];
 };
 
-const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => {
-  return (
-    <td>
-      {tokens.map(item => (
-        <div
-          className="cursor-pointer px-1 hover:underline"
-          key={item.name}
-          onClick={() => onClick(item)}
-        >
-          {item.name}
-        </div>
-      ))}
-    </td>
-  );
-};
+const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => (
+  <td>
+    {tokens.map(item => (
+      <div
+        className="cursor-pointer px-1 hover:underline"
+        key={item.name}
+        onClick={() => onClick(item)}
+      >
+        {item.name}
+      </div>
+    ))}
+  </td>
+);
+
+type THProps = PropsWithChildren<{
+  sort?: SortProp;
+  onSort?: (prop: SortProp) => void;
+  className?: string;
+}>;
+
+const TableHeader = ({ className, children, onSort, sort }: THProps) => (
+  <th
+    onClick={() => onSort && sort && onSort(sort)}
+    className={cn(sort ? 'cursor-pointer hover:underline' : undefined, className)}
+  >
+    {children}
+  </th>
+);

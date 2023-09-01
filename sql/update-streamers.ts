@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import { createStreamersOnMoviesTable } from './create-tables';
+import { relevantStreamers } from '~/data/relevant-streamers';
 
 const db = new Database('./prisma/db.sqlite', {
   readonly: false,
@@ -23,18 +24,6 @@ const getAllStreamers = db.prepare(`
   SELECT id, name FROM streamers;
 `);
 
-const relevantProviders = [
-  'Netflix',
-  'Amazon Prime Video',
-  'Disney Plus',
-  'Apple TV',
-  'Hulu',
-  'HBO Max',
-  'Paramount Plus',
-  'Starz',
-  'Showtime',
-];
-
 const insertStreamerOnMovie = db.prepare(
   insert('streamers_on_movies', ['streamer_id', 'movie_id'])
 );
@@ -46,7 +35,7 @@ async function getStreamersForMovie(id: number) {
   const data = await response.json();
   const results = data?.results?.US?.flatrate as { provider_name: string }[];
   return (results || [])
-    .filter(p => relevantProviders.includes(p.provider_name))
+    .filter(p => relevantStreamers.includes(p.provider_name))
     .map(p => p.provider_name);
 }
 

@@ -127,7 +127,14 @@ export default function Movies({ movies }: MoviesProps) {
       {loaded ? (
         <>
           {displayType === 'table' ? (
-            <MovieTable movies={displayedMovies} onTokenClick={toggleToken} />
+            <MovieTable
+              movies={displayedMovies}
+              onSortClick={field => {
+                if (orderBy === field) setAsc(!asc);
+                else setOrderBy(field);
+              }}
+              onTokenClick={toggleToken}
+            />
           ) : (
             <MovieCards movies={displayedMovies} onTokenClick={toggleToken} />
           )}
