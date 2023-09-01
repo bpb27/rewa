@@ -1,11 +1,7 @@
-import Database from "better-sqlite3";
-import { createStreamersOnMoviesTable } from "./create-tables";
+import Database from 'better-sqlite3';
+import { createStreamersOnMoviesTable } from './create-tables';
 
-/*
-  THIS script is inconsistent - not sure if it's API-related or DB-write related
-*/
-
-const db = new Database("./prisma/db.sqlite", {
+const db = new Database('./prisma/db.sqlite', {
   readonly: false,
   timeout: 5000,
 });
@@ -13,9 +9,9 @@ const db = new Database("./prisma/db.sqlite", {
 const insert = (table: string, fields: string[]) =>
   `
     INSERT OR IGNORE INTO ${table} (
-        ${fields.join(",")}
+        ${fields.join(',')}
     ) VALUES (
-        ${fields.map(f => "@" + f).join(",")}
+        ${fields.map(f => '@' + f).join(',')}
     )
 `;
 
@@ -23,21 +19,25 @@ const getAllMovies = db.prepare(`
   SELECT id, tmdb_id, title FROM movies;
 `);
 
-const getStreamerByName = db.prepare<string>(`
-  SELECT id AS streamer_id FROM streamers WHERE name = ?;
+const getAllStreamers = db.prepare(`
+  SELECT id, name FROM streamers;
 `);
 
 const relevantProviders = [
-  "Netflix",
-  "Amazon Prime Video",
-  "Disney Plus",
-  "Apple TV",
-  "Hulu",
-  "HBO Max",
-  "Paramount Plus",
-  "Starz",
-  "Showtime",
+  'Netflix',
+  'Amazon Prime Video',
+  'Disney Plus',
+  'Apple TV',
+  'Hulu',
+  'HBO Max',
+  'Paramount Plus',
+  'Starz',
+  'Showtime',
 ];
+
+const insertStreamerOnMovie = db.prepare(
+  insert('streamers_on_movies', ['streamer_id', 'movie_id'])
+);
 
 async function getStreamersForMovie(id: number) {
   const response = await fetch(
@@ -50,35 +50,42 @@ async function getStreamersForMovie(id: number) {
     .map(p => p.provider_name);
 }
 
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-
 const run = async () => {
-  db.exec("DROP TABLE IF EXISTS streamers_on_movies");
-  db.prepare(createStreamersOnMoviesTable).run();
-  const insertStreamerOnMovie = db.prepare(
-    insert("streamers_on_movies", ["streamer_id", "movie_id"])
-  );
-
   const movies = getAllMovies.all() as {
     id: number;
     tmdb_id: number;
     title: string;
   }[];
 
-  movies.forEach(async (movie, i) => {
-    await delay(250);
+  const allStreamers = getAllStreamers.all() as {
+    id: number;
+    name: string;
+  }[];
+
+  db.exec('DROP TABLE IF EXISTS streamers_on_movies');
+  db.prepare(createStreamersOnMoviesTable).run();
+
+  const add = async (i: number) => {
+    const movie = movies[i];
+    if (!movie) return;
+
     const streamers = await getStreamersForMovie(movie.tmdb_id);
-    console.log("inserting for ", movie.title, streamers);
+    console.log('inserting for ', movie.title, streamers);
+
     streamers.forEach(streamer => {
-      const { streamer_id } = getStreamerByName.get(streamer) as {
-        streamer_id: number;
-      };
+      const streamer_id = allStreamers.find(s => s.name === streamer)?.id;
       if (streamer_id) {
         const streamerOnMoviePayload = { movie_id: movie.id, streamer_id };
         insertStreamerOnMovie.run(streamerOnMoviePayload);
+      } else {
+        console.error(`Missed adding ${streamer} on ${movie.title}`);
       }
     });
-  });
+
+    setTimeout(() => add(i + 1), 200);
+  };
+
+  add(0);
 };
 
 run();

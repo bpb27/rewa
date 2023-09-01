@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "freshdb": "rm ./prisma/db.sqlite && node -r esbuild-register -r dotenv/config ./sql/boot.ts",
     "newmovie": "node -r esbuild-register -r dotenv/config ./sql/new-movie.ts",
-    "streamers": "node -r esbuild-register -r dotenv/config ./sql/update-streamers.ts"
+    "streamers": "node -r esbuild-register -r dotenv/config ./sql/update-streamers.ts",
+    "studio": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
