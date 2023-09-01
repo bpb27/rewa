@@ -25,8 +25,8 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
   );
 
   useEffect(() => {
-    if (data?.length) setShowResults(true);
-  }, [data, setShowResults]);
+    if (data?.length || isLoading) setShowResults(true);
+  }, [data, isLoading, setShowResults]);
 
   useEffect(() => {
     if (!search) setShowResults(false);

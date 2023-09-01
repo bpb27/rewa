@@ -1,5 +1,5 @@
 import { TopCategory } from '~/components/top-category';
-import { getCrew } from '~/top-people';
+import { getCrew } from '~/data/top-people';
 import { StaticProps } from '~/types';
 
 export const getStaticProps = async () => {
