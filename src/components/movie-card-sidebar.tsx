@@ -1,11 +1,12 @@
+import { PropsWithChildren } from 'react';
 import useSWR from 'swr';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon, type IconKey } from '~/components/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
-import { type GetMovieByIdResponse } from '~/pages/api/movies/[id]';
+import { Button } from '~/components/ui/button';
+import { type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
 import { fetcher } from '~/utils/api';
-import { Button } from './ui/button';
-import { PropsWithChildren } from 'react';
+import { formatDate } from '~/utils/format';
 
 type MovieCardSidebar = {
   personId?: number;
@@ -14,7 +15,7 @@ type MovieCardSidebar = {
 };
 
 export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSidebar) => {
-  const { data: movie } = useSWR<GetMovieByIdResponse>(
+  const { data: movie } = useSWR<ApiGetMovieResponse>(
     `/api/movies/${movieId}?${personId ? `actorId=${personId}` : ''}`,
     fetcher
   );
@@ -31,10 +32,10 @@ export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSideba
           <MovieCardPoster {...movie} size={150} />
         </TheaterBackground>
         <p className="text-sm text-slate-600">{movie.tagline}</p>
-        {movie.character && (
+        {movie.actor && (
           <p className="flex items-center space-x-3 text-lg">
             <Icon.Star className="text-yellow-500" />
-            <span>{movie.character}</span>
+            <span>{movie.actor.character}</span>
             <Icon.Star className="text-yellow-500" />
           </p>
         )}
@@ -64,10 +65,10 @@ export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSideba
           </IconField>
         ))}
         <Separator />
-        <IconField icon="Calendar">{movie.release_date}</IconField>
-        <IconField icon="Clock">{movie.runtime}</IconField>
+        <IconField icon="Calendar">{formatDate(movie.release_date)}</IconField>
+        <IconField icon="Clock">{movie.runtime.name}</IconField>
         <IconField icon="Dollar">
-          {movie.budget} / {movie.revenue}
+          {movie.budget.name} / {movie.revenue.name}
         </IconField>
         <Separator />
         <IconField icon="Link">
@@ -76,7 +77,7 @@ export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSideba
           </ImdbLink>
         </IconField>
         <IconField icon="Link">
-          <SpotifyLink url={movie.spotify_url} className="mx-1 hover:underline">
+          <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
             Spotify
           </SpotifyLink>
         </IconField>

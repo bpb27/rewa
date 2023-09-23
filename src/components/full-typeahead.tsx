@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
+import { groupBy } from 'remeda';
 import useSWR from 'swr';
-import { GetMoviesBySearchResponse } from '~/pages/api/search/movie';
+import { Icon } from '~/components/icons';
+import { Button } from '~/components/ui/button';
+import { DialogOverlay } from '~/components/ui/dialog';
+import { type Token } from '~/data/tokens';
+import { type ApiSearchResponse } from '~/pages/api/search';
 import { fetcher } from '~/utils/api';
 import { capitalize } from '~/utils/format';
 import { useDebounce } from '~/utils/use-debounce';
-import { groupBy } from 'remeda';
-import { DialogOverlay } from './ui/dialog';
-import { Icon } from './icons';
-import { Button } from './ui/button';
 
 type FullTypeaheadProps = {
-  onSelect: (selection: GetMoviesBySearchResponse[number]) => void;
+  onSelect: (selection: Token) => void;
 };
 
-export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
+export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
   const [resultsContainer, setResultsContainer] = useState<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useSWR<GetMoviesBySearchResponse>(
-    debouncedSearch ? `/api/search/movie?search=${debouncedSearch}` : null,
+  const { data, isLoading } = useSWR<ApiSearchResponse>(
+    debouncedSearch ? `/api/search?search=${debouncedSearch}` : null,
     fetcher
   );
 
@@ -62,7 +63,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
             <LoadingBar />
           </div>
         )}
-        {!data?.length && !!search && (
+        {!data?.length && !!search && !isLoading && (
           <div className="mt-3 flex space-x-2">
             <Icon.FaceMeh />
             <span>Nah.</span>
@@ -95,7 +96,7 @@ export function FullTypeahead({ onSelect }: FullTypeaheadProps) {
       </DialogOverlay>
     </div>
   );
-}
+};
 
 const LoadingBar = () => (
   <div className="my-2 h-4 w-full bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200" />

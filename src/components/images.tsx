@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 
 export const tmdbImage = (path: string) => `https://image.tmdb.org/t/p/original${path}`;
 

@@ -1,16 +1,32 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { getMovieById } from '~/data/movie-by-id';
+import { type NextApiHandler } from 'next';
+import { z } from 'zod';
+import { getMovies, type GetMoviesResponse } from '~/api/get-movies';
+import { getActorInMovie, type GetActorInMovieResponse } from '~/api/get-actor-in-movie';
+import { integer } from '~/utils/zschema';
+import { defaultQps } from '~/data/query-params';
 
-export type GetMovieByIdResponse = Awaited<ReturnType<typeof getMovieById>>;
+export type ApiGetMovieResponse = GetMoviesResponse['movies'][number] & {
+  actor: GetActorInMovieResponse | undefined;
+};
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<GetMovieByIdResponse>) => {
-  const movieId = Number(req.query.id);
-  const actorId = req.query.actorId ? Number(req.query.actorId) : undefined;
+const paramsSchema = z.object({
+  id: integer,
+  actorId: integer.optional(),
+});
+
+const handler: NextApiHandler<ApiGetMovieResponse> = async (req, res) => {
   try {
-    const response = await getMovieById(movieId, actorId);
-    res.status(200).json(response);
+    const params = paramsSchema.parse(req.query);
+    const movieParams = { ...defaultQps, movie: [params.id] };
+    const actorParams = { actorId: params.actorId!, movieId: params.id };
+    const [moviesResponse, actor] = await Promise.all([
+      getMovies(movieParams),
+      params.actorId && getActorInMovie(actorParams),
+    ]);
+    const movie = moviesResponse.movies[0];
+    res.status(200).json({ ...movie, actor: actor || undefined });
   } catch (e) {
-    res.status(404);
+    res.status(400);
   }
 };
 

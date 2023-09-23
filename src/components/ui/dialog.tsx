@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cn } from '~/utils/style';
 

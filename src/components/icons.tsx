@@ -21,7 +21,7 @@ import {
   Video,
   XCircle,
 } from 'lucide-react';
-import { ComponentPropsWithoutRef } from 'react';
+import { type ComponentPropsWithoutRef } from 'react';
 
 type IconProps = ComponentPropsWithoutRef<typeof ArrowDown>;
 export type IconKey = keyof typeof Icon;

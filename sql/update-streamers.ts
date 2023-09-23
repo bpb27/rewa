@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { createStreamersOnMoviesTable } from './create-tables';
-import { relevantStreamers } from '~/data/relevant-streamers';
+import { relevantStreamers } from '~/data/streamers';
 
 const db = new Database('./prisma/db.sqlite', {
   readonly: false,

@@ -1,6 +1,5 @@
 import { type Movie } from '~/pages/tables/movies';
-
-export type SortProp = keyof typeof sortFns;
+import { SortKey } from '~/data/query-params';
 
 const sortFns = Object.freeze({
   budget: (m: Movie) => m.budget.id,
@@ -27,7 +26,7 @@ const sortOptions = [
   { value: 'budget', label: 'Budget' },
   { value: 'profit', label: 'Profit %' },
   { value: 'director', label: 'Director' },
-] satisfies { value: SortProp; label: string }[];
+] satisfies { value: SortKey; label: string }[];
 
 export const sortingUtils = { options: sortOptions, fns: sortFns };
 

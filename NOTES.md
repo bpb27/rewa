@@ -1,12 +1,14 @@
 # NICE TO HAVE
 
+- move to QPs
+- expandable place for description, crew, cast + load more
+
 - imdb rating / rottenmater rating
 - academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
 - other filter components like year slider, host checklist/typeahead (or filter sidebar)
 - person most involved list
 - ditch css modules?
 - actor viz sensor + search? search on other pages?
-- clickable table header sort?
 
 # IMDB list of all rewatchables movies
 

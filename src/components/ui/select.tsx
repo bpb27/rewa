@@ -1,19 +1,24 @@
+import { Icon } from '~/components/icons';
 import { cn } from '~/utils/style';
-import { Icon } from '../icons';
 
-type SelectProps = {
+type SelectProps<TValue extends string = string> = {
   className?: string;
-  options: { label: string; value: string }[];
-  onSelect: (value: string) => void;
+  options: { label: string; value: TValue }[];
+  onSelect: (value: TValue) => void;
   value: string;
 };
 
-export const Select = ({ className, onSelect, options, value }: SelectProps) => {
+export const Select = <TValue extends string = string>({
+  className,
+  onSelect,
+  options,
+  value,
+}: SelectProps<TValue>) => {
   return (
     <div className={cn('relative flex items-center', className)}>
       <select
         className="flex h-10 appearance-none items-center justify-between rounded-md border border-slate-200 bg-transparent py-2 pl-3 pr-8 text-sm"
-        onChange={e => onSelect(e.target.value)}
+        onChange={e => onSelect(e.target.value as (typeof options)[number]['value'])}
         value={value}
       >
         {options.map(option => (

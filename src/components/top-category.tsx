@@ -1,36 +1,32 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { type GetTopActorsResponse } from '~/api/get-top-actors';
+import { type GetTopCrewResponse } from '~/api/get-top-crew';
 import { tmdbImage } from '~/components/images';
-import { MovieCardSidebar } from '~/components/movie-card-sidebar';
 import Layout from '~/components/layout';
+import { MovieCardSidebar } from '~/components/movie-card-sidebar';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
 
 type TopCategoryProps = {
-  people: {
-    id: number;
-    profile_path?: string | null;
-    name: string;
-    movies: {
-      id: number;
-      title: string;
-      poster_path: string;
-      release_date: string;
-    }[];
-  }[];
+  fetchPersonOnClick?: boolean;
+  people: GetTopActorsResponse | GetTopCrewResponse;
   title: string;
 };
 
-export const TopCategory = ({ people, title }: TopCategoryProps) => {
+export const TopCategory = ({ fetchPersonOnClick, people, title }: TopCategoryProps) => {
   const [selectedMovie, setSelectedMovie] = useState<
-    { movieId: number; personId: number } | undefined
+    { movieId: number; personId: number | undefined } | undefined
   >(undefined);
 
   useEffect(() => {
     if (window.innerWidth > 1100) {
-      setSelectedMovie({ movieId: people[0].movies[0].id, personId: people[0].id });
+      setSelectedMovie({
+        movieId: people[0].movies[0].id,
+        personId: fetchPersonOnClick ? people[0].id : undefined,
+      });
     }
-  }, [people]);
+  }, [people, fetchPersonOnClick]);
 
   return (
     <Layout title={title}>
@@ -67,7 +63,12 @@ export const TopCategory = ({ people, title }: TopCategoryProps) => {
                     width={40}
                     height={60}
                     className="m-1 scale-100 cursor-pointer border-2 border-black hover:scale-110 hover:drop-shadow-xl"
-                    onClick={() => setSelectedMovie({ personId: person.id, movieId: m.id })}
+                    onClick={() =>
+                      setSelectedMovie({
+                        personId: fetchPersonOnClick ? person.id : undefined,
+                        movieId: m.id,
+                      })
+                    }
                   />
                 ))}
             </div>

@@ -1,6 +1,6 @@
 import * as Nav from '@radix-ui/react-navigation-menu';
-import { Icon } from '~/components/icons';
 import Link from 'next/link';
+import { Icon } from '~/components/icons';
 import { cn } from '~/utils/style';
 
 export const Navbar = () => {

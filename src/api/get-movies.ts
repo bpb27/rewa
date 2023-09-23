@@ -1,14 +1,27 @@
 import { pick } from 'remeda';
+import { createFilters, getSearches } from '~/data/movie-search-conditions';
+import { QpSchema } from '~/data/query-params';
+import { tokenizeBudget, tokenizeRevenue, tokenizeRuntime, tokenizeYear } from '~/data/tokens';
 import { Prisma } from '~/prisma';
-import { getYear, moneyShort } from '~/utils/format';
 import { Token } from '~/utils/token';
 
-const prisma = Prisma.getPrisma();
+// NB: AND === all conditions present, OR === any conditions present
 
+const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
 
-export const getMoviesForTable = async () => {
+export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;
+
+export const getMovies = async (params: QpSchema) => {
+  const mode = params.mode.toUpperCase() as 'AND' | 'OR';
+  const searches = getSearches(params);
+  const prismaSearch = searches.length ? { [mode]: createFilters(mode, searches) } : undefined;
+
   const data = await prisma.movies.findMany({
+    where: {
+      episodes: { some: {} },
+      ...prismaSearch,
+    },
     select: {
       budget: true,
       id: true,
@@ -31,6 +44,7 @@ export const getMoviesForTable = async () => {
         },
       },
       episodes: {
+        take: 1,
         select: {
           id: true,
           spotify_url: true,
@@ -47,7 +61,9 @@ export const getMoviesForTable = async () => {
     },
   });
 
-  const movies = data.map(movie => {
+  // TODO: sort data here
+
+  const movies = data.slice(0, params.amount).map(movie => {
     const episode = movie.episodes[0];
 
     const actors = movie.actors_on_movies
@@ -75,45 +91,23 @@ export const getMoviesForTable = async () => {
       .map(jt => jt.streamers!)
       .map(item => ({ ...item, type: 'streamer' } satisfies Token));
 
-    const budget = {
-      id: movie.budget,
-      name: moneyShort(movie.budget),
-      type: 'budget',
-    } satisfies Token;
-
-    const revenue = {
-      id: movie.revenue * 1000,
-      name: moneyShort(movie.revenue * 1000),
-      type: 'revenue',
-    } satisfies Token;
-
-    const runtime = {
-      id: movie.runtime,
-      name: `${movie.runtime} mins`,
-      type: 'runtime',
-    } satisfies Token;
-
-    const year = {
-      id: Number(getYear(movie.release_date)),
-      name: getYear(movie.release_date),
-      type: 'year',
-    } satisfies Token;
-
     return {
       ...pick(movie, ['id', 'imdb_id', 'poster_path', 'release_date', 'tagline', 'title']),
       episode: pick(episode, ['episode_order', 'id', 'spotify_url']),
       actors: actors.slice(0, 3),
-      actorIds: actors.map(a => a.id),
-      budget,
+      budget: tokenizeBudget(movie.budget),
       directors,
       genres,
       hosts,
-      revenue,
-      runtime,
+      revenue: tokenizeRevenue(movie.revenue),
+      runtime: tokenizeRuntime(movie.runtime),
       streamers,
-      year,
+      year: tokenizeYear(movie.release_date),
     };
   });
 
-  return movies;
+  return {
+    movies,
+    total: data.length,
+  };
 };
