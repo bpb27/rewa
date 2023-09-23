@@ -4,7 +4,7 @@ import movieJson from '../scraping/jsonstuff/movies.json';
 import episodesJson from '../scraping/jsonstuff/episodes.json';
 import streamersJson from '../scraping/jsonstuff/streamers.json';
 import streamersOnMoviesJson from '../scraping/jsonstuff/providers.json';
-import { MoviesJson, EpisodesJson } from '../src/types';
+import { MoviesJson, EpisodesJson } from './types';
 import {
   creatProductionCompaniesSql,
   createActorsOnMoviesTableSql,
@@ -45,7 +45,7 @@ const insert = (table: string, fields: string[]) =>
     INSERT OR IGNORE INTO ${table} (
         ${fields.join(',')}
     ) VALUES (
-        ${fields.map((f) => '@' + f).join(',')}
+        ${fields.map(f => '@' + f).join(',')}
     )
 `;
 
@@ -85,38 +85,23 @@ const insertMovie = db.prepare(
 
 const insertGenre = db.prepare(insert('genres', ['name']));
 
-const insertGenreOnMovie = db.prepare(
-  insert('genres_on_movies', ['movie_id', 'genre_id'])
-);
+const insertGenreOnMovie = db.prepare(insert('genres_on_movies', ['movie_id', 'genre_id']));
 
 const insertProductionCompany = db.prepare(
   insert('production_companies', ['name', 'tmdb_id', 'logo_path'])
 );
 
 const insertProductionCompanyOnMovie = db.prepare(
-  insert('production_companies_on_movies', [
-    'movie_id',
-    'production_company_id',
-  ])
+  insert('production_companies_on_movies', ['movie_id', 'production_company_id'])
 );
 
-const insertActor = db.prepare(
-  insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path'])
-);
+const insertActor = db.prepare(insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path']));
 
 const insertActorOnMovie = db.prepare(
-  insert('actors_on_movies', [
-    'movie_id',
-    'actor_id',
-    'character',
-    'credit_id',
-    'credit_order',
-  ])
+  insert('actors_on_movies', ['movie_id', 'actor_id', 'character', 'credit_id', 'credit_order'])
 );
 
-const insertCrew = db.prepare(
-  insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path'])
-);
+const insertCrew = db.prepare(insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path']));
 
 const insertCrewOnMovie = db.prepare(
   insert('crew_on_movies', [
@@ -130,22 +115,12 @@ const insertCrewOnMovie = db.prepare(
 );
 
 const insertEpisode = db.prepare(
-  insert('episodes', [
-    'title',
-    'episode_order',
-    'date',
-    'spotify_url',
-    'movie_id',
-  ])
+  insert('episodes', ['title', 'episode_order', 'date', 'spotify_url', 'movie_id'])
 );
 
-const insertHostOnEpisode = db.prepare(
-  insert('hosts_on_episodes', ['host_id', 'episode_id'])
-);
+const insertHostOnEpisode = db.prepare(insert('hosts_on_episodes', ['host_id', 'episode_id']));
 
-const insertStreamer = db.prepare(
-  insert('streamers', ['tmdb_id', 'name', 'logo_path'])
-);
+const insertStreamer = db.prepare(insert('streamers', ['tmdb_id', 'name', 'logo_path']));
 
 const insertStreamerOnMovie = db.prepare(
   insert('streamers_on_movies', ['streamer_id', 'movie_id'])
@@ -223,9 +198,9 @@ const insertMovies = db.transaction((movies: MoviesJson) => {
         tmdb_id: company.id,
       };
       insertProductionCompany.run(companyPayload);
-      const { production_company_id } = getCompanyByTmdbId.get(
-        companyPayload.tmdb_id
-      ) as { production_company_id: number };
+      const { production_company_id } = getCompanyByTmdbId.get(companyPayload.tmdb_id) as {
+        production_company_id: number;
+      };
       insertProductionCompanyOnMovie.run({ movie_id, production_company_id });
     }
 
@@ -271,7 +246,7 @@ const insertMovies = db.transaction((movies: MoviesJson) => {
     }
 
     // EPISODES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    const episode = episodes.find((e) => e.movieId === moviePayload.tmdb_id);
+    const episode = episodes.find(e => e.movieId === moviePayload.tmdb_id);
     if (episode) {
       const episodePayload = {
         title: episode.title,
@@ -281,9 +256,9 @@ const insertMovies = db.transaction((movies: MoviesJson) => {
         movie_id,
       };
       insertEpisode.run(episodePayload);
-      const { episode_id } = getEpisodeByUrl.get(
-        episodePayload.spotify_url
-      ) as { episode_id: number };
+      const { episode_id } = getEpisodeByUrl.get(episodePayload.spotify_url) as {
+        episode_id: number;
+      };
 
       for (const host of episode.hosts) {
         const hostPayload = { name: host };
@@ -307,9 +282,7 @@ const insertMovies = db.transaction((movies: MoviesJson) => {
     }
 
     // STREAMERS_ON_MOVIE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    const soms = streamersOnMovies.find(
-      (s) => s.id === moviePayload.tmdb_id
-    )?.providers;
+    const soms = streamersOnMovies.find(s => s.id === moviePayload.tmdb_id)?.providers;
 
     if (soms) {
       for (const streamerName of soms) {

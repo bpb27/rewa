@@ -1,6 +1,6 @@
 import { pick } from 'remeda';
 import Database from 'better-sqlite3';
-import { MoviesJson, EpisodesJson } from '../src/types';
+import { MoviesJson } from './types';
 
 const db = new Database('./prisma/db.sqlite', {
   readonly: false,

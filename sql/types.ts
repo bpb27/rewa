@@ -87,18 +87,3 @@ type Episode = {
   url: string;
   movieId: number;
 };
-
-export const relevantProviders = [
-  'Netflix',
-  'Amazon Prime Video',
-  'Disney Plus',
-  'Apple TV',
-  'Hulu',
-  'HBO Max',
-  'Paramount Plus',
-  'Starz',
-  'Showtime',
-] as const;
-
-export type Streamer = (typeof relevantProviders)[number];
-export type ProviderJson = { id: number; providers: Streamer[] }[];

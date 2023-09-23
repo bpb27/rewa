@@ -1,6 +1,6 @@
 import { getTopActors } from '~/api/get-top-actors';
 import { TopCategory } from '~/components/top-category';
-import { type StaticProps } from '~/types';
+import { type StaticProps } from '~/utils/general-types';
 
 export const getStaticProps = async () => {
   const people = await getTopActors();
