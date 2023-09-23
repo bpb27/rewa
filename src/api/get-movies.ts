@@ -7,6 +7,7 @@ import {
   tokenizeRuntime,
   tokenizeYear,
   type Token,
+  tokenize,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
 
@@ -74,27 +75,27 @@ export const getMovies = async (params: QpSchema) => {
     const actors = movie.actors_on_movies
       .filter(jt => jt.actors)
       .map(jt => jt.actors!)
-      .map(item => ({ ...item, type: 'actor' } satisfies Token));
+      .map(item => tokenize('actor', item));
 
     const hosts = episode.hosts_on_episodes
       .filter(jt => jt.hosts)
       .map(jt => jt.hosts!)
-      .map(item => ({ ...item, type: 'host' } satisfies Token));
+      .map(item => tokenize('host', item));
 
     const directors = movie.crew_on_movies
       .filter(jt => jt.job === 'Director')
       .map(jt => jt.crew!)
-      .map(item => ({ ...item, type: 'director' } satisfies Token));
+      .map(item => tokenize('director', item));
 
     const genres = movie.genres_on_movies
       .filter(jt => jt.genres)
       .map(jt => jt.genres!)
-      .map(item => ({ ...item, type: 'genre' } satisfies Token));
+      .map(item => tokenize('genre', item));
 
     const streamers = movie.streamers_on_movies
       .filter(jt => jt.streamers)
       .map(jt => jt.streamers!)
-      .map(item => ({ ...item, type: 'streamer' } satisfies Token));
+      .map(item => tokenize('streamer', item));
 
     return {
       ...pick(movie, ['id', 'imdb_id', 'poster_path', 'release_date', 'tagline', 'title']),

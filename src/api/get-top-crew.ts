@@ -1,9 +1,9 @@
 import { Prisma } from '~/prisma';
 import { TOP_PEOPLE_MOVIE_SELECT } from './get-top-actors';
 
-export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
-
 const prisma = Prisma.getPrisma();
+
+export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
 
 const WHERE_JOB = {
   director: {

@@ -1,9 +1,9 @@
 import { uniqBy } from 'remeda';
 import { Prisma } from '~/prisma';
 
-export type GetTopActorsResponse = Awaited<ReturnType<typeof getTopActors>>;
-
 const prisma = Prisma.getPrisma();
+
+export type GetTopActorsResponse = Awaited<ReturnType<typeof getTopActors>>;
 
 export const TOP_PEOPLE_MOVIE_SELECT = {
   select: {

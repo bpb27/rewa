@@ -10,9 +10,9 @@ import {
   tokenizeYear,
 } from '~/data/tokens';
 
-export type GetTokensResponse = Awaited<ReturnType<typeof getTokens>>;
-
 const prisma = Prisma.getPrisma();
+
+export type GetTokensResponse = Awaited<ReturnType<typeof getTokens>>;
 
 export const getTokens = async (params: QpSchema) => {
   const response = await Promise.all(
