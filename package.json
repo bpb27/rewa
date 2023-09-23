@@ -11,6 +11,7 @@
     "freshdb": "rm ./prisma/db.sqlite && node -r esbuild-register -r dotenv/config ./sql/boot.ts",
     "newmovie": "node -r esbuild-register -r dotenv/config ./sql/new-movie.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/update-streamers.ts",
+    "oscars": "node -r esbuild-register -r dotenv/config ./scraping/parse-oscars.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {
@@ -31,16 +32,19 @@
     "lucide-react": "^0.259.0",
     "next": "13.2.4",
     "prisma": "^4.13.0",
+    "qs": "^6.11.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "remeda": "^1.14.0",
     "swr": "^2.1.5",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
-    "typescript": "5.0.2"
+    "typescript": "5.0.2",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "@types/qs": "^6.9.8",
     "autoprefixer": "^10.4.14",
     "dotenv": "^16.0.3",
     "esbuild-register": "^3.4.2",

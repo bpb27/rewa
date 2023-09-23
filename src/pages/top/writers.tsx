@@ -1,9 +1,9 @@
+import { getTopCrew } from '~/api/get-top-crew';
 import { TopCategory } from '~/components/top-category';
-import { getCrew } from '~/data/top-people';
-import { StaticProps } from '~/types';
+import { StaticProps } from '~/utils/general-types';
 
 export const getStaticProps = async () => {
-  const people = await getCrew('writer');
+  const people = await getTopCrew('writer');
   return { props: { people } };
 };
 

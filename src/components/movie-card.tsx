@@ -1,10 +1,10 @@
+import { type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
-import { Movie } from '~/pages/tables/movies';
+import { type Movie } from '~/components/movie-table-page';
+import { type Token } from '~/data/tokens';
 import { formatDate } from '~/utils/format';
-import { Token } from '~/utils/token';
-import { PropsWithChildren } from 'react';
 
 interface MovieCardProps extends Movie {
   onTokenClick: (token: Token) => void;

@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import { PropsWithChildren } from 'react';
-import { Navbar } from './ui/nav';
+import { type PropsWithChildren } from 'react';
+import { Navbar } from '~/components/ui/nav';
 
 const metaName = 'Rewa';
 const metaTitle = 'Rewa Movies';

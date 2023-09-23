@@ -1,15 +1,15 @@
-import { type Movie } from '~/pages/tables/movies';
-import { type SortProp } from '~/utils/sorting';
+import { type PropsWithChildren } from 'react';
+import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import { Icon } from '~/components/icons';
+import { MovieTablePoster } from '~/components/images';
+import { type Movie } from '~/components/movie-table-page';
+import { type Token } from '~/data/tokens';
+import { type SortKey } from '~/data/query-params';
 import { cn } from '~/utils/style';
-import { type Token } from '~/utils/token';
-import { ImdbLink, SpotifyLink } from './external-links';
-import { MovieTablePoster } from './images';
-import { Icon } from './icons';
-import { PropsWithChildren } from 'react';
 
 type MovieTableProps = {
   movies: Movie[];
-  onSortClick: (sort: SortProp) => void;
+  onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
 };
 
@@ -102,8 +102,8 @@ const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => (
 );
 
 type THProps = PropsWithChildren<{
-  sort?: SortProp;
-  onSort?: (prop: SortProp) => void;
+  sort?: SortKey;
+  onSort?: (prop: SortKey) => void;
   className?: string;
 }>;
 

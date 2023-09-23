@@ -1,16 +1,9 @@
-import { uniqBy } from 'remeda';
 import { Prisma } from '~/prisma';
+import { TOP_PEOPLE_MOVIE_SELECT } from './get-top-actors';
 
 const prisma = Prisma.getPrisma();
 
-const MOVIE_SELECT = {
-  select: {
-    id: true,
-    poster_path: true,
-    release_date: true,
-    title: true,
-  },
-};
+export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
 
 const WHERE_JOB = {
   director: {
@@ -27,55 +20,7 @@ const WHERE_JOB = {
   },
 };
 
-export const getActors = async () => {
-  const top = await prisma.actors_on_movies.groupBy({
-    by: ['actor_id'],
-    _count: {
-      actor_id: true,
-    },
-    orderBy: {
-      _count: {
-        actor_id: 'desc',
-      },
-    },
-    take: 100,
-  });
-
-  const allData = await prisma.actors.findMany({
-    where: {
-      id: {
-        in: top.map((p) => p.actor_id!),
-      },
-    },
-    select: {
-      name: true,
-      id: true,
-      profile_path: true,
-      actors_on_movies: {
-        select: { character: true, movies: MOVIE_SELECT },
-      },
-    },
-  });
-
-  const people = allData
-    .map((item) => ({
-      id: item.id,
-      name: item.name,
-      profile_path: item.profile_path,
-      movies: uniqBy(
-        item.actors_on_movies.map((movie) => ({
-          ...movie.movies!,
-          character: movie.character,
-        })),
-        (movie) => movie.id
-      ),
-    }))
-    .sort((a, b) => b.movies.length - a.movies.length);
-
-  return people;
-};
-
-export const getCrew = async (job: keyof typeof WHERE_JOB) => {
+export const getTopCrew = async (job: keyof typeof WHERE_JOB) => {
   const top = await prisma.crew_on_movies.groupBy({
     by: ['crew_id'],
     _count: {
@@ -94,7 +39,7 @@ export const getCrew = async (job: keyof typeof WHERE_JOB) => {
     where: {
       AND: {
         crew_id: {
-          in: top.map((p) => p.crew_id!),
+          in: top.map(p => p.crew_id!),
         },
         ...WHERE_JOB[job],
       },
@@ -107,7 +52,7 @@ export const getCrew = async (job: keyof typeof WHERE_JOB) => {
           profile_path: true,
         },
       },
-      movies: { select: MOVIE_SELECT.select },
+      movies: { select: TOP_PEOPLE_MOVIE_SELECT.select },
     },
   });
 
@@ -131,7 +76,7 @@ export const getCrew = async (job: keyof typeof WHERE_JOB) => {
 
   const response = Object.values(parsed)
     .sort((a, b) => b.movies.length - a.movies.length)
-    .map((entry) => ({
+    .map(entry => ({
       ...entry.person,
       movies: entry.movies,
     }));

@@ -1,22 +1,30 @@
-import { type Movie } from '~/pages/tables/movies';
+import { SortKey } from '~/data/query-params';
 
-export type SortProp = keyof typeof sortFns;
+type PartialMovieForSorting = {
+  budget: { id: number };
+  directors: { name: string }[];
+  episode: { episode_order: number };
+  revenue: { id: number };
+  release_date: string;
+  runtime: { id: number };
+  title: string;
+};
 
 const sortFns = Object.freeze({
-  budget: (m: Movie) => m.budget.id,
-  director: (m: Movie) => m.directors[0]?.name,
-  episodeNumber: (m: Movie) => m.episode.episode_order,
-  profit: (m: Movie) => {
+  budget: m => m.budget.id,
+  director: m => m.directors[0]?.name,
+  episodeNumber: m => m.episode.episode_order,
+  profit: m => {
     const budget = m.budget.id;
     const revenue = m.revenue.id;
     if (!budget || !revenue) return 0;
     return (revenue - budget) / budget;
   },
-  release_date: (m: Movie) => m.release_date,
-  revenue: (m: Movie) => m.revenue.id,
-  runtime: (m: Movie) => m.runtime.id,
-  title: (m: Movie) => m.title,
-} satisfies { [k: string]: (m: Movie) => string | number });
+  release_date: m => m.release_date,
+  revenue: m => m.revenue.id,
+  runtime: m => m.runtime.id,
+  title: m => m.title,
+} satisfies Record<SortKey, (m: PartialMovieForSorting) => string | number>);
 
 const sortOptions = [
   { value: 'title', label: 'Title' },
@@ -27,7 +35,7 @@ const sortOptions = [
   { value: 'budget', label: 'Budget' },
   { value: 'profit', label: 'Profit %' },
   { value: 'director', label: 'Director' },
-] satisfies { value: SortProp; label: string }[];
+] satisfies { value: SortKey; label: string }[];
 
 export const sortingUtils = { options: sortOptions, fns: sortFns };
 
