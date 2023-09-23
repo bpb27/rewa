@@ -1,9 +1,14 @@
 import { pick } from 'remeda';
 import { createFilters, getSearches } from '~/data/movie-search-conditions';
 import { QpSchema } from '~/data/query-params';
-import { tokenizeBudget, tokenizeRevenue, tokenizeRuntime, tokenizeYear } from '~/data/tokens';
+import {
+  tokenizeBudget,
+  tokenizeRevenue,
+  tokenizeRuntime,
+  tokenizeYear,
+  type Token,
+} from '~/data/tokens';
 import { Prisma } from '~/prisma';
-import { Token } from '~/utils/token';
 
 // NB: AND === all conditions present, OR === any conditions present
 

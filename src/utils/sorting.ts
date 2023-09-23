@@ -1,4 +1,4 @@
-import { type Movie } from '~/pages/tables/movies';
+import { type Movie } from '~/components/movie-table-page';
 import { SortKey } from '~/data/query-params';
 
 const sortFns = Object.freeze({

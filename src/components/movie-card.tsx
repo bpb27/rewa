@@ -3,8 +3,8 @@ import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
 import { type Movie } from '~/components/movie-table-page';
+import { type Token } from '~/data/tokens';
 import { formatDate } from '~/utils/format';
-import { type Token } from '~/utils/token';
 
 interface MovieCardProps extends Movie {
   onTokenClick: (token: Token) => void;

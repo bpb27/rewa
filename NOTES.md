@@ -1,11 +1,16 @@
+# TODO
+
+- sorting
+- getStaticPaths for table page
+- oscars
+- remove unused utils
+
 # NICE TO HAVE
 
-- move to QPs
+- more linting rules
 - expandable place for description, crew, cast + load more
-
 - imdb rating / rottenmater rating
-- academy awards stuff (not available via TMDB - would be cool to have a dedicated table - doesn't exist anywhere)
-- other filter components like year slider, host checklist/typeahead (or filter sidebar)
+- filter components like year slider, host checklist/typeahead (or filter sidebar) (would be outside token bar but needs to be QP'd)
 - person most involved list
 - ditch css modules?
 - actor viz sensor + search? search on other pages?

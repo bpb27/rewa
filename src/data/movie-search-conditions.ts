@@ -1,7 +1,7 @@
 import { type Prisma as PrismaBaseType } from '@prisma/client';
-import { TokenType } from '~/utils/token';
-import { QpSchema } from './query-params';
 import { isArray } from 'remeda';
+import { type QpSchema } from '~/data/query-params';
+import { type TokenType } from '~/data/tokens';
 
 type AndOr = PrismaBaseType.moviesWhereInput['OR'] | PrismaBaseType.moviesWhereInput['AND'];
 
