@@ -1,12 +1,6 @@
-# TODO
-
-- sorting
-- getStaticPaths for table page
-- oscars
-- remove unused utils
-
 # NICE TO HAVE
 
+- oscars
 - more linting rules
 - expandable place for description, crew, cast + load more
 - imdb rating / rottenmater rating

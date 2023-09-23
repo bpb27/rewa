@@ -2,7 +2,6 @@ import { isDefined } from 'remeda';
 import { Prisma } from '~/prisma';
 import { QpSchema, qpTokenKeys } from '~/data/query-params';
 import {
-  Token,
   tokenize,
   tokenizeBudget,
   tokenizeRevenue,
@@ -46,6 +45,6 @@ export const getTokens = async (params: QpSchema) => {
     })
   );
 
-  const tokens: Token[] = response.flat().filter(isDefined);
+  const tokens = response.flat().filter(isDefined);
   return { tokens };
 };

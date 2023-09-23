@@ -6,10 +6,10 @@ import {
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
-  type Token,
   tokenize,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
+import { smartSort, sortingUtils } from '~/utils/sorting';
 
 // NB: AND === all conditions present, OR === any conditions present
 
@@ -67,9 +67,7 @@ export const getMovies = async (params: QpSchema) => {
     },
   });
 
-  // TODO: sort data here
-
-  const movies = data.slice(0, params.amount).map(movie => {
+  const formatted = data.map(movie => {
     const episode = movie.episodes[0];
 
     const actors = movie.actors_on_movies
@@ -112,8 +110,12 @@ export const getMovies = async (params: QpSchema) => {
     };
   });
 
+  // NB: can't sort across tables w/ prisma + SQLite
+  // so fetching and formatting all data before sorting and paginating
+  const sorted = smartSort(formatted, sortingUtils.fns[params.sort], params.asc);
+
   return {
-    movies,
+    movies: sorted.slice(0, params.amount),
     total: data.length,
   };
 };
