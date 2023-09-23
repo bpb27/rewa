@@ -17,16 +17,15 @@ import { sortingUtils } from '~/utils/sorting';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 
 export type Movie = ApiGetMoviesResponse['movies'][number];
-const initialResult: ApiGetMoviesResponse = {
-  total: 0,
-  tokens: [],
-  movies: [],
-};
 
-export const MoviesPage = () => {
+type MoviesPageProps = { initialData: ApiGetMoviesResponse };
+
+export const MoviesPage = ({ initialData }: MoviesPageProps) => {
+  const { values, update, clearTokens, queryString, noUrlValues } = useQueryParams();
   const [display, setDisplay] = useState<'table' | 'card' | undefined>();
-  const [results, setResults] = useState(initialResult);
-  const { values, update, clearTokens, queryString } = useQueryParams();
+  const [results, setResults] = useState<ApiGetMoviesResponse>(
+    noUrlValues ? initialData : { total: 0, tokens: [], movies: [] }
+  );
   const { data } = useSWR<ApiGetMoviesResponse>(`/api/movies?${queryString}`, fetcher);
   const vizSensorRef = useRef<HTMLDivElement>(null);
   const { amount, asc, mode, sort } = values;
@@ -82,11 +81,10 @@ export const MoviesPage = () => {
           </Button>
         </Box.FilterButtons>
       </Box.Filters>
-      {display === 'table' ? (
+      {display === 'table' && (
         <MovieTable movies={movies} onTokenClick={handleTokenClick} onSortClick={handleSort} />
-      ) : (
-        <MovieCards movies={movies} onTokenClick={handleTokenClick} />
       )}
+      {display === 'card' && <MovieCards movies={movies} onTokenClick={handleTokenClick} />}
       {!!display && <div ref={vizSensorRef} />}
     </Layout>
   );

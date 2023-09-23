@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import { stringify } from 'qs';
 import { omitBy, isArray, pick } from 'remeda';
 import { z } from 'zod';
-import { getDefaults, integer, integerList, boolean } from '~/utils/zschema';
+import { integer, integerList, boolean } from '~/utils/zschema';
 import { TokenType, tokenSchema } from './tokens';
 
 export type QpSchema = z.infer<typeof qpSchema>;
@@ -27,7 +27,7 @@ export const qpSchema = z.object({
   director: integerList.optional().default(''),
   genre: integerList.optional().default(''),
   host: integerList.optional().default(''),
-  mode: z.enum(['and', 'or']).optional().default('and'),
+  mode: z.enum(['and', 'or']).optional().default('or'),
   sort: sortSchema.optional().default('episodeNumber'),
   movie: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
@@ -36,7 +36,22 @@ export const qpSchema = z.object({
   year: integerList.optional().default(''),
 });
 
-export const defaultQps = getDefaults(qpSchema);
+export const defaultQps: QpSchema = {
+  actor: [],
+  amount: 20,
+  asc: false,
+  budget: [],
+  director: [],
+  genre: [],
+  host: [],
+  mode: 'or',
+  sort: 'episodeNumber',
+  movie: [],
+  revenue: [],
+  runtime: [],
+  streamer: [],
+  year: [],
+};
 
 export const qpTokenKeys = [
   'actor',
@@ -55,7 +70,7 @@ export const tokenQps = (qps: QpSchema) => pick(qps, qpTokenKeys);
 
 export const qpParse = (search: object) => {
   const parsed = qpSchema.safeParse(search);
-  return parsed.success ? parsed.data : getDefaults(qpSchema);
+  return parsed.success ? parsed.data : defaultQps;
 };
 
 export const qpStringify = (search: QpSchema, path?: string) => {
@@ -116,5 +131,11 @@ export const useQueryParams = () => {
     push(newValues);
   };
 
-  return { values, update, clearTokens, queryString };
+  return {
+    values,
+    update,
+    clearTokens,
+    queryString,
+    noUrlValues: !router.asPath.split('?')[1]?.length,
+  };
 };
