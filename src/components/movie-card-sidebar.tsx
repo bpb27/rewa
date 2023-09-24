@@ -1,53 +1,52 @@
-import { PropsWithChildren } from 'react';
+import { type PropsWithChildren, useState } from 'react';
 import useSWR from 'swr';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon, type IconKey } from '~/components/icons';
-import { MovieCardPoster, TheaterBackground } from '~/components/images';
-import { Button } from '~/components/ui/button';
+import { Sidebar } from '~/components/ui/sidebar';
 import { type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
 import { fetcher } from '~/utils/api';
 import { formatDate } from '~/utils/format';
 
 type MovieCardSidebar = {
-  personId?: number;
   movieId: number;
+  actorId?: number;
   onClose: () => void;
 };
 
-export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSidebar) => {
+export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar) => {
+  const [showDesc, setShowDesc] = useState(false);
   const { data: movie } = useSWR<ApiGetMovieResponse>(
-    `/api/movies/${movieId}?${personId ? `actorId=${personId}` : ''}`,
+    `/api/movies/${movieId}?${actorId ? `actorId=${actorId}` : ''}`,
     fetcher
   );
 
   if (!movie) return null;
   return (
-    <div className="fixed right-0 top-8 z-10 h-full w-3/4 overflow-y-scroll border-l-4 bg-slate-100 p-5 pb-8 text-center md:w-1/2 lg:w-1/4">
-      <Button variant="card" onClick={onClose} className="block w-full bg-red-400 hover:bg-red-300">
-        Close
-      </Button>
-      <div className="mt-5 flex flex-col items-center space-y-1.5">
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">{movie.title}</h3>
-        <TheaterBackground>
-          <MovieCardPoster {...movie} size={150} />
-        </TheaterBackground>
-        <p className="text-sm text-slate-600">{movie.tagline}</p>
+    <Sidebar>
+      <Sidebar.CloseButton onClose={onClose} />
+      <Sidebar.HeaderAndPoster {...movie} header={movie.title} />
+      <div className="mt-2 flex flex-col items-center">
+        <p
+          className="flex cursor-pointer items-center text-sm text-slate-500 hover:underline"
+          onClick={() => setShowDesc(!showDesc)}
+        >
+          {movie.tagline}
+        </p>
+        {showDesc && <p className="mt-2 text-left">{movie.overview}</p>}
         {movie.actor && (
-          <p className="flex items-center space-x-3 text-lg">
-            <Icon.Star className="text-yellow-500" />
+          <Sidebar.StarBar>
             <span>{movie.actor.character}</span>
-            <Icon.Star className="text-yellow-500" />
-          </p>
+          </Sidebar.StarBar>
         )}
       </div>
       <div>
-        <Separator />
+        <Sidebar.Separator />
         {movie.hosts.map(({ id, name }) => (
           <IconField icon="Mic" key={id}>
             {name}
           </IconField>
         ))}
-        <Separator />
+        <Sidebar.Separator />
         {movie.directors.map(({ id, name }) => (
           <IconField icon="Video" key={id}>
             {name}
@@ -58,19 +57,19 @@ export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSideba
             {name}
           </IconField>
         ))}
-        {movie.streamers.length > 0 && <Separator />}
+        {movie.streamers.length > 0 && <Sidebar.Separator />}
         {movie.streamers.map(({ id, name }) => (
           <IconField icon="Tv" key={id}>
             {name}
           </IconField>
         ))}
-        <Separator />
+        <Sidebar.Separator />
         <IconField icon="Calendar">{formatDate(movie.release_date)}</IconField>
         <IconField icon="Clock">{movie.runtime.name}</IconField>
         <IconField icon="Dollar">
           {movie.budget.name} / {movie.revenue.name}
         </IconField>
-        <Separator />
+        <Sidebar.Separator />
         <IconField icon="Link">
           <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
             IMDB
@@ -82,11 +81,9 @@ export const MovieCardSidebar = ({ movieId, onClose, personId }: MovieCardSideba
           </SpotifyLink>
         </IconField>
       </div>
-    </div>
+    </Sidebar>
   );
 };
-
-const Separator = () => <hr className="my-2 border-slate-300" />;
 
 const IconField = ({ children, icon }: PropsWithChildren<{ icon: IconKey }>) => {
   const IconComponent = Icon[icon];

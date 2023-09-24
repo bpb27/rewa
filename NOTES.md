@@ -1,3 +1,13 @@
+a11y
+
+- accessible button name
+- select label
+- make sure table is navigable
+- lots of clickable things - probably need to add role button + aria label
+
+- more boxes
+- crew sidebar
+
 # NICE TO HAVE
 
 - oscars

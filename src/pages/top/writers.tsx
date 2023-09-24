@@ -8,5 +8,5 @@ export const getStaticProps = async () => {
 };
 
 export default function TopWriters({ people }: StaticProps<typeof getStaticProps>) {
-  return <TopCategory people={people} title="Top Writers" />;
+  return <TopCategory people={people} category="writer" />;
 }

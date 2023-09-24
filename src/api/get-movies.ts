@@ -35,6 +35,7 @@ export const getMovies = async (params: QpSchema) => {
       budget: true,
       id: true,
       imdb_id: true,
+      overview: true,
       poster_path: true,
       release_date: true,
       revenue: true, // NB: stored in DB as / 1000 due to BigInt shit
@@ -100,7 +101,15 @@ export const getMovies = async (params: QpSchema) => {
         .map(item => tokenize('streamer', item));
 
       return {
-        ...pick(movie, ['id', 'imdb_id', 'poster_path', 'release_date', 'tagline', 'title']),
+        ...pick(movie, [
+          'id',
+          'imdb_id',
+          'overview',
+          'poster_path',
+          'release_date',
+          'tagline',
+          'title',
+        ]),
         episode: pick(episode, ['episode_order', 'id', 'spotify_url']),
         actors: actors.slice(0, 3),
         budget: tokenizeBudget(movie.budget),

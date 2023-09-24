@@ -1,52 +1,10 @@
-import { cva, type VariantProps } from 'cva';
-import { PropsWithChildren } from 'react';
-import { cn } from '~/utils/style';
+import { type PropsWithChildren } from 'react';
 
-const boxClasses = cva(['box', 'box-border'], {
-  variants: {
-    layout: {
-      column: 'flex flex-col',
-      columnCentered: 'flex flex-col items-center',
-      flex: 'flex',
-    },
-    m: {
-      '0': 'm-0',
-      '2': 'm-2',
-      '4': 'm-4',
-      '8': 'm-8',
-    },
-    p: {
-      '0': 'p-0',
-      '2': 'p-2',
-      '4': 'p-4',
-      '8': 'p-8',
-    },
-  },
-  defaultVariants: {
-    layout: 'flex',
-    m: '0',
-    p: '0',
-  },
-});
+export type Box = React.FC<PropsWithChildren<{}>>;
+export type Boxes = Record<string, Box>;
 
-interface BoxProps extends VariantProps<typeof boxClasses> {
-  className?: string;
-  native?: React.HTMLAttributes<HTMLDivElement>;
-}
-
-export const Box: React.FC<PropsWithChildren<BoxProps>> = ({
-  className,
-  children,
-  layout,
-  m,
-  p,
-  native,
-}) => {
-  const bc = boxClasses({ className, layout, m, p });
-  const classes = cn(native?.onClick ? 'cursor-pointer' : '', bc);
-  return (
-    <div className={classes} {...native}>
-      {children}
-    </div>
-  );
-};
+export const Sidebar: Box = ({ children }) => (
+  <div className="fixed right-0 top-8 z-10 h-full w-3/4 overflow-y-scroll border-l-4 bg-slate-100 p-5 pb-8 text-center md:w-1/2 lg:w-1/4">
+    {children}
+  </div>
+);

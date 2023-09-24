@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { FullTypeahead } from '~/components/full-typeahead';
 import { MovieCards } from '~/components/movie-card';
@@ -6,6 +6,7 @@ import { Icon } from '~/components/icons';
 import Layout from '~/components/layout';
 import { MovieTable } from '~/components/movie-table';
 import { TokenBar } from '~/components/token-bar';
+import { type Boxes } from '~/components/ui/box';
 import { Button } from '~/components/ui/button';
 import { Select } from '~/components/ui/select';
 import { Space } from '~/components/ui/space';
@@ -90,15 +91,10 @@ export const MoviesPage = ({ initialData }: MoviesPageProps) => {
   );
 };
 
-// prettier-ignore
 const Box = {
-  Filters: ({ children }) => (
-    <div className="mb-1 mt-3 flex flex-col py-2">{children}</div>
-  ),
+  Filters: ({ children }) => <div className="mb-1 mt-3 flex flex-col py-2">{children}</div>,
   FilterButtons: ({ children }) => (
     <div className="mt-3 flex items-center justify-center">{children}</div>
   ),
-  Tokens: ({ children }) => (
-    <div className="mt-1 flex space-x-2 overflow-scroll">{children}</div>
-  ),
-} satisfies Record<string, React.FC<PropsWithChildren<{}>>>;
+  Tokens: ({ children }) => <div className="mt-1 flex space-x-2 overflow-scroll">{children}</div>,
+} satisfies Boxes;

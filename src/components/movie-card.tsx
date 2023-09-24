@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
@@ -11,6 +11,7 @@ interface MovieCardProps extends Movie {
 }
 
 export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
+  const [showDesc, setShowDesc] = useState(false);
   return (
     <div className="mb-5 flex w-[350px] flex-col rounded-lg border-2 border-slate-600 bg-slate-100 text-slate-950 shadow-lg">
       <div className="flex flex-col items-center space-y-1.5 p-5">
@@ -18,7 +19,13 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
         <TheaterBackground>
           <MovieCardPoster {...movie} />
         </TheaterBackground>
-        <p className="text-sm text-slate-500">{movie.tagline}</p>
+        <p
+          className="flex cursor-pointer items-center text-sm text-slate-500 hover:underline"
+          onClick={() => setShowDesc(!showDesc)}
+        >
+          {movie.tagline}
+        </p>
+        {showDesc && <p>{movie.overview}</p>}
       </div>
       <div className="flex flex-col p-6 pt-0">
         {movie.hosts.map(host => (

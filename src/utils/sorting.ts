@@ -39,7 +39,9 @@ const sortOptions = [
 
 export const sortingUtils = { options: sortOptions, fns: sortFns };
 
-const isoRegExp = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/;
+const longDateRegEx = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/;
+const shortDateRegEx = /^\d{4}-\d{2}-\d{2}$/;
+const isDateString = (str: string) => longDateRegEx.test(str) || shortDateRegEx.test(str);
 
 type SortableObject = {
   [key: string]: string | number | undefined | null | object;
@@ -57,7 +59,7 @@ export const smartSort = <TEntry extends SortableObject>(
     if (bValue === undefined || bValue === null) return -1;
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
-      if (isoRegExp.test(aValue) && isoRegExp.test(bValue)) {
+      if (isDateString(aValue) && isDateString(bValue)) {
         return Date.parse(aValue) - Date.parse(bValue);
       } else {
         return aValue.localeCompare(bValue);
