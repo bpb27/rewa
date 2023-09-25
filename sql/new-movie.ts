@@ -219,36 +219,36 @@ const addMovieToDb = (
 
 const newStuff = [
   {
-    tmdbId: 11153,
-    id: 306,
-    title: 'Vacation',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
-    date: 'Aug 2023',
-    url: 'https://open.spotify.com/episode/0gPQ03lMHYxg9RBpHBtpUX?si=942b6a9db6324d4a',
-  },
-  {
-    tmdbId: 345,
-    id: 307,
-    title: 'Eyes Wide Shut',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Mallory Rubin'],
-    date: 'Aug 2023',
-    url: 'https://open.spotify.com/episode/7wOXmBvBAsmclh3n9tozVv?si=8f21a5d4f3194fd4',
-  },
-  {
-    tmdbId: 796,
-    id: 308,
-    title: 'Cruel Intentions',
-    hosts: ['Bill Simmons', 'Juliet Litman', 'Amanda Dobbins'],
-    date: 'Aug 2023',
-    url: 'https://open.spotify.com/episode/5IOa9Mk8PvNzrWsJnrKaoJ?si=d565f3c79fec4e5b',
-  },
-  {
     tmdbId: 156022,
     id: 309,
     title: 'The Equalizer',
     hosts: ['Bill Simmons', 'Chris Ryan', 'Bill’s Dad'],
     date: 'Aug 2023',
     url: 'https://open.spotify.com/episode/3btBdwsf7wqnPA7JrGyPX6?si=ead9153a7e8143f7',
+  },
+  {
+    tmdbId: 153,
+    id: 310,
+    title: 'Lost in Translation',
+    hosts: ['Bill Simmons', 'Amanda Dobbins'],
+    date: 'Sep 2023',
+    url: 'https://open.spotify.com/episode/2Io5uhe7q9HG0Q6vTWFDPt?si=a2e87c96d8f54387',
+  },
+  {
+    tmdbId: 201088,
+    id: 311,
+    title: 'Blackhat',
+    hosts: ['Bill Simmons', 'Chris Ryan'],
+    date: 'Sep 2023',
+    url: 'https://open.spotify.com/episode/5ra30K0ZD2jwpsW0vRwajo?si=7ad6e3be99ca4631',
+  },
+  {
+    tmdbId: 1607,
+    id: 312,
+    title: 'A Bronx Tale',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Van Lathan'],
+    date: 'Sep 2023',
+    url: 'https://open.spotify.com/episode/76liMZd8aPJ6rkHdEtfW1c?si=c14d4e3c1a4f4117',
   },
 ];
 
