@@ -55,7 +55,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
             <Fragment key={m.id}>
               {/* NB: can't add padding or margin to trs, or using empty row as a spacer */}
               <tr className="h-4"></tr>
-              <tr className="rounded-xl border-2 border-slate-200 bg-slate-50 p-2 text-left shadow-md">
+              <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md">
                 <td className="p-2">
                   <MovieTablePoster title={m.title} poster_path={m.poster_path} />
                 </td>

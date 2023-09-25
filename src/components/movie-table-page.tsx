@@ -43,7 +43,7 @@ export const MoviesPage = ({ initialData }: MoviesPageProps) => {
 
   // enable infinite scroll
   useVizSensor(vizSensorRef, {
-    rootMargin: '200px',
+    rootMargin: '300px',
     threshold: 0.1,
     callback: () => {
       if (data && data.total > amount + 20) {

@@ -57,7 +57,7 @@ export const TopCategory = ({ category, people }: TopCategoryProps) => {
           {person.profile_path ? (
             <Box.ProfilePic>
               <Image
-                className="h-full w-full rounded object-cover"
+                className="h-full w-full object-cover"
                 src={tmdbImage(person.profile_path)}
                 alt={`Image of ${person.name}`}
                 fill
@@ -105,7 +105,7 @@ const Box = {
     <div className="mb-8 flex flex-col items-start sm:flex-row sm:items-center">{children}</div>
   ),
   ProfilePic: ({ children }) => (
-    <div className="relative mb-4 hidden sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
+    <div className="rounderd relative mb-4 hidden border-2  border-slate-700 shadow-xl sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
       {children}
     </div>
   ),

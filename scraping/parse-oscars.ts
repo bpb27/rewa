@@ -67,18 +67,28 @@ const getMovie = async ({ film, yearFilm }: { film: string; yearFilm: number }) 
   }
 };
 
+// TODO: need to separate scripts - 1) add oscar awards, 2) add oscar movies
+
 parseCsv().then(async result => {
   const data = result
     .filter(oscar => oscar.yearFilm >= 1950 && getCategoryTag(oscar.category))
     .map(oscar => ({ ...oscar, categoryTag: getCategoryTag(oscar.category) }));
 
-  const firstMovie = await getMovie(data[0]);
+  const addMovie = async (i: number) => {
+    const item = data[i];
+    if (!item || i > 5) return;
+    const result = await getMovie(item);
+    console.log(result.title, result.release_date);
+    setTimeout(() => addMovie(i + 1), 200);
+  };
+
+  addMovie(0);
+
   // oscars
   // oscars_on_movies
   // change rewa query to go thru episode
   // add movies
   // oscar query through oscars_on_movies
-  console.log(firstMovie);
 });
 
 const getCategoryTag = (name: string) => awardMap.find(a => a.name === name)?.category;
