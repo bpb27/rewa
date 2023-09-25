@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react';
+import { type PropsWithChildren, Fragment } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/icons';
 import { MovieTablePoster } from '~/components/images';
@@ -18,7 +18,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b-slate-200 bg-slate-100 text-left shadow-md [&>th]:pr-2">
+          <tr className="border-b-slate-200 bg-blue-50 text-left shadow-md [&>th]:pr-2">
             <TableHeader>Poster</TableHeader>
             <TableHeader onSort={onSortClick} sort="title">
               Title
@@ -52,13 +52,10 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
         </thead>
         <tbody>
           {movies.map(m => (
-            <>
+            <Fragment key={m.id}>
               {/* NB: can't add padding or margin to trs, or using empty row as a spacer */}
               <tr className="h-4"></tr>
-              <tr
-                key={m.id}
-                className="rounded-xl border-2 border-slate-200 bg-slate-50 p-2 text-left shadow-md"
-              >
+              <tr className="rounded-xl border-2 border-slate-200 bg-slate-50 p-2 text-left shadow-md">
                 <td className="p-2">
                   <MovieTablePoster title={m.title} poster_path={m.poster_path} />
                 </td>
@@ -78,7 +75,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                   <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>
                 </td>
               </tr>
-            </>
+            </Fragment>
           ))}
         </tbody>
       </table>

@@ -15,7 +15,7 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
   return (
     <div className="mb-5 flex w-[350px] flex-col rounded-lg border-2 border-slate-600 bg-slate-100 text-slate-950 shadow-lg">
       <div className="flex flex-col items-center space-y-1.5 p-5">
-        <h3 className="text-2xl font-semibold leading-none tracking-tight">{movie.title}</h3>
+        <h3 className="mb-1 text-center text-2xl font-semibold leading-none">{movie.title}</h3>
         <TheaterBackground>
           <MovieCardPoster {...movie} />
         </TheaterBackground>

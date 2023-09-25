@@ -16,7 +16,7 @@ const CloseButton = ({ onClose }: { onClose: () => void }) => (
 );
 
 const Header = ({ children }: PropsWithChildren<{}>) => (
-  <h3 className="text-2xl font-semibold leading-none tracking-tight">{children}</h3>
+  <h3 className="text-2xl font-semibold leading-none">{children}</h3>
 );
 
 const Content = ({ children }: PropsWithChildren<{}>) => (
