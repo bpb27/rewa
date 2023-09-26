@@ -150,7 +150,7 @@ function csvParser() {
   return results;
 }
 
-async function parseCsv(): Promise<ParsedOscar[]> {
+export async function parseOscarCsv(): Promise<ParsedOscar[]> {
   try {
     const lines = csvParser();
     return (
@@ -203,7 +203,15 @@ const getMovie = async ({ film_name, film_year }: ParsedOscar) => {
       r =>
         r.release_date.startsWith(film_year.toString()) ||
         r.release_date.startsWith((film_year - 1).toString()) ||
-        r.release_date.startsWith((film_year + 1).toString())
+        r.release_date.startsWith((film_year + 1).toString()) ||
+        r.release_date.startsWith((film_year - 2).toString()) ||
+        r.release_date.startsWith((film_year + 2).toString()) ||
+        r.release_date.startsWith((film_year - 3).toString()) ||
+        r.release_date.startsWith((film_year + 3).toString()) ||
+        r.release_date.startsWith((film_year - 4).toString()) ||
+        r.release_date.startsWith((film_year + 4).toString()) ||
+        r.release_date.startsWith((film_year - 5).toString()) ||
+        r.release_date.startsWith((film_year + 5).toString())
     );
     if (!movie) throw new Error('Not found for that year');
     const getRoute = `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${apiKey}&append_to_response=credits`;
@@ -216,13 +224,12 @@ const getMovie = async ({ film_name, film_year }: ParsedOscar) => {
   }
 };
 
-parseCsv().then(async result => {
+parseOscarCsv().then(async result => {
   const db = new Database('./prisma/db.sqlite', {
     readonly: false,
     timeout: 5000,
   });
 
-  // TODO: de-dupe repeated movies (unique by name and year)
   const data = uniqBy(
     result.filter(oscar => oscar.ceremony_year >= 1950),
     movie => movie.film_name + movie.film_year
