@@ -16,91 +16,122 @@ const insert = (table: string, fields: string[]) =>
     )
 `;
 
-const insertMovie = db.prepare(
-  insert('movies', [
-    'budget',
-    'tmdb_id',
-    'imdb_id',
-    'overview',
-    'poster_path',
-    'release_date',
-    'revenue',
-    'runtime',
-    'tagline',
-    'title',
-  ])
-);
+const prepareDb = (database: typeof db) => {
+  const insertMovie = database.prepare(
+    insert('movies', [
+      'budget',
+      'tmdb_id',
+      'imdb_id',
+      'overview',
+      'poster_path',
+      'release_date',
+      'revenue',
+      'runtime',
+      'tagline',
+      'title',
+    ])
+  );
 
-const insertGenre = db.prepare(insert('genres', ['name']));
+  const insertGenre = database.prepare(insert('genres', ['name']));
 
-const insertGenreOnMovie = db.prepare(insert('genres_on_movies', ['movie_id', 'genre_id']));
+  const insertGenreOnMovie = database.prepare(insert('genres_on_movies', ['movie_id', 'genre_id']));
 
-const insertProductionCompany = db.prepare(
-  insert('production_companies', ['name', 'tmdb_id', 'logo_path'])
-);
+  const insertProductionCompany = database.prepare(
+    insert('production_companies', ['name', 'tmdb_id', 'logo_path'])
+  );
 
-const insertProductionCompanyOnMovie = db.prepare(
-  insert('production_companies_on_movies', ['movie_id', 'production_company_id'])
-);
+  const insertProductionCompanyOnMovie = database.prepare(
+    insert('production_companies_on_movies', ['movie_id', 'production_company_id'])
+  );
 
-const insertActor = db.prepare(insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path']));
+  const insertActor = database.prepare(
+    insert('actors', ['gender', 'tmdb_id', 'name', 'profile_path'])
+  );
 
-const insertActorOnMovie = db.prepare(
-  insert('actors_on_movies', ['movie_id', 'actor_id', 'character', 'credit_id', 'credit_order'])
-);
+  const insertActorOnMovie = database.prepare(
+    insert('actors_on_movies', ['movie_id', 'actor_id', 'character', 'credit_id', 'credit_order'])
+  );
 
-const insertCrew = db.prepare(insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path']));
+  const insertCrew = database.prepare(
+    insert('crew', ['gender', 'tmdb_id', 'name', 'profile_path'])
+  );
 
-const insertCrewOnMovie = db.prepare(
-  insert('crew_on_movies', [
-    'movie_id',
-    'crew_id',
-    'known_for_department',
-    'credit_id',
-    'department',
-    'job',
-  ])
-);
+  const insertCrewOnMovie = database.prepare(
+    insert('crew_on_movies', [
+      'movie_id',
+      'crew_id',
+      'known_for_department',
+      'credit_id',
+      'department',
+      'job',
+    ])
+  );
 
-const insertEpisode = db.prepare(
-  insert('episodes', ['title', 'episode_order', 'date', 'spotify_url', 'movie_id'])
-);
+  const insertEpisode = database.prepare(
+    insert('episodes', ['title', 'episode_order', 'date', 'spotify_url', 'movie_id'])
+  );
 
-const insertHostOnEpisode = db.prepare(insert('hosts_on_episodes', ['host_id', 'episode_id']));
+  const insertHostOnEpisode = database.prepare(
+    insert('hosts_on_episodes', ['host_id', 'episode_id'])
+  );
 
-const insertHost = db.prepare(insert('hosts', ['name']));
+  const insertHost = database.prepare(insert('hosts', ['name']));
 
-const getMovieByTmdbId = db.prepare<number>(`
+  const getMovieByTmdbId = database.prepare<number>(`
   SELECT id AS movie_id FROM movies WHERE tmdb_id = ?;
 `);
 
-const getGenreByName = db.prepare<string>(`
+  const getGenreByName = database.prepare<string>(`
   SELECT id AS genre_id FROM genres WHERE name = ?;
 `);
 
-const getCompanyByTmdbId = db.prepare<number>(`
+  const getCompanyByTmdbId = database.prepare<number>(`
   SELECT id AS production_company_id FROM production_companies WHERE tmdb_id = ?;
 `);
 
-const getActorByTmdbId = db.prepare<number>(`
+  const getActorByTmdbId = database.prepare<number>(`
   SELECT id AS actor_id FROM actors WHERE tmdb_id = ?;
 `);
 
-const getCrewByTmdbId = db.prepare<number>(`
+  const getCrewByTmdbId = database.prepare<number>(`
   SELECT id AS crew_id FROM crew WHERE tmdb_id = ?;
 `);
 
-const getHostByName = db.prepare<string>(`
+  const getHostByName = database.prepare<string>(`
   SELECT id AS host_id FROM hosts WHERE name = ?;
 `);
 
-const getEpisodeByUrl = db.prepare<string>(`
+  const getEpisodeByUrl = database.prepare<string>(`
   SELECT id AS episode_id FROM episodes WHERE spotify_url = ?;
 `);
 
-const addMovieToDb = (
+  return {
+    getActorByTmdbId,
+    getCompanyByTmdbId,
+    getCrewByTmdbId,
+    getEpisodeByUrl,
+    getGenreByName,
+    getHostByName,
+    getMovieByTmdbId,
+    insertActor,
+    insertActorOnMovie,
+    insertCrew,
+    insertCrewOnMovie,
+    insertEpisode,
+    insertGenre,
+    insertGenreOnMovie,
+    insertHost,
+    insertHostOnEpisode,
+    insertMovie,
+    insertProductionCompany,
+    insertProductionCompanyOnMovie,
+  };
+};
+
+export const addMovieToDb = (
+  database: typeof db,
   movie: MoviesJson[number],
-  episode: {
+  episode?: {
     id: number;
     title: string;
     hosts: string[];
@@ -108,7 +139,29 @@ const addMovieToDb = (
     date: string;
   }
 ) =>
-  db.transaction(() => {
+  database.transaction(() => {
+    const {
+      getActorByTmdbId,
+      getCompanyByTmdbId,
+      getCrewByTmdbId,
+      getEpisodeByUrl,
+      getGenreByName,
+      getHostByName,
+      getMovieByTmdbId,
+      insertActor,
+      insertActorOnMovie,
+      insertCrew,
+      insertCrewOnMovie,
+      insertEpisode,
+      insertGenre,
+      insertGenreOnMovie,
+      insertHost,
+      insertHostOnEpisode,
+      insertMovie,
+      insertProductionCompany,
+      insertProductionCompanyOnMovie,
+    } = prepareDb(database);
+
     const moviePayload = {
       ...pick(movie, [
         'budget',
@@ -194,26 +247,28 @@ const addMovieToDb = (
 
     // EPISODE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    const episodePayload = {
-      title: episode.title,
-      episode_order: episode.id,
-      date: episode.date,
-      spotify_url: episode.url,
-      movie_id,
-    };
-    insertEpisode.run(episodePayload);
-    const { episode_id } = getEpisodeByUrl.get(episodePayload.spotify_url) as {
-      episode_id: number;
-    };
-
-    for (const host of episode.hosts) {
-      const hostPayload = { name: host };
-      insertHost.run(hostPayload);
-      const { host_id } = getHostByName.get(hostPayload.name) as {
-        host_id: number;
+    if (episode) {
+      const episodePayload = {
+        title: episode.title,
+        episode_order: episode.id,
+        date: episode.date,
+        spotify_url: episode.url,
+        movie_id,
       };
-      const hostOnEpisodePayload = { host_id, episode_id };
-      insertHostOnEpisode.run(hostOnEpisodePayload);
+      insertEpisode.run(episodePayload);
+      const { episode_id } = getEpisodeByUrl.get(episodePayload.spotify_url) as {
+        episode_id: number;
+      };
+
+      for (const host of episode.hosts) {
+        const hostPayload = { name: host };
+        insertHost.run(hostPayload);
+        const { host_id } = getHostByName.get(hostPayload.name) as {
+          host_id: number;
+        };
+        const hostOnEpisodePayload = { host_id, episode_id };
+        insertHostOnEpisode.run(hostOnEpisodePayload);
+      }
     }
   })();
 
@@ -259,7 +314,7 @@ const fetchFromTmdb = async () => {
   const movie = await response.json();
   const run = true;
   if (run) {
-    addMovieToDb(movie, episode);
+    addMovieToDb(db, movie, episode);
   } else {
     console.log('DRY RUN', movie);
   }
