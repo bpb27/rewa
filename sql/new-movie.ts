@@ -7,7 +7,7 @@ const db = new Database('./prisma/db.sqlite', {
   timeout: 5000,
 });
 
-const insert = (table: string, fields: string[]) =>
+export const insert = (table: string, fields: string[]) =>
   `
     INSERT OR IGNORE INTO ${table} (
         ${fields.join(',')}

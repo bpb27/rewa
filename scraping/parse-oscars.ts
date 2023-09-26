@@ -3,16 +3,6 @@ import Database from 'better-sqlite3';
 import { addMovieToDb } from '../sql/new-movie';
 import { uniqBy } from 'remeda';
 
-type RawOscar = {
-  year_film: string;
-  year_ceremony: string;
-  ceremony: string;
-  category: string;
-  name: string;
-  film: string;
-  winner: string;
-};
-
 type ParsedOscar = {
   award_category: AwardCategory;
   award_name: AwardName;
@@ -27,7 +17,7 @@ type AwardCategory = (typeof awardMap)[number]['category'];
 type AwardName = (typeof awardMap)[number]['name'];
 
 // prettier-ignore
-const awardMap = [
+export const awardMap = [
   { name: 'ACTOR', category: 'actor' },
   { name: 'ACTOR IN A LEADING ROLE', category: 'actor' },
   { name: 'ACTOR IN A SUPPORTING ROLE', category: 'supporting_actor' },
@@ -146,7 +136,6 @@ function csvParser() {
     }
   }
 
-  console.log(results);
   return results;
 }
 
@@ -187,7 +176,13 @@ export async function parseOscarCsv(): Promise<ParsedOscar[]> {
   }
 }
 
-const getMovie = async ({ film_name, film_year }: ParsedOscar) => {
+export const getMovie = async ({
+  film_name,
+  film_year,
+}: {
+  film_name: string;
+  film_year: number;
+}) => {
   const apiKey = process.env.TMDB_API_KEY;
   const queryRoute = `https://api.themoviedb.org/3/search/movie?query=${encodeURI(
     film_name
@@ -224,37 +219,37 @@ const getMovie = async ({ film_name, film_year }: ParsedOscar) => {
   }
 };
 
-parseOscarCsv().then(async result => {
-  const db = new Database('./prisma/db.sqlite', {
-    readonly: false,
-    timeout: 5000,
-  });
+// parseOscarCsv().then(async result => {
+//   const db = new Database('./prisma/db.sqlite', {
+//     readonly: false,
+//     timeout: 5000,
+//   });
 
-  const data = uniqBy(
-    result.filter(oscar => oscar.ceremony_year >= 1950),
-    movie => movie.film_name + movie.film_year
-  );
+//   const data = uniqBy(
+//     result.filter(oscar => oscar.ceremony_year >= 1950),
+//     movie => movie.film_name + movie.film_year
+//   );
 
-  const addMovie = async (i: number) => {
-    const item = data[i];
-    if (!item) return;
-    try {
-      const result = await getMovie(item);
-      addMovieToDb(db, result);
-      console.log('Added', item.film_name, item.film_year);
-    } catch (e) {
-      console.log('FAILED TO GET OR INSERT MOVIE', item.film_name, item.film_year, e);
-    }
-    setTimeout(() => addMovie(i + 1), 200);
-  };
+//   const addMovie = async (i: number) => {
+//     const item = data[i];
+//     if (!item) return;
+//     try {
+//       const result = await getMovie(item);
+//       addMovieToDb(db, result);
+//       console.log('Added', item.film_name, item.film_year);
+//     } catch (e) {
+//       console.log('FAILED TO GET OR INSERT MOVIE', item.film_name, item.film_year, e);
+//     }
+//     setTimeout(() => addMovie(i + 1), 200);
+//   };
 
-  addMovie(0);
-  /*
-    try w/ year 2000 first
-    insert all movies
-    create award name table
-    create oscar table
-    reiterate over parsed oscar list (not deduped), query for movie, actor, crew by name then insert oscar
-    probably can't match award names to people - to many variables - will need to just do via movies when querying
-  */
-});
+//   addMovie(0);
+//   /*
+//     try w/ year 2000 first
+//     insert all movies
+//     create award name table
+//     create oscar table
+//     reiterate over parsed oscar list (not deduped), query for movie, actor, crew by name then insert oscar
+//     probably can't match award names to people - to many variables - will need to just do via movies when querying
+//   */
+// });

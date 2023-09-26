@@ -149,22 +149,21 @@ CREATE TABLE IF NOT EXISTS streamers_on_movies (
 );
 `;
 
-export const createOscarsTableSql = `
+export const createOscarsNominationsTable = `
 CREATE TABLE IF NOT EXISTS oscars_nominations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  year_film INTEGER NOT NULL,
-  year_ceremony INTEGER NOT NULL,
+  film_year INTEGER NOT NULL,
+  ceremony_year INTEGER NOT NULL,
   won BOOLEAN NOT NULL,
   movie_id INTEGER NOT NULL,
   award_id INTEGER NOT NULL,
-  actor_id INTEGER,
-  crew_id INTEGER,
   FOREIGN KEY (movie_id) REFERENCES movies (id) ON DELETE CASCADE,
-  FOREIGN KEY (award_id) REFERENCES oscars_awards (id) ON DELETE CASCADE
+  FOREIGN KEY (award_id) REFERENCES oscars_awards (id) ON DELETE CASCADE,
+  UNIQUE (movie_id, award_id)
 );
 `;
 
-export const createOscarAwardNamesTableSql = `
+export const createOscarAwardNamesTable = `
 CREATE TABLE IF NOT EXISTS oscars_awards (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,

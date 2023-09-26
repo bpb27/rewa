@@ -11,7 +11,7 @@
     "freshdb": "rm ./prisma/db.sqlite && node -r esbuild-register -r dotenv/config ./sql/boot.ts",
     "newmovie": "node -r esbuild-register -r dotenv/config ./sql/new-movie.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/update-streamers.ts",
-    "oscars": "node -r esbuild-register -r dotenv/config ./scraping/parse-oscars.ts",
+    "oscars": "node -r esbuild-register -r dotenv/config ./scraping/create-oscars-tables.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {
