@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "episode": "node -r esbuild-register -r dotenv/config ./sql/new-rewa-episode.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/update-streamers.ts",
+    "views": "node -r esbuild-register -r dotenv/config ./sql/create-views.ts",
     "oscars": "node -r esbuild-register -r dotenv/config ./scraping/create-oscars-tables.ts",
     "studio": "npx prisma studio"
   },

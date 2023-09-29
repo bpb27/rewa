@@ -1,6 +1,6 @@
 import { pick, uniqBy } from 'remeda';
 import { createFilters, getSearches } from '~/data/movie-search-conditions';
-import { QpSchema } from '~/data/query-params';
+import { QpSchema, SortKey } from '~/data/query-params';
 import {
   tokenizeBudget,
   tokenizeRevenue,
@@ -12,13 +12,27 @@ import { Prisma } from '~/prisma';
 import { Prisma as PrismaBaseType } from '@prisma/client';
 
 // NB: mode AND === all conditions present, mode OR === any conditions present
-// NB: can't sort across tables via prisma (need separate queries)
+// NB: using a view (movies_with_computed_fields) to sort across tables (e.g. episode order) + custom fields (e.g. profit percentage)
+
+type QueryWhere = Pick<PrismaBaseType.moviesFindManyArgs, 'where'>;
+type QueryOrderBy = Pick<PrismaBaseType.movies_with_computed_fieldsFindManyArgs, 'orderBy'>;
+type QuerySkip = Pick<PrismaBaseType.movies_with_computed_fieldsFindManyArgs, 'skip'>;
+type OrderByKey = keyof PrismaBaseType.movies_with_computed_fieldsOrderByWithAggregationInput;
 
 const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
 const take = 25;
 
-type FindManyArgs = PrismaBaseType.moviesFindManyArgs;
+const sortMap = {
+  budget: 'budget',
+  director: 'director_name',
+  episodeNumber: 'episode_order',
+  profit: 'profit_percentage',
+  release_date: 'release_date',
+  revenue: 'revenue',
+  runtime: 'runtime',
+  title: 'title',
+} satisfies Record<SortKey, OrderByKey>;
 
 export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;
 
@@ -29,7 +43,7 @@ export const getMovies = async (params: QpSchema) => {
   const searches = getSearches(params);
   const prismaSearch = searches.length ? { [mode]: createFilters(mode, searches) } : undefined;
 
-  const where: Pick<FindManyArgs, 'where'> = {
+  const where: QueryWhere = {
     where: {
       ...(params.hasEpisode ? { episodes: { some: {} } } : undefined),
       ...(params.hasOscar ? { oscars_nominations: { some: {} } } : undefined),
@@ -37,78 +51,76 @@ export const getMovies = async (params: QpSchema) => {
     },
   };
 
-  const orderBy: Pick<FindManyArgs, 'orderBy'> = {
-    orderBy: {
-      ...(params.sort === 'budget' ? { budget: sortOrder } : undefined),
-      ...(params.sort === 'release_date' ? { release_date: sortOrder } : undefined),
-      ...(params.sort === 'revenue' ? { revenue: sortOrder } : undefined),
-      ...(params.sort === 'runtime' ? { runtime: sortOrder } : undefined),
-      ...(params.sort === 'title' ? { title: sortOrder } : undefined),
-    },
+  const orderBy: QueryOrderBy = {
+    orderBy: { [sortMap[params.sort]]: sortOrder },
   };
 
-  const skip: Pick<FindManyArgs, 'skip'> = {
+  const skip: QuerySkip = {
     skip: offset,
   };
 
-  // TODO: profit, episode, and director sorting (might need to limit to just rewa)
   const [total, matchedIds] = await Promise.all([
     prisma.movies.count({ ...where }),
-    prisma.movies.findMany({
-      select: { id: true },
+    prisma.movies_with_computed_fields.findMany({
+      select: { movie_id: true },
+      where: { movie: where.where },
       take,
       ...skip,
-      ...where,
       ...orderBy,
     }),
   ]);
 
-  const data = await prisma.movies.findMany({
+  const data = await prisma.movies_with_computed_fields.findMany({
     ...orderBy,
     where: {
-      id: { in: matchedIds.map(match => match.id) },
+      movie_id: { in: matchedIds.map(match => match.movie_id) },
     },
     select: {
-      budget: true,
-      id: true,
-      imdb_id: true,
-      overview: true,
-      poster_path: true,
-      release_date: true,
-      revenue: true, // NB: stored in DB as / 1000 due to BigInt shit
-      runtime: true,
-      title: true,
-      tagline: true,
-      actors_on_movies: {
-        orderBy: { credit_order: 'asc' },
-        select: { actors: selectIdAndName },
-      },
-      crew_on_movies: {
-        where: { job: 'Director' },
+      movie: {
         select: {
-          job: true,
-          crew: selectIdAndName,
-        },
-      },
-      episodes: {
-        take: 1,
-        select: {
+          budget: true,
           id: true,
-          spotify_url: true,
-          episode_order: true,
-          hosts_on_episodes: { select: { hosts: selectIdAndName } },
+          imdb_id: true,
+          overview: true,
+          poster_path: true,
+          release_date: true,
+          revenue: true, // NB: stored in DB as / 1000 due to BigInt shit
+          runtime: true,
+          title: true,
+          tagline: true,
+          actors_on_movies: {
+            orderBy: { credit_order: 'asc' },
+            select: { actors: selectIdAndName },
+          },
+          crew_on_movies: {
+            where: { job: 'Director' },
+            select: {
+              job: true,
+              crew: selectIdAndName,
+            },
+          },
+          episodes: {
+            take: 1,
+            select: {
+              id: true,
+              spotify_url: true,
+              episode_order: true,
+              hosts_on_episodes: { select: { hosts: selectIdAndName } },
+            },
+          },
+          genres_on_movies: {
+            select: { genres: selectIdAndName },
+          },
+          streamers_on_movies: {
+            select: { streamers: selectIdAndName },
+          },
         },
-      },
-      genres_on_movies: {
-        select: { genres: selectIdAndName },
-      },
-      streamers_on_movies: {
-        select: { streamers: selectIdAndName },
       },
     },
   });
 
-  const movies = data.map(movie => {
+  const movies = data.map(item => {
+    const movie = item.movie!;
     return {
       ...pick(movie, [
         'id',
