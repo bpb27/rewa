@@ -41,12 +41,16 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
       </div>
       <div>
         <Sidebar.Separator />
-        {movie.hosts.map(({ id, name }) => (
-          <IconField icon="Mic" key={id}>
-            {name}
-          </IconField>
-        ))}
-        <Sidebar.Separator />
+        {movie.episode && (
+          <>
+            {movie.hosts.map(({ id, name }) => (
+              <IconField icon="Mic" key={id}>
+                {name}
+              </IconField>
+            ))}
+            <Sidebar.Separator />
+          </>
+        )}
         {movie.directors.map(({ id, name }) => (
           <IconField icon="Video" key={id}>
             {name}
@@ -57,12 +61,16 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
             {name}
           </IconField>
         ))}
-        {movie.streamers.length > 0 && <Sidebar.Separator />}
-        {movie.streamers.map(({ id, name }) => (
-          <IconField icon="Tv" key={id}>
-            {name}
-          </IconField>
-        ))}
+        {movie.streamers.length > 0 && (
+          <>
+            <Sidebar.Separator />
+            {movie.streamers.map(({ id, name }) => (
+              <IconField icon="Tv" key={id}>
+                {name}
+              </IconField>
+            ))}
+          </>
+        )}
         <Sidebar.Separator />
         <IconField icon="Calendar">{formatDate(movie.release_date)}</IconField>
         <IconField icon="Clock">{movie.runtime.name}</IconField>
@@ -75,11 +83,13 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
             IMDB
           </ImdbLink>
         </IconField>
-        <IconField icon="Link">
-          <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
-            Spotify
-          </SpotifyLink>
-        </IconField>
+        {movie.episode && (
+          <IconField icon="Link">
+            <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
+              Spotify
+            </SpotifyLink>
+          </IconField>
+        )}
       </div>
     </Sidebar>
   );

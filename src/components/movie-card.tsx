@@ -28,10 +28,14 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
         {showDesc && <p>{movie.overview}</p>}
       </div>
       <div className="flex flex-col p-6 pt-0">
-        {movie.hosts.map(host => (
-          <ClickableField key={host.id} item={host} onClick={onTokenClick} />
-        ))}
-        <Separator />
+        {movie.hosts.length > 0 && (
+          <>
+            {movie.hosts.map(host => (
+              <ClickableField key={host.id} item={host} onClick={onTokenClick} />
+            ))}
+            <Separator />
+          </>
+        )}
         {movie.directors.map(director => (
           <ClickableField key={director.id} item={director} onClick={onTokenClick} />
         ))}
@@ -58,10 +62,14 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
           <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
             IMDB
           </ImdbLink>
-          <span>/</span>
-          <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
-            Spotify
-          </SpotifyLink>
+          {movie.episode && (
+            <>
+              <span>/</span>
+              <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
+                Spotify
+              </SpotifyLink>
+            </>
+          )}
         </div>
         {movie.streamers.length > 0 && <Separator />}
         {movie.streamers.map(streamer => (

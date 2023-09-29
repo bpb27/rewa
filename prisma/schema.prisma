@@ -113,6 +113,7 @@ model movies {
   genres_on_movies               genres_on_movies[]
   production_companies_on_movies production_companies_on_movies[]
   streamers_on_movies            streamers_on_movies[]
+  oscars_nominations             oscars_nominations[]
 }
 
 model production_companies {
@@ -149,4 +150,24 @@ model streamers_on_movies {
   movies      movies?    @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, streamer_id], map: "sqlite_autoindex_streamers_on_movies_1")
+}
+
+model oscars_awards {
+  id        Int               @id @default(autoincrement())
+  name      String
+  category  String
+  nominations oscars_nominations[]
+}
+
+model oscars_nominations {
+  id            Int           @id @default(autoincrement())
+  film_year      Int
+  ceremony_year  Int
+  won           Boolean
+  movie_id       Int
+  award_id       Int
+  movie         movies         @relation(fields: [movie_id], references: [id], onDelete: Cascade)
+  award         oscars_awards   @relation(fields: [award_id], references: [id], onDelete: Cascade)
+
+  @@unique([movie_id, award_id])
 }

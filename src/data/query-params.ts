@@ -21,13 +21,15 @@ export const sortSchema = z.enum([
 
 export const qpSchema = z.object({
   actor: integerList.optional().default(''),
-  amount: integer.optional().default(20),
   asc: boolean.optional().default('false'),
   budget: integerList.optional().default(''),
   director: integerList.optional().default(''),
   genre: integerList.optional().default(''),
+  hasEpisode: boolean.optional().default('false'),
+  hasOscar: boolean.optional().default('false'),
   host: integerList.optional().default(''),
   mode: z.enum(['and', 'or']).optional().default('and'),
+  movieCursor: integer.optional().default(0),
   sort: sortSchema.optional().default('episodeNumber'),
   movie: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
@@ -38,13 +40,15 @@ export const qpSchema = z.object({
 
 export const defaultQps: QpSchema = {
   actor: [],
-  amount: 20,
   asc: false,
   budget: [],
   director: [],
   genre: [],
+  hasEpisode: false,
+  hasOscar: false,
   host: [],
   mode: 'and',
+  movieCursor: 0,
   sort: 'episodeNumber',
   movie: [],
   revenue: [],
@@ -68,9 +72,9 @@ export const qpTokenKeys = [
 
 export const tokenQps = (qps: QpSchema) => pick(qps, qpTokenKeys);
 
-export const qpParse = (search: object) => {
+export const qpParse = (search: object, defaultValues: QpSchema) => {
   const parsed = qpSchema.safeParse(search);
-  return parsed.success ? parsed.data : defaultQps;
+  return parsed.success ? parsed.data : defaultValues;
 };
 
 export const qpStringify = (search: QpSchema, path?: string) => {
@@ -82,10 +86,15 @@ export const qpStringify = (search: QpSchema, path?: string) => {
   return path ? `${path.split('?')[0]}?${qpString}` : qpString;
 };
 
-export const useQueryParams = () => {
+export const useQueryParams = (defaultValues: QpSchema) => {
   const router = useRouter();
-  const values = qpParse(router.query);
-  const queryString = qpStringify(values);
+  const isEmpty = !router.asPath.split('?')[1]?.length;
+  const values = isEmpty ? defaultValues : qpParse(router.query, defaultValues);
+  const queryString = qpStringify({
+    ...values,
+    ...(router.asPath.includes('/rewa/') ? { hasEpisode: true } : undefined),
+    ...(router.asPath.includes('/oscars/') ? { hasOscar: true } : undefined),
+  });
 
   const push = (newValues: QpSchema) => {
     router.replace(qpStringify(newValues, router.asPath), undefined, {
@@ -116,8 +125,8 @@ export const useQueryParams = () => {
       newValues = { ...values, [key]: value };
     }
 
-    if (key !== 'amount') {
-      newValues.amount = 20;
+    if (key !== 'movieCursor') {
+      newValues.movieCursor = 0;
     }
 
     push(newValues);
@@ -134,8 +143,9 @@ export const useQueryParams = () => {
   return {
     values,
     update,
+    updateAll: push,
     clearTokens,
     queryString,
-    noUrlValues: !router.asPath.split('?')[1]?.length,
+    isEmpty,
   };
 };

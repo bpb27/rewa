@@ -11,17 +11,18 @@ import { capitalize } from '~/utils/format';
 import { useDebounce } from '~/utils/use-debounce';
 
 type FullTypeaheadProps = {
+  filter: 'episode' | 'oscar';
   onSelect: (selection: Token) => void;
 };
 
-export const FullTypeahead = ({ onSelect }: FullTypeaheadProps) => {
+export const FullTypeahead = ({ filter, onSelect }: FullTypeaheadProps) => {
   const [resultsContainer, setResultsContainer] = useState<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
   const { data, isLoading } = useSWR<ApiSearchResponse>(
-    debouncedSearch ? `/api/search?search=${debouncedSearch}` : null,
+    debouncedSearch ? `/api/search?search=${debouncedSearch}&filter=${filter}` : null,
     fetcher
   );
 

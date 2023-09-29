@@ -3,7 +3,7 @@ import { SortKey } from '~/data/query-params';
 type PartialMovieForSorting = {
   budget: { id: number };
   directors: { name: string }[];
-  episode: { episode_order: number };
+  episode?: { episode_order: number };
   revenue: { id: number };
   release_date: string;
   runtime: { id: number };
@@ -13,7 +13,7 @@ type PartialMovieForSorting = {
 const sortFns = Object.freeze({
   budget: m => m.budget.id,
   director: m => m.directors[0]?.name,
-  episodeNumber: m => m.episode.episode_order,
+  episodeNumber: m => m.episode?.episode_order || 0,
   profit: m => {
     const budget = m.budget.id;
     const revenue = m.revenue.id;

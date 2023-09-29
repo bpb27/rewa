@@ -1,5 +1,23 @@
-a11y
+- mode switch in navbar
+- top appearances pages + api route filter
+- lots of oscar movie cards dont have taglines but do have overviews - need a way to access it
+- maxlist box when lots of directors, hosts, oscars, genres
+- redo oscar_nominations inserts (need recipient)
+- displaying oscars in table
 
+- oscars
+
+  - data is in finally
+  - figure out display of awards in table and card
+  - need to normalize/format names
+  - tokenize oscars
+  - maybe tables TDs should have a max with an expandable thing
+  - ability to view oscar year (probably via modal)
+  - new movie script needs to check for oscars? or the movie will already be there so it should work fine...it will just add the episode
+
+- more composable pieces in scripts - when you import stuff from other files they automatically run
+
+- api routes just stall on errors - need to send something
 - accessible button name
 - select label
 - make sure table is navigable
@@ -10,7 +28,6 @@ a11y
 
 # NICE TO HAVE
 
-- oscars
 - more linting rules
 - expandable place for description, crew, cast + load more
 - imdb rating / rottenmater rating

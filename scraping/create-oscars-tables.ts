@@ -1,45 +1,29 @@
-import Database from 'better-sqlite3';
+import { Prisma } from '~/prisma';
 import { createOscarsNominationsTable, createOscarAwardNamesTable } from '../sql/create-tables';
 import { parseOscarCsv, awardMap, getMovie } from './parse-oscars';
-import { insert } from '../sql/new-movie';
-import { uniq, uniqBy } from 'remeda';
+import { uniqBy } from 'remeda';
 import missingOscars from './missing-oscars.json';
+import { connectToDb, dropTable } from '../sql/general';
+import { prepareInsert } from '../sql/insert';
 
-const db = new Database('./prisma/db.sqlite', {
-  readonly: false,
-  timeout: 5000,
-});
+const prisma = Prisma.getPrisma();
+const db = connectToDb();
+const inserter = prepareInsert(db);
 
-db.exec('DROP TABLE IF EXISTS oscars_nominations');
-db.exec('DROP TABLE IF EXISTS oscars_awards');
+dropTable(db, 'oscars_nominations');
+dropTable(db, 'oscars_awards');
 db.prepare(createOscarAwardNamesTable).run();
 db.prepare(createOscarsNominationsTable).run();
 
-const getAllMovies = db.prepare(`
-  SELECT id, title, release_date, tmdb_id FROM movies;
-`);
-
-const getAllAwards = db.prepare(`
-  SELECT * FROM oscars_awards;
-`);
-
-const insertAward = db.prepare(insert('oscars_awards', ['name', 'category']));
-
-const insertNomination = db.prepare(
-  insert('oscars_nominations', ['film_year', 'ceremony_year', 'won', 'movie_id', 'award_id'])
-);
-
-parseOscarCsv().then(result => {
+parseOscarCsv().then(async result => {
   type Nominee = (typeof result)[number];
 
-  awardMap.forEach(award => insertAward.run(award));
+  awardMap.forEach(award => inserter.oscarAward(award));
 
-  const allMovies = getAllMovies.all() as {
-    id: number;
-    title: string;
-    release_date: string;
-    tmdb_id: string;
-  }[];
+  const allMovies = await prisma.movies.findMany({
+    select: { id: true, title: true, release_date: true, tmdb_id: true },
+  });
+
   const findMovie = (nominee: Nominee) =>
     allMovies.find(
       movie =>
@@ -47,7 +31,7 @@ parseOscarCsv().then(result => {
         Math.abs(Number(movie.release_date.slice(0, 4)) - nominee.film_year) <= 5
     );
 
-  const allAwards = getAllAwards.all() as { id: number; name: string; category: string }[];
+  const allAwards = await prisma.oscars_awards.findMany();
   const findAward = (nominee: Nominee) =>
     allAwards.find(award => award.category === nominee.award_category && award.name === award.name);
 
@@ -62,11 +46,12 @@ parseOscarCsv().then(result => {
         cantMatchTitle.push(nominee);
       }
     } else {
-      insertNomination.run({
+      inserter.oscarNomination({
         ...nominee,
         won: nominee.won ? 1 : 0,
         award_id: award.id,
         movie_id: movie.id,
+        recipient: nominee.person_name,
       });
     }
   });
@@ -77,15 +62,16 @@ parseOscarCsv().then(result => {
     const nom = unmatched[i];
     if (!nom) return;
     try {
-      const result = (await getMovie(nom)) as { id: string };
+      const result = (await getMovie(nom)) as { id: number };
       const movie = allMovies.find(m => m.tmdb_id === result.id);
       const award = findAward(nom);
       if (movie && award) {
-        insertNomination.run({
+        inserter.oscarNomination({
           ...nom,
           won: nom.won ? 1 : 0,
           award_id: award.id,
           movie_id: movie.id,
+          recipient: nom.person_name,
         });
       } else {
         console.log('Failed reconciliation', nom.film_name);

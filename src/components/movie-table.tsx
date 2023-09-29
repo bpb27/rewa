@@ -72,7 +72,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <td>
                   <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
                   <br />
-                  <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>
+                  {m.episode && <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>}
                 </td>
               </tr>
             </Fragment>
