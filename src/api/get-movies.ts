@@ -25,6 +25,7 @@ export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;
 export const getMovies = async (params: QpSchema) => {
   const mode = params.mode.toUpperCase() as 'AND' | 'OR';
   const sortOrder = params.asc ? 'asc' : 'desc';
+  const offset = params.page * take;
   const searches = getSearches(params);
   const prismaSearch = searches.length ? { [mode]: createFilters(mode, searches) } : undefined;
 
@@ -36,12 +37,6 @@ export const getMovies = async (params: QpSchema) => {
     },
   };
 
-  const cursor: Pick<FindManyArgs, 'cursor'> | undefined = params.movieCursor
-    ? { cursor: { id: params.movieCursor } }
-    : undefined;
-
-  const skip: Pick<FindManyArgs, 'skip'> | undefined = cursor ? { skip: 1 } : undefined;
-
   const orderBy: Pick<FindManyArgs, 'orderBy'> = {
     orderBy: {
       ...(params.sort === 'budget' ? { budget: sortOrder } : undefined),
@@ -52,16 +47,18 @@ export const getMovies = async (params: QpSchema) => {
     },
   };
 
+  const skip: Pick<FindManyArgs, 'skip'> = {
+    skip: offset,
+  };
+
   // TODO: profit, episode, and director sorting (might need to limit to just rewa)
-  const [total, nextBatchTotal, matchedIds] = await Promise.all([
+  const [total, matchedIds] = await Promise.all([
     prisma.movies.count({ ...where }),
-    prisma.movies.count({ ...where, ...cursor }),
     prisma.movies.findMany({
       select: { id: true },
       take,
-      ...where,
-      ...cursor,
       ...skip,
+      ...where,
       ...orderBy,
     }),
   ]);
@@ -156,10 +153,9 @@ export const getMovies = async (params: QpSchema) => {
   });
 
   return {
-    fresh: !params.movieCursor,
+    hasNext: offset + take < total,
     movies,
-    cursor: matchedIds[matchedIds.length - 1]?.id || 0,
-    hasNext: nextBatchTotal - take > 0,
+    page: params.page,
     total,
   };
 };

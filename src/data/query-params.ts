@@ -29,7 +29,7 @@ export const qpSchema = z.object({
   hasOscar: boolean.optional().default('false'),
   host: integerList.optional().default(''),
   mode: z.enum(['and', 'or']).optional().default('and'),
-  movieCursor: integer.optional().default(0),
+  page: integer.optional().default(0),
   sort: sortSchema.optional().default('episodeNumber'),
   movie: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
@@ -48,7 +48,7 @@ export const defaultQps: QpSchema = {
   hasOscar: false,
   host: [],
   mode: 'and',
-  movieCursor: 0,
+  page: 0,
   sort: 'episodeNumber',
   movie: [],
   revenue: [],
@@ -125,8 +125,8 @@ export const useQueryParams = (defaultValues: QpSchema) => {
       newValues = { ...values, [key]: value };
     }
 
-    if (key !== 'movieCursor') {
-      newValues.movieCursor = 0;
+    if (key !== 'page') {
+      newValues.page = 0;
     }
 
     push(newValues);

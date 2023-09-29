@@ -29,8 +29,10 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
     useQueryParams(defaultQps);
 
   const vizSensorRef = useRef<HTMLDivElement>(null);
-  const [tokens, setTokens] = useState<Token[]>([]);
+
   const [display, setDisplay] = useState<'table' | 'card' | undefined>();
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [total, setTotal] = useState(isEmpty ? initialData.total : 0);
   const [movies, setMovies] = useState<ApiGetMoviesResponse['movies']>(
     isEmpty ? initialData.movies : []
   );
@@ -50,12 +52,14 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   // fresh means the list was reset (e.g. new token or sort)
   // otherwise it's another paginated batch that should be appended to existing list
   useEffect(() => {
-    if (data && data.fresh) {
-      setMovies(data.movies);
-      setTokens(data.tokens);
-    } else if (data) {
+    if (data && data.page) {
       setMovies([...movies, ...data.movies]);
       setTokens(data.tokens);
+      setTotal(data.total);
+    } else if (data) {
+      setMovies(data.movies);
+      setTokens(data.tokens);
+      setTotal(data.total);
     }
   }, [data]);
 
@@ -70,7 +74,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
     threshold: 0.1,
     callback: () => {
       if (data?.hasNext) {
-        update('movieCursor', data.cursor);
+        update('page', data.page + 1);
       }
     },
   });
@@ -91,7 +95,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           <TokenBar clear={clearTokens} update={update} tokens={tokens} mode={mode} />
         </Box.Tokens>
         <Box.FilterButtons>
-          <h2 className="text-xl font-semibold tracking-wide">{data?.total}</h2>
+          <h2 className="text-xl font-semibold tracking-wide">{total}</h2>
           <Icon.Movie className="ml-1" />
           <Space w={3} />
           <Select onSelect={handleSort} options={sortingUtils.options} value={sort} />
@@ -111,7 +115,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
         <MovieTable movies={movies} onTokenClick={handleTokenClick} onSortClick={handleSort} />
       )}
       {display === 'card' && <MovieCards movies={movies} onTokenClick={handleTokenClick} />}
-      {!!display && !isLoading && <div ref={vizSensorRef} />}
+      {!!display && !isLoading && !!data?.hasNext && <div ref={vizSensorRef} />}
     </Layout>
   );
 };

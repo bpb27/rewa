@@ -1,22 +1,26 @@
 import { isDefined } from 'remeda';
 import { Prisma } from '~/prisma';
+import { Prisma as PrismaBaseType } from '@prisma/client';
 
 const prisma = Prisma.getPrisma();
 
 export const sortByEpisode = async ({
-  asc,
-  amount,
-  movieCursor,
+  order,
+  skip,
+  take,
+  where,
 }: {
-  asc: boolean;
-  amount: number;
-  movieCursor: number;
+  order: 'asc' | 'desc';
+  skip: number;
+  take: number;
+  where: PrismaBaseType.moviesFindManyArgs['where'];
 }): Promise<number[]> => {
   const result = await prisma.episodes.findMany({
-    orderBy: { episode_order: asc ? 'asc' : 'desc' },
-    take: amount,
+    orderBy: { episode_order: order },
     select: { movie_id: true },
-    where: { movie_id: { gt: movieCursor } },
+    skip,
+    take,
+    where: { movies: where },
   });
   return result.map(item => item.movie_id).filter(isDefined);
 };
