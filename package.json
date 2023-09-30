@@ -12,6 +12,7 @@
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/scripts/update-streamers.ts",
     "views": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-views.ts",
     "oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-oscars-tables.ts",
+    "missing": "node -r esbuild-register -r dotenv/config ./sql/scripts/fill-missing-oscars.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {

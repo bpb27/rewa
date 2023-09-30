@@ -1,9 +1,7 @@
-- finish script cleanup and delete old shit
 - oscar/rewa mode switch in navbar (green and gold)
 - top appearances pages + api route filter
 - lots of oscar movie cards dont have taglines but do have overviews - need a way to access it
 - maxlist box when lots of directors, hosts, oscars, genres
-- redo oscar_nominations inserts (need recipient)
 - displaying oscars in table
   - card and table display
   - normalize names
@@ -23,6 +21,8 @@
 - oscar streamers strategy
   - 3.9k movies
   - filter out movies w/ bullshit awards (doc short, animated short, e.g.)
+- basic smoke test
+- missing oscars
 
 # NICE TO HAVE
 

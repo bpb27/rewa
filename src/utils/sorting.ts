@@ -74,3 +74,6 @@ export const smartSort = <TEntry extends SortableObject>(
 };
 
 export const sortByDate = (a: string, b: string) => Date.parse(a) - Date.parse(b);
+
+export const withinYearRange = (one: string | number, two: string | number): boolean =>
+  Math.abs(Number(one.toString().slice(0, 4)) - Number(two.toString().slice(0, 4))) <= 5;

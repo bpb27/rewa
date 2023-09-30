@@ -17,7 +17,7 @@ const getMovieByName = async ({ name, year }: { name: string; year: number }) =>
 
   // TODO: move to separate parse func
   const { results, total_results } = (await response.json()) as {
-    results: { id: number; release_date: string }[];
+    results: { id: number; release_date: string; title: string }[];
     total_results: number;
   };
 
@@ -34,7 +34,7 @@ const getMovieByName = async ({ name, year }: { name: string; year: number }) =>
     );
   });
   if (!movie) throw new Error('Not found for that year');
-  return getMovieById({ tmdb_id: movie.id });
+  return movie;
 };
 
 const getStreamersForMovie = async ({ tmdb_id }: { tmdb_id: number }) => {

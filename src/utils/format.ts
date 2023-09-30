@@ -40,3 +40,12 @@ export const apiError = (message: string, e: unknown): ApiError => ({
   message,
   cause: parseError(e),
 });
+
+export const normalizeName = (str: string) =>
+  str
+    .toLowerCase()
+    .replace(/[^\w\s]|_/g, '')
+    .replace(/\s+/g, ' ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
