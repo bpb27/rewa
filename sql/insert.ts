@@ -12,7 +12,7 @@ import {
   getProductionCompanyByTmdbId,
 } from './select';
 
-// NB: prisma can't handle lots of inserts, so need to use better sqlite
+// NB: prisma can't handle lots of inserts, so need to use better-sqlite
 
 const insertSchema = z.object({
   actor: z.object({
@@ -96,6 +96,10 @@ const insertSchema = z.object({
     movie_id: z.number(),
     production_company_id: z.number(),
   }),
+  streamers_on_movie: z.object({
+    movie_id: z.number(),
+    streamer_id: z.number(),
+  }),
 });
 
 type InsertSchema = z.infer<typeof insertSchema>;
@@ -132,20 +136,27 @@ export const prepareInsert = (db: Database) => {
       buildInsertSql('hosts_on_episodes', getFields('hosts_on_episode'))
     ),
     movie: db.prepare<InsertSchema['movie']>(buildInsertSql('movies', getFields('movie'))),
-    // oscarAward: db.prepare<InsertSchema['oscars_award']>(
-    //   buildInsertSql('oscars_awards', getFields('oscars_award'))
-    // ),
-    // oscarNomination: db.prepare<InsertSchema['oscars_nomination']>(
-    //   buildInsertSql('oscars_nominations', getFields('oscars_nomination'))
-    // ),
+    oscarAward: db.prepare<InsertSchema['oscars_award']>(
+      buildInsertSql('oscars_awards', getFields('oscars_award'))
+    ),
+    oscarNomination: db.prepare<InsertSchema['oscars_nomination']>(
+      buildInsertSql('oscars_nominations', getFields('oscars_nomination'))
+    ),
     productionCompany: db.prepare<InsertSchema['production_company']>(
       buildInsertSql('production_companies', getFields('production_company'))
     ),
     productionCompaniesOnMovie: db.prepare<InsertSchema['production_companies_on_movie']>(
       buildInsertSql('production_companies_on_movies', getFields('production_companies_on_movie'))
     ),
+    streamerOnMovie: db.prepare<InsertSchema['streamers_on_movie']>(
+      buildInsertSql('streamers_on_movies', getFields('streamers_on_movie'))
+    ),
   };
 };
+
+// NB: insert.run only returns the id if it actually inserts a row
+// but does / returns nothing if the row already exists
+// which means we need to refetch by tmdb_id after inserting
 
 export const insertNewMovie = async (
   db: Database,
@@ -154,16 +165,14 @@ export const insertNewMovie = async (
   const inserter = prepareInsert(db);
 
   // add movie
-  const r1 = inserter.movie.run(parsedMovie.movie);
-  console.log(r1);
+  inserter.movie.run(parsedMovie.movie);
   const insertedMovie = await getMovieByTmdbId(parsedMovie.movie.tmdb_id);
   if (!insertedMovie) throw new Error('Failed to get movie');
   const movie_id = insertedMovie.id;
 
   // add actors
   parsedMovie.actors.forEach(actor => {
-    const a1 = inserter.actor.run(actor);
-    console.log(a1);
+    inserter.actor.run(actor);
   });
   const insertedActors = await Promise.all(
     parsedMovie.actors.map(actor => getActorByTmdbId(actor.tmdb_id))
@@ -239,6 +248,8 @@ export const insertNewEpisode = async (
   episode.hosts.forEach(host => {
     inserter.host.run({ name: host });
   });
+
+  // add hosts on episode
   const insertedHosts = await Promise.all(episode.hosts.map(host => getHostByName(host)));
   episode.hosts.forEach(host => {
     const host_id = insertedHosts.find(a => a?.name === host)?.id;

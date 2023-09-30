@@ -111,6 +111,15 @@ export const getMovies = async (params: QpSchema) => {
           genres_on_movies: {
             select: { genres: selectIdAndName },
           },
+          oscars_nominations: {
+            select: {
+              id: true,
+              recipient: true,
+              won: true,
+              ceremony_year: true,
+              award: { select: { category: true, name: true } },
+            },
+          },
           streamers_on_movies: {
             select: { streamers: selectIdAndName },
           },
@@ -154,6 +163,14 @@ export const getMovies = async (params: QpSchema) => {
         .filter(jt => jt.hosts)
         .map(jt => jt.hosts!)
         .map(item => tokenize('host', item)),
+      oscars: movie.oscars_nominations.map(o => ({
+        id: o.id,
+        award: o.award.name,
+        awardCategory: o.award.category,
+        won: o.won,
+        recipient: o.recipient,
+        ceremonyYear: o.ceremony_year,
+      })),
       revenue: tokenizeRevenue(movie.revenue),
       runtime: tokenizeRuntime(movie.runtime),
       streamers: movie.streamers_on_movies

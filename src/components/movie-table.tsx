@@ -30,6 +30,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
               Director
             </TableHeader>
             <TableHeader>Top Cast</TableHeader>
+            <TableHeader>Oscars</TableHeader>
             <TableHeader>Hosts</TableHeader>
             <TableHeader>Streaming</TableHeader>
             <TableHeader onSort={onSortClick} sort="budget">
@@ -63,6 +64,14 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
+                {/* <td>
+                  {m.oscars.map(o => (
+                    <span key={o.id}>{o.award}</span>
+                  ))}
+                </td> */}
+                <td>
+                  {m.oscars.length} Oscar{m.oscars.length === 1 ? '' : 's'}
+                </td>
                 <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
                 <ClickableTd tokens={m.streamers} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />

@@ -1,30 +1,28 @@
-- mode switch in navbar
+- finish script cleanup and delete old shit
+- oscar/rewa mode switch in navbar (green and gold)
 - top appearances pages + api route filter
 - lots of oscar movie cards dont have taglines but do have overviews - need a way to access it
 - maxlist box when lots of directors, hosts, oscars, genres
 - redo oscar_nominations inserts (need recipient)
 - displaying oscars in table
-
-- oscars
-
-  - data is in finally
-  - figure out display of awards in table and card
-  - need to normalize/format names
-  - tokenize oscars
-  - maybe tables TDs should have a max with an expandable thing
+  - card and table display
+  - normalize names
+  - tokenize award id
   - ability to view oscar year (probably via modal)
-  - new movie script needs to check for oscars? or the movie will already be there so it should work fine...it will just add the episode
-
 - more composable pieces in scripts - when you import stuff from other files they automatically run
-
-- api routes just stall on errors - need to send something
-- accessible button name
-- select label
-- make sure table is navigable
-- lots of clickable things - probably need to add role button + aria label
-
-- more boxes
-- crew sidebar
+- a11y
+  - accessible button name
+  - select label
+  - make sure table is navigable
+  - lots of clickable things - probably need to add role button + aria label
+- more UI
+  - clicking table title opens movie sidebar w/ more info
+  - year range selector
+  - handle oscar/rewa discrepancies (e.g. hosts, episode columns), sortable fields
+  - maxwidth on TDs (cast, title, director)
+- oscar streamers strategy
+  - 3.9k movies
+  - filter out movies w/ bullshit awards (doc short, animated short, e.g.)
 
 # NICE TO HAVE
 

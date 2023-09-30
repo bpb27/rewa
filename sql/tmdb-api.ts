@@ -1,4 +1,5 @@
 import { pick } from 'remeda';
+import { relevantStreamers } from '../src/data/streamers';
 
 const API_KEY = process.env.TMDB_API_KEY;
 
@@ -14,7 +15,7 @@ const getMovieByName = async ({ name, year }: { name: string; year: number }) =>
   const route = `https://api.themoviedb.org/3/search/movie?query=${filmName}&include_adult=false&language=en-US&page=1&api_key=${API_KEY}`;
   const response = await fetch(route);
 
-  // TODO: movie to parse
+  // TODO: move to separate parse func
   const { results, total_results } = (await response.json()) as {
     results: { id: number; release_date: string }[];
     total_results: number;
@@ -34,6 +35,26 @@ const getMovieByName = async ({ name, year }: { name: string; year: number }) =>
   });
   if (!movie) throw new Error('Not found for that year');
   return getMovieById({ tmdb_id: movie.id });
+};
+
+const getStreamersForMovie = async ({ tmdb_id }: { tmdb_id: number }) => {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/movie/${tmdb_id}/watch/providers?api_key=${API_KEY}`
+  );
+  const data = await response.json();
+  const results = data?.results?.US?.flatrate as { provider_name: string }[];
+  return (results || [])
+    .filter(p => relevantStreamers.includes(p.provider_name))
+    .map(p => p.provider_name);
+};
+
+const getTmdbIdByImdbId = async ({ imdb_id }: { imdb_id: string }) => {
+  const findUrl = `https://api.themoviedb.org/3/find/${imdb_id}?api_key=${API_KEY}&external_source=imdb_id`;
+  const response = await fetch(findUrl);
+  const data = (await response.json()) as { movie_results: { id: number }[] };
+  const tmdbId = data.movie_results[0]?.id;
+  if (!tmdbId) throw new Error(`Failed to find ${imdb_id}`);
+  return tmdbId;
 };
 
 const parseMovieById = (movie: Movie) => {
@@ -80,6 +101,8 @@ const parseMovieById = (movie: Movie) => {
 export const tmdbApi = {
   getMovieById,
   getMovieByName,
+  getStreamersForMovie,
+  getTmdbIdByImdbId,
   parseMovieById,
 };
 

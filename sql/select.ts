@@ -23,3 +23,19 @@ export const getGenreByName = (name: string) => prisma.genres.findFirst({ where:
 export const getHostByName = (name: string) => prisma.hosts.findFirst({ where: { name } });
 
 export const getMovieByTmdbId = (id: number) => prisma.movies.findFirst(byTmdbId(id));
+
+export const getAllMoviesWithEpisodes = () =>
+  prisma.movies.findMany({
+    where: { episodes: { some: {} } },
+    select: { id: true, tmdb_id: true, title: true },
+  });
+
+export const getAllMovies = () =>
+  prisma.movies.findMany({
+    select: { id: true, title: true, release_date: true },
+  });
+
+export const getAllStreamers = () =>
+  prisma.streamers.findMany({ select: { id: true, name: true } });
+
+export const getAllAwards = () => prisma.oscars_awards.findMany();
