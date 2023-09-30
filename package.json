@@ -11,8 +11,7 @@
     "movie": "node -r esbuild-register -r dotenv/config ./sql/scripts/insert-movie.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/scripts/update-streamers.ts",
     "views": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-views.ts",
-    "oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-oscars-tables.ts",
-    "missing": "node -r esbuild-register -r dotenv/config ./sql/scripts/fill-missing-oscars.ts",
+    "oscar-oneoff": "node -r esbuild-register -r dotenv/config ./sql/scripts/oscar-one-offs.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {
