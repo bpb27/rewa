@@ -1,7 +1,7 @@
 - oscar/rewa mode switch in navbar (green and gold)
 - top appearances oscars pages + api route filter
 - clicking table title opens movie sidebar w/ more info
-- real oscars only filter
+- oscar filters: real only, categories w/ all nominees or just winners
 - oscars by year page (would help verify data is right)
 - sort by total oscars
 - displaying oscars in table

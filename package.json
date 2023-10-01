@@ -12,6 +12,8 @@
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/scripts/update-streamers.ts",
     "views": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-views.ts",
     "oscar-oneoff": "node -r esbuild-register -r dotenv/config ./sql/scripts/oscar-one-offs.ts",
+    "oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-oscars-tables.ts",
+    "export-oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/export-oscars.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {

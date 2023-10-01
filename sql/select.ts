@@ -32,7 +32,7 @@ export const getAllMoviesWithEpisodes = () =>
 
 export const getAllMovies = () =>
   prisma.movies.findMany({
-    select: { id: true, title: true, release_date: true },
+    select: { id: true, title: true, release_date: true, tmdb_id: true },
   });
 
 export const getAllStreamers = () =>

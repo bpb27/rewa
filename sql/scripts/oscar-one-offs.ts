@@ -6,10 +6,10 @@ import { prepareInsert } from '../insert';
 import { getAllAwards, getMovieByTmdbId } from '../select';
 
 // pull from allOscars file
-const title = 'Sunset Blvd.';
-const year = 1950;
+const title = 'Gold';
+const year = 1974;
 // lookup via tmdb.org
-const tmdb_id = 599;
+const tmdb_id = 47737;
 
 const run = async () => {
   const db = connectToDb();
