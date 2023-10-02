@@ -12,7 +12,9 @@ SELECT
     END
   ) AS profit_percentage,
   COALESCE(e.episode_order, 0) AS episode_order,
-  COALESCE(c.name, 'N/A') AS director_name
+  COALESCE(c.name, 'N/A') AS director_name,
+  COALESCE(o.total_nominations, 0) AS total_oscar_nominations,
+  COALESCE(o.total_wins, 0) AS total_oscar_wins
 FROM
   movies AS m
   LEFT JOIN episodes AS e ON m.id = e.movie_id
@@ -28,5 +30,20 @@ FROM
     GROUP BY
       com.movie_id
   ) AS c ON m.id = c.movie_id
+  LEFT JOIN (
+    SELECT
+      movie_id,
+      COUNT(*) AS total_nominations,
+      SUM(
+        CASE
+          WHEN won THEN 1
+          ELSE 0
+        END
+      ) AS total_wins
+    FROM
+      oscars_nominations
+    GROUP BY
+      movie_id
+  ) AS o ON m.id = o.movie_id
 GROUP BY
   m.id;

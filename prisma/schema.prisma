@@ -168,18 +168,20 @@ model oscars_nominations {
   award         oscars_awards @relation(fields: [award_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   movie         movies        @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@unique([movie_id, award_id], map: "sqlite_autoindex_oscars_nominations_1")
+  @@unique([movie_id, award_id, recipient], map: "sqlite_autoindex_oscars_nominations_1")
 }
 
 view movies_with_computed_fields {
-  movie_id          Int             @unique
-  budget            Int
-  release_date      String
-  revenue           Int
-  runtime           Int
-  title             String
-  profit_percentage Int
-  episode_order     Int
-  director_name     String
-  movie             movies?         @relation(fields: [movie_id], references: [id])
+  movie_id                Int              @unique
+  budget                  Int
+  release_date            String
+  revenue                 Int
+  runtime                 Int
+  title                   String
+  profit_percentage       Int
+  episode_order           Int
+  director_name           String
+  total_oscar_nominations Int
+  total_oscar_wins        Int
+  movie                   movies?          @relation(fields: [movie_id], references: [id])
 }

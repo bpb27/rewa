@@ -14,7 +14,7 @@ import { type SortKey, useQueryParams, QpSchema } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 import { type ApiGetMoviesResponse } from '~/pages/api/movies';
 import { fetcher } from '~/utils/api';
-import { sortingUtils } from '~/utils/sorting';
+import { sortOptions } from '~/utils/sorting';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 
 export type Movie = ApiGetMoviesResponse['movies'][number];
@@ -98,7 +98,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           <h2 className="text-xl font-semibold tracking-wide">{total}</h2>
           <Icon.Movie className="ml-1" />
           <Space w={3} />
-          <Select onSelect={handleSort} options={sortingUtils.options} value={sort} />
+          <Select onSelect={handleSort} options={sortOptions} value={sort} />
           <Button className="ml-1" onClick={() => update('asc', !asc)} variant="icon">
             {asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
           </Button>

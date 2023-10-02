@@ -1,9 +1,9 @@
 import { connectToDb } from '../general';
 
 /*
-    npm run view
+    npm run views
     npx prisma db pull
-    amend prisma schema file manually
+    amend prisma schema file manually, add proper type where it says unsupported
     npx prisma generate
 */
 
@@ -24,7 +24,9 @@ const run = () => {
                 ELSE 0
             END) as profit_percentage,
             COALESCE(e.episode_order, 0) as episode_order,
-            COALESCE(c.name, 'N/A') as director_name
+            COALESCE(c.name, 'N/A') as director_name,
+            COALESCE(o.total_nominations, 0) AS total_oscar_nominations,
+            COALESCE(o.total_wins, 0) AS total_oscar_wins
         FROM movies m
         LEFT JOIN episodes e ON m.id = e.movie_id
         LEFT JOIN (
@@ -34,6 +36,14 @@ const run = () => {
             WHERE com.job = 'Director'
             GROUP BY com.movie_id
         ) as c ON m.id = c.movie_id
+        LEFT JOIN (
+            SELECT
+            movie_id,
+            COUNT(*) AS total_nominations,
+            SUM(CASE WHEN won THEN 1 ELSE 0 END) AS total_wins
+            FROM oscars_nominations
+            GROUP BY movie_id
+        ) AS o ON m.id = o.movie_id
         GROUP BY m.id; 
     `);
   db.close();

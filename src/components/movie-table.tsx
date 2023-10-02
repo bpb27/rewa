@@ -64,13 +64,10 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
-                {/* <td>
-                  {m.oscars.map(o => (
-                    <span key={o.id}>{o.award}</span>
-                  ))}
-                </td> */}
                 <td>
-                  {m.oscars.length} Oscar{m.oscars.length === 1 ? '' : 's'}
+                  <span>{m.oscars.length} noms</span>
+                  <br />
+                  <span>{m.oscars.filter(o => o.won).length} wins</span>
                 </td>
                 <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
                 <ClickableTd tokens={m.streamers} onClick={onTokenClick} />

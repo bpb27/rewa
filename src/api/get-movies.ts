@@ -32,6 +32,8 @@ const sortMap = {
   revenue: 'revenue',
   runtime: 'runtime',
   title: 'title',
+  total_oscar_nominations: 'total_oscar_nominations',
+  total_oscar_wins: 'total_oscar_wins',
 } satisfies Record<SortKey, OrderByKey>;
 
 export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;

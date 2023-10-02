@@ -3,6 +3,7 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
+type GetTopActorsParams = { mode: 'rewa' | 'oscars' };
 export type GetTopActorsResponse = Awaited<ReturnType<typeof getTopActors>>;
 
 export const TOP_PEOPLE_MOVIE_SELECT = {
@@ -14,7 +15,7 @@ export const TOP_PEOPLE_MOVIE_SELECT = {
   },
 };
 
-export const getTopActors = async () => {
+export const getTopActors = async ({ mode }: GetTopActorsParams) => {
   const top = await prisma.actors_on_movies.groupBy({
     by: ['actor_id'],
     _count: {
@@ -23,6 +24,12 @@ export const getTopActors = async () => {
     orderBy: {
       _count: {
         actor_id: 'desc',
+      },
+    },
+    where: {
+      movies: {
+        ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),
+        ...(mode === 'rewa' ? { episodes: { some: {} } } : undefined),
       },
     },
     take: 100,
@@ -39,7 +46,19 @@ export const getTopActors = async () => {
       id: true,
       profile_path: true,
       actors_on_movies: {
-        select: { character: true, movies: TOP_PEOPLE_MOVIE_SELECT },
+        select: {
+          character: true,
+          movies: {
+            select: {
+              id: true,
+              poster_path: true,
+              release_date: true,
+              title: true,
+              episodes: { select: { id: true } },
+              oscars_nominations: { select: { id: true } },
+            },
+          },
+        },
       },
     },
   });
@@ -50,10 +69,16 @@ export const getTopActors = async () => {
       name: item.name,
       profile_path: item.profile_path,
       movies: uniqBy(
-        item.actors_on_movies.map(movie => ({
-          ...movie.movies!,
-          character: movie.character,
-        })),
+        item.actors_on_movies
+          .map(movie => ({
+            ...movie.movies!,
+            character: movie.character,
+          }))
+          .filter(aom => {
+            if (mode === 'oscars') return aom.oscars_nominations.length;
+            if (mode === 'rewa') return aom.episodes.length;
+            return true;
+          }),
         movie => movie.id
       ),
     }))

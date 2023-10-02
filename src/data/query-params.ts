@@ -17,6 +17,8 @@ export const sortSchema = z.enum([
   'revenue',
   'runtime',
   'title',
+  'total_oscar_nominations',
+  'total_oscar_wins',
 ]);
 
 export const qpSchema = z.object({

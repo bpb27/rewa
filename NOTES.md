@@ -1,9 +1,6 @@
-- oscar/rewa mode switch in navbar (green and gold)
-- top appearances oscars pages + api route filter
 - clicking table title opens movie sidebar w/ more info
 - oscar filters: real only, categories w/ all nominees or just winners
 - oscars by year page (would help verify data is right)
-- sort by total oscars
 - displaying oscars in table
   - card and table display
   - normalize names
@@ -24,6 +21,7 @@
   - make sure table is navigable
   - lots of clickable things - probably need to add role button + aria label
 - basic smoke test
+- type API route strings w/ responses, probably nav routes too
 
 # NICE TO HAVE
 
