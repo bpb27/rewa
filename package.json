@@ -14,6 +14,7 @@
     "oscar-oneoff": "node -r esbuild-register -r dotenv/config ./sql/scripts/oscar-one-offs.ts",
     "oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-oscars-tables.ts",
     "export-oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/export-oscars.ts",
+    "export-something": "node -r esbuild-register -r dotenv/config ./sql/scripts/export-something.ts",
     "studio": "npx prisma studio"
   },
   "dependencies": {

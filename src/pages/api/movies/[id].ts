@@ -19,7 +19,6 @@ const paramsSchema = z.object({
 const handler: NextApiHandler<ApiGetMovieResponse | ApiError> = async (req, res) => {
   try {
     const params = paramsSchema.parse(req.query);
-    console.log(params);
     const movieParams = { ...defaultQps, movie: [params.id] };
     const actorParams = { actorId: params.actorId!, movieId: params.id };
     const [moviesResponse, actor] = await Promise.all([

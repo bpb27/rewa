@@ -1,5 +1,5 @@
 import { getMovies } from '~/api/get-movies';
-import { MoviesPage } from '~/components/movie-table-page';
+import { MoviesPage } from '~/components/movies-page';
 import { defaultQps, type QpSchema } from '~/data/query-params';
 import { type StaticProps } from '~/utils/general-types';
 

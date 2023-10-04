@@ -1,5 +1,23 @@
+Rename to Leaderboard
+
+# Bugs
+
+- empty search results have an empty results w/ transparent background on mobile
+
+# Data probs
+
+- The Hunt is wrong (should be the Mads movie)
+- Accented characters when searching
+- Award category to separate table so it can be tokenized
+
+# TODO
+
 - clicking table title opens movie sidebar w/ more info
-- oscar filters: real only, categories w/ all nominees or just winners
+- oscar filters (button that opens an overlay)
+  - filter bullshit awards checkbox (on by default)
+  - every award checklist
+  - won checkbox
+  - year range (two inputs, gte and lte) (maybe same for budget, revenue, runtime)
 - oscars by year page (would help verify data is right)
 - displaying oscars in table
   - card and table display
@@ -22,18 +40,10 @@
   - lots of clickable things - probably need to add role button + aria label
 - basic smoke test
 - type API route strings w/ responses, probably nav routes too
-
-# NICE TO HAVE
-
-- top appearance since year would be cool but difficult
+- top appearance since year
 - more linting rules
-- expandable place for description, crew, cast + load more
-- imdb rating / rottenmater rating
-- filter components like year slider, host checklist/typeahead (or filter sidebar) (would be outside token bar but needs to be QP'd)
+- expandable place for description, crew, cast + load more in table
+- imdb rating / rottenmater rating / roger ebert
 - person most involved list
-- ditch css modules?
-- actor viz sensor + search? search on other pages?
-
-# IMDB list of all rewatchables movies
-
-https://www.imdb.com/list/ls099792855/?sort=list_order,desc&st_dt=&mode=detail&page=3
+- ditch css modules
+- search on top appearances pages

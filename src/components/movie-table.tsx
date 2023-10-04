@@ -2,7 +2,7 @@ import { type PropsWithChildren, Fragment } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/icons';
 import { MovieTablePoster } from '~/components/images';
-import { type Movie } from '~/components/movie-table-page';
+import { type Movie } from '~/components/movies-page';
 import { type Token } from '~/data/tokens';
 import { type SortKey } from '~/data/query-params';
 import { cn } from '~/utils/style';

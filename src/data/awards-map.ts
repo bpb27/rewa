@@ -1,7 +1,5 @@
 /*
-    name matches category field in all.json
-    ignored all honorary awards and stuff pre 1950
-    added category to normalize discrepancies between years
+  category normalizes award name discrepancies between years
 */
 
 export type AwardCategory = (typeof awardsMap)[number]['category'];

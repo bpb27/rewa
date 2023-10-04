@@ -20,6 +20,7 @@ const tableNameSchema = z.enum([
   'hosts_on_episodes',
   'movies',
   'oscars_awards',
+  'oscars_categories',
   'oscars_nominations',
   'production_companies',
   'production_companies_on_movies',
