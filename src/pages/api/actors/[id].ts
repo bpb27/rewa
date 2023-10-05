@@ -5,6 +5,7 @@ import { apiError } from '~/utils/format';
 import { type ApiError } from '~/utils/general-types';
 import { integer } from '~/utils/zschema';
 
+export type ApiGetActorParams = undefined;
 export type ApiGetActorResponse = GetActorResponse;
 
 const paramsSchema = z.object({

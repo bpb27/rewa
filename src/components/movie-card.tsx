@@ -1,6 +1,6 @@
 import { useState, type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
 import { type Movie } from '~/components/movies-page';
 import { type Token } from '~/data/tokens';

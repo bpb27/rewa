@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { groupBy } from 'remeda';
-import useSWR from 'swr';
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { type Token } from '~/data/tokens';
-import { type ApiSearchResponse } from '~/pages/api/search';
-import { fetcher } from '~/utils/api';
 import { capitalize } from '~/utils/format';
 import { useDebounce } from '~/utils/use-debounce';
+import { useAPI } from '~/utils/use-api';
 
 type FullTypeaheadProps = {
   filter: 'episode' | 'oscar';
@@ -21,9 +19,10 @@ export const FullTypeahead = ({ filter, onSelect }: FullTypeaheadProps) => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useSWR<ApiSearchResponse>(
-    debouncedSearch ? `/api/search?search=${debouncedSearch}&filter=${filter}` : null,
-    fetcher
+  const { data, isLoading } = useAPI(
+    '/api/search',
+    { search: debouncedSearch, filter },
+    { skip: !debouncedSearch }
   );
 
   useEffect(() => {

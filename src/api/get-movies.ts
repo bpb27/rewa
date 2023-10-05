@@ -36,9 +36,10 @@ const sortMap = {
   total_oscar_wins: 'total_oscar_wins',
 } satisfies Record<SortKey, OrderByKey>;
 
+export type GetMoviesParams = QpSchema;
 export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;
 
-export const getMovies = async (params: QpSchema) => {
+export const getMovies = async (params: GetMoviesParams) => {
   const mode = params.mode.toUpperCase() as 'AND' | 'OR';
   const sortOrder = params.asc ? 'asc' : 'desc';
   const offset = params.page * take;

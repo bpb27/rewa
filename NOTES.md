@@ -2,6 +2,7 @@ Rename to Leaderboard
 
 # Bugs
 
+- page QP will fuckup shareable links
 - empty search results have an empty results w/ transparent background on mobile
 
 # Data probs

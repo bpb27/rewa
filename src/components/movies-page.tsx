@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import useSWR from 'swr';
+import { useEffect, useRef, useState } from 'react';
 import { FullTypeahead } from '~/components/full-typeahead';
 import { MovieCards } from '~/components/movie-card';
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import Layout from '~/components/layout';
 import { MovieTable } from '~/components/movie-table';
 import { TokenBar } from '~/components/token-bar';
@@ -13,9 +12,11 @@ import { Space } from '~/components/ui/space';
 import { type SortKey, useQueryParams, QpSchema } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 import { type ApiGetMoviesResponse } from '~/pages/api/movies';
-import { fetcher } from '~/utils/api';
+import { useAPI } from '~/utils/use-api';
 import { sortOptions } from '~/utils/sorting';
 import { useVizSensor } from '~/utils/use-viz-sensor';
+import { OscarYearModal } from './oscar-year-modal';
+import { useToggle } from '~/utils/use-toggle';
 
 export type Movie = ApiGetMoviesResponse['movies'][number];
 type MoviesPageProps = { initialData: ApiGetMoviesResponse; defaultQps: QpSchema };
@@ -25,22 +26,19 @@ type MoviesPageProps = { initialData: ApiGetMoviesResponse; defaultQps: QpSchema
 // but ignore it if there are QPs (!isEmpty)
 
 export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
-  const { values, update, updateAll, clearTokens, queryString, isEmpty } =
-    useQueryParams(defaultQps);
+  const { values, update, updateAll, clearTokens, isEmpty } = useQueryParams(defaultQps);
 
   const vizSensorRef = useRef<HTMLDivElement>(null);
 
-  const [display, setDisplay] = useState<'table' | 'card' | undefined>();
+  const oscarsModal = useToggle('closed', 'open');
+  const display = useToggle('table', 'card', null);
   const [tokens, setTokens] = useState<Token[]>([]);
   const [total, setTotal] = useState(isEmpty ? initialData.total : 0);
   const [movies, setMovies] = useState<ApiGetMoviesResponse['movies']>(
     isEmpty ? initialData.movies : []
   );
 
-  const { data, isLoading } = useSWR<ApiGetMoviesResponse>(
-    isEmpty ? null : `/api/movies?${queryString}`,
-    fetcher
-  );
+  const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
   const { asc, mode, sort } = values;
 
   // no query param values, so update the URL with the defaults
@@ -65,7 +63,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
 
   // default to card view on mobile (window doesn't exist when SSR'd so needs to be in effect)
   useEffect(() => {
-    setDisplay(window.innerWidth < 700 ? 'card' : 'table');
+    display.set(window.innerWidth < 700 ? 'card' : 'table');
   }, []);
 
   // enable infinite scroll
@@ -103,19 +101,24 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
             {asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
           </Button>
           <Space w={3} />
-          <Button onClick={() => setDisplay('table')} selected={display === 'table'} variant="icon">
+          <Button onClick={display.setTable} selected={display.isTable} variant="icon">
             <Icon.Table />
           </Button>
-          <Button onClick={() => setDisplay('card')} selected={display === 'card'} variant="icon">
+          <Button onClick={display.setCard} selected={display.isCard} variant="icon">
             <Icon.Card />
           </Button>
         </Box.FilterButtons>
       </Box.Filters>
-      {display === 'table' && (
+      {display.isTable && (
         <MovieTable movies={movies} onTokenClick={handleTokenClick} onSortClick={handleSort} />
       )}
-      {display === 'card' && <MovieCards movies={movies} onTokenClick={handleTokenClick} />}
-      {!!display && !isLoading && !!data?.hasNext && <div ref={vizSensorRef} />}
+      {display.isCard && <MovieCards movies={movies} onTokenClick={handleTokenClick} />}
+      {display.isDefined && !isLoading && !!data?.hasNext && !!movies.length && (
+        <div ref={vizSensorRef} />
+      )}
+      {oscarsModal.isOpen && (
+        <OscarYearModal isOpen={oscarsModal.isOpen} onClose={oscarsModal.setClosed} year={1987} />
+      )}
     </Layout>
   );
 };

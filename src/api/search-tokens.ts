@@ -6,7 +6,7 @@ import { isDefined } from 'remeda';
 
 const prisma = Prisma.getPrisma();
 
-type SearchTokensParams = {
+export type SearchTokensParams = {
   filter: 'episode' | 'oscar';
   search: string;
 };

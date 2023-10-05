@@ -9,6 +9,7 @@ const paramsSchema = z.object({
   search: z.string(),
 });
 
+export type ApiSearchParams = z.infer<typeof paramsSchema>;
 export type ApiSearchResponse = SearchTokensResponse;
 
 const handler: NextApiHandler<SearchTokensResponse | ApiError> = async (req, res) => {

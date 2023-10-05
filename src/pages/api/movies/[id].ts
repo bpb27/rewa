@@ -7,6 +7,7 @@ import { apiError } from '~/utils/format';
 import { type ApiError } from '~/utils/general-types';
 import { integer } from '~/utils/zschema';
 
+export type ApiGetMovieParams = Pick<z.infer<typeof paramsSchema>, 'actorId'>;
 export type ApiGetMovieResponse = GetMoviesResponse['movies'][number] & {
   actor: GetActorInMovieResponse | undefined;
 };

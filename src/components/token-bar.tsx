@@ -1,5 +1,5 @@
 import { Button } from './ui/button';
-import { Icon } from './icons';
+import { Icon } from './ui/icons';
 import { useQueryParams } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 

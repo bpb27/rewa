@@ -79,7 +79,10 @@ export const qpParse = (search: object, defaultValues: QpSchema) => {
   return parsed.success ? parsed.data : defaultValues;
 };
 
-export const qpStringify = (search: QpSchema, path?: string) => {
+export const qpStringify = (
+  search: Record<string, string | number | boolean | string[] | number[]>,
+  path?: string
+) => {
   const trimmed = omitBy(
     search,
     value => value === undefined || (Array.isArray(value) && !value.length)

@@ -1,7 +1,7 @@
 import * as Nav from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import { capitalize } from '~/utils/format';
 import { cn } from '~/utils/style';
 

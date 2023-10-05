@@ -1,5 +1,7 @@
 import {
   ArrowDown,
+  ArrowLeft,
+  ArrowRight,
   ArrowUp,
   CalendarDays,
   ChevronDown,
@@ -32,6 +34,8 @@ export const ConditionalCaret = ({ showing, ...rest }: IconProps & { showing: bo
 export const Icon = {
   Actor: User2,
   ArrowDown: ArrowDown,
+  ArrowLeft: ArrowLeft,
+  ArrowRight: ArrowRight,
   ArrowUp: ArrowUp,
   Calendar: CalendarDays,
   Card: RectangleVertical,

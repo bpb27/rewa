@@ -1,24 +1,19 @@
 import { type PropsWithChildren, useState } from 'react';
-import useSWR from 'swr';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon, type IconKey } from '~/components/icons';
+import { Icon, type IconKey } from '~/components/ui/icons';
 import { Sidebar } from '~/components/ui/sidebar';
-import { type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
-import { fetcher } from '~/utils/api';
+import { useAPI } from '~/utils/use-api';
 import { formatDate } from '~/utils/format';
 
 type MovieCardSidebar = {
-  movieId: number;
   actorId?: number;
+  movieId: number;
   onClose: () => void;
 };
 
-export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar) => {
+export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const [showDesc, setShowDesc] = useState(false);
-  const { data: movie } = useSWR<ApiGetMovieResponse>(
-    `/api/movies/${movieId}?${actorId ? `actorId=${actorId}` : ''}`,
-    fetcher
-  );
+  const { data: movie } = useAPI(`/api/movies/${movieId}`, { actorId });
 
   if (!movie) return null;
   return (
