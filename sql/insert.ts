@@ -76,13 +76,19 @@ const insertSchema = z.object({
     tmdb_id: z.number(),
   }),
   oscars_award: z.object({
-    category: z.string(),
     name: z.string(),
+    category_id: z.number(),
+  }),
+  oscars_category: z.object({
+    name: z.string(),
+    relevance: z.string(),
   }),
   oscars_nomination: z.object({
     award_id: z.number(),
     ceremony_year: z.number(),
     film_year: z.number(),
+    actor_id: z.number().nullable(),
+    crew_id: z.number().nullable(),
     movie_id: z.number(),
     recipient: z.string(),
     won: z.number(),
@@ -138,6 +144,9 @@ export const prepareInsert = (db: Database) => {
     movie: db.prepare<InsertSchema['movie']>(buildInsertSql('movies', getFields('movie'))),
     oscarAward: db.prepare<InsertSchema['oscars_award']>(
       buildInsertSql('oscars_awards', getFields('oscars_award'))
+    ),
+    oscarCategory: db.prepare<InsertSchema['oscars_category']>(
+      buildInsertSql('oscars_categories', getFields('oscars_category'))
     ),
     oscarNomination: db.prepare<InsertSchema['oscars_nomination']>(
       buildInsertSql('oscars_nominations', getFields('oscars_nomination'))

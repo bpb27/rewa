@@ -114,20 +114,13 @@ export const getMovies = async (params: GetMoviesParams) => {
           genres_on_movies: {
             select: { genres: selectIdAndName },
           },
-          oscars_nominations: {
-            select: {
-              id: true,
-              recipient: true,
-              won: true,
-              ceremony_year: true,
-              award: { select: { category: true, name: true } },
-            },
-          },
           streamers_on_movies: {
             select: { streamers: selectIdAndName },
           },
         },
       },
+      total_oscar_nominations: true,
+      total_oscar_wins: true,
     },
   });
 
@@ -166,20 +159,16 @@ export const getMovies = async (params: GetMoviesParams) => {
         .filter(jt => jt.hosts)
         .map(jt => jt.hosts!)
         .map(item => tokenize('host', item)),
-      oscars: movie.oscars_nominations.map(o => ({
-        id: o.id,
-        award: o.award.name,
-        awardCategory: o.award.category,
-        won: o.won,
-        recipient: o.recipient,
-        ceremonyYear: o.ceremony_year,
-      })),
       revenue: tokenizeRevenue(movie.revenue),
       runtime: tokenizeRuntime(movie.runtime),
       streamers: movie.streamers_on_movies
         .filter(jt => jt.streamers)
         .map(jt => jt.streamers!)
         .map(item => tokenize('streamer', item)),
+      oscars: {
+        noms: item.total_oscar_nominations,
+        wins: item.total_oscar_wins,
+      },
       year: tokenizeYear(movie.release_date),
     };
   });

@@ -65,9 +65,9 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
                 <td>
-                  <span>{m.oscars.length} noms</span>
+                  <span>{m.oscars.noms} noms</span>
                   <br />
-                  <span>{m.oscars.filter(o => o.won).length} wins</span>
+                  <span>{m.oscars.wins} wins</span>
                 </td>
                 <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
                 <ClickableTd tokens={m.streamers} onClick={onTokenClick} />

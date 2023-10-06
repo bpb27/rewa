@@ -161,8 +161,12 @@ CREATE TABLE IF NOT EXISTS ${TABLES.oscars_nominations} (
   recipient TEXT NOT NULL,
   movie_id INTEGER NOT NULL,
   award_id INTEGER NOT NULL,
+  actor_id INTEGER,
+  crew_id INTEGER,
   FOREIGN KEY (movie_id) REFERENCES ${TABLES.movies} (id) ON DELETE CASCADE,
   FOREIGN KEY (award_id) REFERENCES ${TABLES.oscars_awards} (id) ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES ${TABLES.actors} (id) ON DELETE CASCADE,
+  FOREIGN KEY (crew_id) REFERENCES ${TABLES.crew} (id) ON DELETE CASCADE,
   UNIQUE (movie_id, award_id, recipient)
 );
 `;
@@ -196,7 +200,7 @@ const createMap = {
   [TABLES.hosts_on_episodes]: createHostsOnEpisodesSql,
   [TABLES.movies]: createMoviesTableSql,
   [TABLES.oscars_awards]: createOscarAwardNamesTable,
-  [TABLES.oscars_categories]: createOscarsNominationsTable,
+  [TABLES.oscars_categories]: createOscarCategoryTable,
   [TABLES.oscars_nominations]: createOscarsNominationsTable,
   [TABLES.production_companies]: createProductionCompaniesSql,
   [TABLES.production_companies_on_movies]: createProductionCompaniesOnMoviesSql,
