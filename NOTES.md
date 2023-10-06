@@ -13,6 +13,7 @@ Rename to Leaderboard
 
 # TODO
 
+- oscars modal - could also take a movie id - clicking in table would open modal w/ movie's oscars + the whole year below
 - clicking table title opens movie sidebar w/ more info
 - oscar filters (button that opens an overlay)
   - filter bullshit awards checkbox (on by default)

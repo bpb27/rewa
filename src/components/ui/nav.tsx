@@ -52,7 +52,7 @@ export const Navbar = () => {
         </Nav.Item>
         <Nav.Item>
           <Nav.Trigger className="group flex py-2">
-            Most Appearances{' '}
+            Leaderboard{' '}
             <Icon.CaretDown
               className={cn(
                 'ml-1',
