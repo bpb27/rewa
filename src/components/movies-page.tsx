@@ -18,62 +18,54 @@ import { useVizSensor } from '~/utils/use-viz-sensor';
 import { OscarYearModal } from './oscar-year-modal';
 import { useToggle } from '~/utils/use-toggle';
 
+/*
+  if the URL has no query params (e.g. /rewa/movies)
+  - show initialData - the API response from /api/movies with the default params (prefetched via getStaticProps)
+  - add the default params to the URL
+  - why: no loading time for first page visit + keep state in URL
+*/
+
 export type Movie = ApiGetMoviesResponse['movies'][number];
 type MoviesPageProps = { initialData: ApiGetMoviesResponse; defaultQps: QpSchema };
 
-// NB: initialData is the api call result w/ the default qps
-// using w/ getStaticProps in pages so there's immediately data when you first hit the page
-// but ignore it if there are QPs (!isEmpty)
-
 export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   const { values, update, updateAll, clearTokens, isEmpty } = useQueryParams(defaultQps);
-
-  const vizSensorRef = useRef<HTMLDivElement>(null);
-
-  const oscarsModal = useToggle('closed', 'open');
-  const display = useToggle('table', 'card', null);
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [total, setTotal] = useState(isEmpty ? initialData.total : 0);
-  const [movies, setMovies] = useState<ApiGetMoviesResponse['movies']>(
-    isEmpty ? initialData.movies : []
-  );
+  const { asc, hasEpisode, mode, sort } = values;
 
   const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
-  const { asc, mode, sort } = values;
 
-  // no query param values, so update the URL with the defaults
+  const [{ hasNext, movies, page, tokens, total }, updateResponse] = useState<ApiGetMoviesResponse>(
+    isEmpty ? initialData : { hasNext: false, movies: [], page: 0, tokens: [], total: 0 }
+  );
+
+  const vizSensorRef = useRef<HTMLDivElement>(null);
+  const oscarsModal = useToggle('closed', 'open');
+  const display = useToggle('table', 'card', null);
+
+  // default to card view on mobile (window not available on SSR)
+  useEffect(() => {
+    window.innerWidth < 700 ? display.setCard() : display.setTable();
+  }, []);
+
+  // add default params to URL
   useEffect(() => {
     if (isEmpty) updateAll(values);
   }, [isEmpty]);
 
-  // storing results to allow for infinite scroll
-  // fresh means the list was reset (e.g. new token or sort)
-  // otherwise it's another paginated batch that should be appended to existing list
+  // store latest API response (append movies if paginated)
   useEffect(() => {
-    if (data && data.page) {
-      setMovies([...movies, ...data.movies]);
-      setTokens(data.tokens);
-      setTotal(data.total);
-    } else if (data) {
-      setMovies(data.movies);
-      setTokens(data.tokens);
-      setTotal(data.total);
+    if (data) {
+      const updatedMovies = data.page ? [...movies, ...data.movies] : data.movies;
+      updateResponse({ ...data, movies: updatedMovies });
     }
   }, [data]);
 
-  // default to card view on mobile (window doesn't exist when SSR'd so needs to be in effect)
-  useEffect(() => {
-    display.set(window.innerWidth < 700 ? 'card' : 'table');
-  }, []);
-
-  // enable infinite scroll
+  // load more via inifinite scroll
   useVizSensor(vizSensorRef, {
     rootMargin: '300px',
     threshold: 0.1,
     callback: () => {
-      if (data?.hasNext) {
-        update('page', data.page + 1);
-      }
+      if (hasNext) update('page', page + 1);
     },
   });
 
@@ -86,7 +78,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
     <Layout title="All movies">
       <Box.Filters>
         <FullTypeahead
-          filter={values.hasEpisode ? 'episode' : 'oscar'}
+          filter={hasEpisode ? 'episode' : 'oscar'}
           onSelect={token => update(token.type, token.id)}
         />
         <Box.Tokens>
