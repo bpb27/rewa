@@ -8,6 +8,10 @@ import {
   type ApiGetOscarsByYearParams,
   type ApiGetOscarsByYearResponse,
 } from '~/pages/api/oscars/year/[year]';
+import {
+  ApiGetOscarCategoriesParams,
+  ApiGetOscarCategoriesResponse,
+} from '~/pages/api/oscars/categories';
 
 export const fetcher = async (url: string) => {
   const response = await fetch(url);
@@ -23,15 +27,36 @@ export const fetcher = async (url: string) => {
 
 // NB: paths are determined by /pages/api directory structure
 type ApiRoutes = [
-  { path: `/api/actors/${number}`; params: ApiGetActorParams; response: ApiGetActorResponse },
-  { path: '/api/movies'; params: ApiGetMoviesParams; response: ApiGetMoviesResponse },
-  { path: `/api/movies/${number}`; params: ApiGetMovieParams; response: ApiGetMovieResponse },
+  {
+    path: `/api/actors/${number}`;
+    params: ApiGetActorParams;
+    response: ApiGetActorResponse;
+  },
+  {
+    path: '/api/movies';
+    params: ApiGetMoviesParams;
+    response: ApiGetMoviesResponse;
+  },
+  {
+    path: `/api/movies/${number}`;
+    params: ApiGetMovieParams;
+    response: ApiGetMovieResponse;
+  },
   {
     path: `/api/oscars/year/${number}`;
     params: ApiGetOscarsByYearParams;
     response: ApiGetOscarsByYearResponse;
   },
-  { path: '/api/search'; params: ApiSearchParams; response: ApiSearchResponse }
+  {
+    path: '/api/oscars/categories';
+    params: ApiGetOscarCategoriesParams;
+    response: ApiGetOscarCategoriesResponse;
+  },
+  {
+    path: '/api/search';
+    params: ApiSearchParams;
+    response: ApiSearchResponse;
+  }
 ];
 
 type ApiPath = ApiRoutes[number]['path'];

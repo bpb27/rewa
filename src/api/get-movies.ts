@@ -11,7 +11,7 @@ import {
 import { Prisma } from '~/prisma';
 import { Prisma as PrismaBaseType } from '@prisma/client';
 
-// NB: mode AND === all conditions present, mode OR === any conditions present
+// NB: searchMode AND === all conditions present, searchMode OR === any conditions present
 // NB: using a view (movies_with_computed_fields) to sort across tables (e.g. episode order) + custom fields (e.g. profit percentage)
 
 type QueryWhere = Pick<PrismaBaseType.moviesFindManyArgs, 'where'>;
@@ -40,7 +40,7 @@ export type GetMoviesParams = QpSchema;
 export type GetMoviesResponse = Awaited<ReturnType<typeof getMovies>>;
 
 export const getMovies = async (params: GetMoviesParams) => {
-  const mode = params.mode.toUpperCase() as 'AND' | 'OR';
+  const mode = params.searchMode.toUpperCase() as 'AND' | 'OR';
   const sortOrder = params.asc ? 'asc' : 'desc';
   const offset = params.page * take;
   const searches = getSearches(params);
@@ -50,8 +50,6 @@ export const getMovies = async (params: GetMoviesParams) => {
     where: {
       ...(params.hasEpisode ? { episodes: { some: {} } } : undefined),
       ...(params.hasOscar ? { oscars_nominations: { some: {} } } : undefined),
-      ...(params.yearGte ? { release_date: { gte: params.yearGte.toString() } } : undefined),
-      ...(params.yearLte ? { release_date: { gte: params.yearLte.toString() } } : undefined),
       ...prismaSearch,
     },
   };

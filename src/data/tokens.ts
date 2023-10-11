@@ -37,3 +37,9 @@ export const tokenizeYear = (date: string): Token => ({
   name: getYear(date),
   type: 'year',
 });
+
+export const tokenizeYearRange = (year: number, symbol: '<' | '>'): Token => ({
+  id: year,
+  name: `${symbol} ${year}`,
+  type: 'yearRange',
+});

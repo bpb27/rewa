@@ -8,6 +8,7 @@ import {
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
+  tokenizeYearRange,
 } from '~/data/tokens';
 
 const prisma = Prisma.getPrisma();
@@ -38,6 +39,7 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'genre') return prisma.genres.findMany(findParams).then(callback);
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
+      if (key === 'yearRange') return ids.map((id, i) => tokenizeYearRange(id, i ? '<' : '>'));
       if (key === 'oscarCategory')
         return prisma.oscars_categories
           .findMany(findParams)
@@ -47,6 +49,7 @@ export const getTokens = async (params: QpSchema) => {
           .findMany({ where: { id: { in: ids } }, select: { title: true, id: true } })
           .then(callback);
       }
+      // TODO: exhaustive check, maybe switch
     })
   );
 

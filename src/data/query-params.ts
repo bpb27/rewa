@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { stringify } from 'qs';
-import { omitBy, isArray } from 'remeda';
+import { omitBy, isArray, isNumber } from 'remeda';
 import { z } from 'zod';
 import { integer, integerList, boolean } from '~/utils/zschema';
 
@@ -17,12 +17,12 @@ export const qpSchema = z.object({
   hasEpisode: boolean.optional().default('false'),
   hasOscar: boolean.optional().default('false'),
   host: integerList.optional().default(''),
-  mode: z.enum(['and', 'or']).optional().default('and'),
   movie: integerList.optional().default(''),
   oscarCategory: integerList.optional().default(''),
   page: integer.optional().default(0),
   revenue: integerList.optional().default(''),
   runtime: integerList.optional().default(''),
+  searchMode: z.enum(['and', 'or']).optional().default('and'),
   sort: z
     .enum([
       'budget',
@@ -40,8 +40,7 @@ export const qpSchema = z.object({
     .default('title'),
   streamer: integerList.optional().default(''),
   year: integerList.optional().default(''),
-  yearGte: integer.optional().default(0),
-  yearLte: integer.optional().default(0),
+  yearRange: integerList.optional().default(''),
 });
 
 export const defaultQps: QpSchema = {
@@ -53,7 +52,7 @@ export const defaultQps: QpSchema = {
   hasEpisode: false,
   hasOscar: false,
   host: [],
-  mode: 'and',
+  searchMode: 'and',
   page: 0,
   sort: 'title',
   movie: [],
@@ -62,8 +61,7 @@ export const defaultQps: QpSchema = {
   runtime: [],
   streamer: [],
   year: [],
-  yearGte: 0,
-  yearLte: 0,
+  yearRange: [],
 };
 
 const tokenSchema = qpSchema.pick({
@@ -78,6 +76,7 @@ const tokenSchema = qpSchema.pick({
   runtime: true,
   streamer: true,
   year: true,
+  yearRange: true,
 });
 
 export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];
@@ -99,7 +98,7 @@ export const qpStringify = (
   return path ? `${path.split('?')[0]}?${qpString}` : qpString;
 };
 
-export const useQueryParams = (defaultValues: QpSchema) => {
+export const useQueryParams = (defaultValues: QpSchema = defaultQps) => {
   const router = useRouter();
   const isEmpty = !router.asPath.split('?')[1]?.length;
   const values = isEmpty ? defaultValues : qpParse(router.query, defaultValues);
@@ -117,29 +116,34 @@ export const useQueryParams = (defaultValues: QpSchema) => {
   };
 
   /*
-    if the target is an array, specify one value in the array to toggle
+    if the target is an array, can specify one value in the array to toggle
     e.g. update('actor', 1)
-    otherwise just change the direct value
-    e.g. update('sort', 'title')
   */
 
   const update = <TKey extends keyof QpSchema, TValue extends QpSchema[TKey]>(
     key: TKey,
-    value: TValue extends any[] ? TValue[number] : TValue
+    value: TValue extends any[] ? TValue[number] | TValue : TValue
   ) => {
     let newValues: QpSchema;
     const target = values[key];
 
-    if (isArray(target) && target.includes(value as number)) {
-      newValues = { ...values, [key]: target.filter(v => v !== value) };
-    } else if (isArray(target)) {
-      newValues = { ...values, [key]: [...target, value] };
+    if (isArray(target) && isNumber(value)) {
+      if (target.includes(value)) {
+        newValues = { ...values, [key]: target.filter(v => v !== value) };
+      } else {
+        newValues = { ...values, [key]: [...target, value] };
+      }
     } else {
       newValues = { ...values, [key]: value };
     }
 
     if (key !== 'page') {
       newValues.page = 0;
+    }
+    if (key === 'year') {
+      newValues.yearRange = [];
+    } else if (key === 'yearRange') {
+      newValues.year = [];
     }
 
     push(newValues);

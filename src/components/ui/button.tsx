@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react';
+import { RefObject, type PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
 
 type ButtonProps = PropsWithChildren<{

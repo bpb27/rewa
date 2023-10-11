@@ -17,6 +17,7 @@ import { sortOptions } from '~/utils/sorting';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { OscarYearModal } from './oscar-year-modal';
 import { useToggle } from '~/utils/use-toggle';
+import { MovieFiltersDialog } from './movie-filters-dialog';
 
 /*
   if the URL has no query params (e.g. /rewa/movies)
@@ -30,7 +31,7 @@ type MoviesPageProps = { initialData: ApiGetMoviesResponse; defaultQps: QpSchema
 
 export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   const { values, update, updateAll, clearTokens, isEmpty } = useQueryParams(defaultQps);
-  const { asc, hasEpisode, mode, sort } = values;
+  const { asc, hasEpisode, searchMode, sort } = values;
 
   const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
 
@@ -82,7 +83,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           onSelect={token => update(token.type, token.id)}
         />
         <Box.Tokens>
-          <TokenBar clear={clearTokens} update={update} tokens={tokens} mode={mode} />
+          <TokenBar clear={clearTokens} update={update} tokens={tokens} mode={searchMode} />
         </Box.Tokens>
         <Box.FilterButtons>
           <h2 className="text-xl font-semibold tracking-wide">{total}</h2>
@@ -99,6 +100,11 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           <Button onClick={display.setCard} selected={display.isCard} variant="icon">
             <Icon.Card />
           </Button>
+          <Space w={3} />
+          <MovieFiltersDialog
+            initialRange={values.yearRange}
+            onSelect={yearRange => update('yearRange', yearRange)}
+          />
         </Box.FilterButtons>
       </Box.Filters>
       {display.isTable && (
