@@ -25,6 +25,8 @@ export const formatDate = (d: string) => {
 
 export const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
+export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(capitalize).join(' ');
+
 export const getYear = (d: string) => {
   return d.length === 4 ? d : d.split('-')[0];
 };

@@ -1,5 +1,5 @@
 import { TokenType } from '~/data/query-params';
-import { getYear, moneyShort } from '~/utils/format';
+import { getYear, moneyShort, titleCase } from '~/utils/format';
 
 export type Token = { type: TokenType; id: number; name: string };
 
@@ -12,6 +12,12 @@ export const tokenizeBudget = (budget: number): Token => ({
   id: budget,
   name: moneyShort(budget),
   type: 'budget',
+});
+
+export const tokenizeOscarCategory = (id: number, name: string): Token => ({
+  id,
+  name: `Oscar: ${titleCase(name)}`,
+  type: 'oscarCategory',
 });
 
 export const tokenizeRevenue = (revenue: number): Token => ({

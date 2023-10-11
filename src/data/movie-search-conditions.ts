@@ -120,7 +120,7 @@ export const searchMap: Record<TokenType, SearchFn> = {
   genre: searchGenres,
   host: searchHosts,
   movie: searchMovies,
-  oscarCategories: searchOscarCategories,
+  oscarCategory: searchOscarCategories,
   revenue: searchRevenues,
   runtime: searchRuntimes,
   streamer: searchStreamers,

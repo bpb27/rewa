@@ -18,7 +18,11 @@ export const qpSchema = z.object({
   hasOscar: boolean.optional().default('false'),
   host: integerList.optional().default(''),
   mode: z.enum(['and', 'or']).optional().default('and'),
+  movie: integerList.optional().default(''),
+  oscarCategory: integerList.optional().default(''),
   page: integer.optional().default(0),
+  revenue: integerList.optional().default(''),
+  runtime: integerList.optional().default(''),
   sort: z
     .enum([
       'budget',
@@ -34,10 +38,6 @@ export const qpSchema = z.object({
     ])
     .optional()
     .default('title'),
-  movie: integerList.optional().default(''),
-  oscarCategories: integerList.optional().default(''),
-  revenue: integerList.optional().default(''),
-  runtime: integerList.optional().default(''),
   streamer: integerList.optional().default(''),
   year: integerList.optional().default(''),
   yearGte: integer.optional().default(0),
@@ -57,7 +57,7 @@ export const defaultQps: QpSchema = {
   page: 0,
   sort: 'title',
   movie: [],
-  oscarCategories: [],
+  oscarCategory: [],
   revenue: [],
   runtime: [],
   streamer: [],
@@ -73,7 +73,7 @@ const tokenSchema = qpSchema.pick({
   genre: true,
   host: true,
   movie: true,
-  oscarCategories: true,
+  oscarCategory: true,
   revenue: true,
   runtime: true,
   streamer: true,

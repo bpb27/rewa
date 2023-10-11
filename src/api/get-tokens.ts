@@ -4,6 +4,7 @@ import { QpSchema, tokenKeys } from '~/data/query-params';
 import {
   tokenize,
   tokenizeBudget,
+  tokenizeOscarCategory,
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
@@ -37,6 +38,10 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'genre') return prisma.genres.findMany(findParams).then(callback);
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
+      if (key === 'oscarCategory')
+        return prisma.oscars_categories
+          .findMany(findParams)
+          .then(cats => cats.map(c => tokenizeOscarCategory(c.id, c.name)));
       if (key === 'movie') {
         return prisma.movies
           .findMany({ where: { id: { in: ids } }, select: { title: true, id: true } })
