@@ -5,6 +5,10 @@ Rename to Leaderboard
 - page QP will fuckup shareable links
 - empty search results have an empty results w/ transparent background on mobile
 
+# Minor UI
+
+- searching for title, selecting, searching for another, selecting - results will always be empty (two title tokens) - should probably replace / only allow one
+
 # Data probs
 
 - The Hunt is wrong (should be the Mads movie)

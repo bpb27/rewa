@@ -8,19 +8,25 @@ const byTmdbId = (id: number) => ({
   },
 });
 
+const byName = (name: string) => ({ where: { name } });
+
 export const getActorByTmdbId = (id: number) => prisma.actors.findFirst(byTmdbId(id));
+
+export const getActorByName = (name: string) => prisma.actors.findFirst(byName(name));
 
 export const getProductionCompanyByTmdbId = (id: number) =>
   prisma.production_companies.findFirst(byTmdbId(id));
 
 export const getCrewByTmdbId = (id: number) => prisma.crew.findFirst(byTmdbId(id));
 
+export const getCrewByName = (name: string) => prisma.crew.findFirst(byName(name));
+
 export const getEpisodeByUrl = (url: string) =>
   prisma.episodes.findFirst({ where: { spotify_url: url } });
 
-export const getGenreByName = (name: string) => prisma.genres.findFirst({ where: { name } });
+export const getGenreByName = (name: string) => prisma.genres.findFirst(byName(name));
 
-export const getHostByName = (name: string) => prisma.hosts.findFirst({ where: { name } });
+export const getHostByName = (name: string) => prisma.hosts.findFirst(byName(name));
 
 export const getMovieByTmdbId = (id: number) => prisma.movies.findFirst(byTmdbId(id));
 

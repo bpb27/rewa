@@ -8,5 +8,5 @@ export const getStaticProps = async () => {
 };
 
 export default function TopCinematographer({ people }: StaticProps<typeof getStaticProps>) {
-  return <TopCategory people={people} category="cinematographer" />;
+  return <TopCategory people={people} category="cinematographer" mode="rewa" />;
 }
