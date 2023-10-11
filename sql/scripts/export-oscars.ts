@@ -7,7 +7,9 @@ const prisma = Prisma.getPrisma();
 const run = async () => {
   const data = await prisma.oscars_nominations.findMany({
     include: {
-      award: true,
+      award: {
+        include: { oscars_categories: true },
+      },
       movie: {
         select: { tmdb_id: true, imdb_id: true, title: true, release_date: true },
       },
@@ -16,7 +18,7 @@ const run = async () => {
   });
 
   const mapped = data.map(nomination => ({
-    awardCategory: nomination.award.category,
+    awardCategory: nomination.award.oscars_categories.name,
     awardName: nomination.award.name,
     awardRecipient: nomination.recipient,
     awardWon: nomination.won,

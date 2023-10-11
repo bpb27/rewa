@@ -1,8 +1,6 @@
-import { type Prisma as PrismaBaseType } from '@prisma/client';
 import { Prisma } from '~/prisma';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
-import { isDefined } from 'remeda';
 
 const prisma = Prisma.getPrisma();
 

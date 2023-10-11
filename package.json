@@ -15,7 +15,8 @@
     "oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/create-oscars-tables.ts",
     "export-oscars": "node -r esbuild-register -r dotenv/config ./sql/scripts/export-oscars.ts",
     "export-something": "node -r esbuild-register -r dotenv/config ./sql/scripts/export-something.ts",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "ts:check": "./node_modules/typescript/bin/tsc"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",

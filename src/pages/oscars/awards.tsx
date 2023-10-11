@@ -8,7 +8,14 @@ const prisma = Prisma.getPrisma();
 
 export const getStaticProps = async () => {
   const oscars = await prisma.oscars_nominations.findMany({
-    include: { award: true, movie: true },
+    include: {
+      award: {
+        include: {
+          oscars_categories: true,
+        },
+      },
+      movie: true,
+    },
     where: { ceremony_year: 2023 },
   });
   const props = { oscars };
@@ -16,7 +23,7 @@ export const getStaticProps = async () => {
 };
 
 export default function Movies({ oscars }: StaticProps<typeof getStaticProps>) {
-  const categories = groupBy(oscars, oscar => oscar.award.category);
+  const categories = groupBy(oscars, oscar => oscar.award.oscars_categories.name);
   return (
     <Layout title="All awards">
       <h1>AWARDs</h1>

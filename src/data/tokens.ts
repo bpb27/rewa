@@ -1,21 +1,7 @@
-import { z } from 'zod';
+import { TokenType } from '~/data/query-params';
 import { getYear, moneyShort } from '~/utils/format';
 
-export type TokenType = z.infer<typeof tokenSchema>;
 export type Token = { type: TokenType; id: number; name: string };
-
-export const tokenSchema = z.enum([
-  'actor',
-  'budget',
-  'director',
-  'genre',
-  'host',
-  'movie',
-  'revenue',
-  'runtime',
-  'streamer',
-  'year',
-]);
 
 export const tokenize = (
   tokenType: TokenType,

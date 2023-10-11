@@ -1,7 +1,6 @@
 import { type Prisma as PrismaBaseType } from '@prisma/client';
 import { isArray } from 'remeda';
-import { type QpSchema } from '~/data/query-params';
-import { type TokenType } from '~/data/tokens';
+import { type QpSchema, type TokenType } from '~/data/query-params';
 
 type AndOr = PrismaBaseType.moviesWhereInput['OR'] | PrismaBaseType.moviesWhereInput['AND'];
 
@@ -13,6 +12,8 @@ export const createFilters = (mode: 'OR' | 'AND', conditions: AndOr[]) =>
   conditions.map(condition => ({ [mode]: condition }));
 
 const fiveMil = 5000000;
+
+// TODO: see if in works in some of these cases
 
 export const searchYears: SearchFn = years =>
   years.map(year => ({
@@ -101,6 +102,17 @@ export const searchHosts: SearchFn = hosts =>
     },
   }));
 
+export const searchOscarCategories: SearchFn = categories =>
+  categories.map(id => ({
+    oscars_nominations: {
+      some: {
+        award: {
+          category_id: id,
+        },
+      },
+    },
+  }));
+
 export const searchMap: Record<TokenType, SearchFn> = {
   actor: searchActors,
   budget: searchBudgets,
@@ -108,6 +120,7 @@ export const searchMap: Record<TokenType, SearchFn> = {
   genre: searchGenres,
   host: searchHosts,
   movie: searchMovies,
+  oscarCategories: searchOscarCategories,
   revenue: searchRevenues,
   runtime: searchRuntimes,
   streamer: searchStreamers,

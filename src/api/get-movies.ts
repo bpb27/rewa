@@ -50,6 +50,8 @@ export const getMovies = async (params: GetMoviesParams) => {
     where: {
       ...(params.hasEpisode ? { episodes: { some: {} } } : undefined),
       ...(params.hasOscar ? { oscars_nominations: { some: {} } } : undefined),
+      ...(params.yearGte ? { release_date: { gte: params.yearGte.toString() } } : undefined),
+      ...(params.yearLte ? { release_date: { gte: params.yearLte.toString() } } : undefined),
       ...prismaSearch,
     },
   };

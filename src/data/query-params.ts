@@ -1,25 +1,12 @@
 import { useRouter } from 'next/router';
 import { stringify } from 'qs';
-import { omitBy, isArray, pick } from 'remeda';
+import { omitBy, isArray } from 'remeda';
 import { z } from 'zod';
 import { integer, integerList, boolean } from '~/utils/zschema';
-import { TokenType, tokenSchema } from './tokens';
 
 export type QpSchema = z.infer<typeof qpSchema>;
+export type TokenType = keyof z.infer<typeof tokenSchema>;
 export type SortKey = QpSchema['sort'];
-
-export const sortSchema = z.enum([
-  'budget',
-  'director',
-  'episodeNumber',
-  'profit',
-  'release_date',
-  'revenue',
-  'runtime',
-  'title',
-  'total_oscar_nominations',
-  'total_oscar_wins',
-]);
 
 export const qpSchema = z.object({
   actor: integerList.optional().default(''),
@@ -32,12 +19,29 @@ export const qpSchema = z.object({
   host: integerList.optional().default(''),
   mode: z.enum(['and', 'or']).optional().default('and'),
   page: integer.optional().default(0),
-  sort: sortSchema.optional().default('episodeNumber'),
+  sort: z
+    .enum([
+      'budget',
+      'director',
+      'episodeNumber',
+      'profit',
+      'release_date',
+      'revenue',
+      'runtime',
+      'title',
+      'total_oscar_nominations',
+      'total_oscar_wins',
+    ])
+    .optional()
+    .default('title'),
   movie: integerList.optional().default(''),
+  oscarCategories: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
   runtime: integerList.optional().default(''),
   streamer: integerList.optional().default(''),
   year: integerList.optional().default(''),
+  yearGte: integer.optional().default(0),
+  yearLte: integer.optional().default(0),
 });
 
 export const defaultQps: QpSchema = {
@@ -51,28 +55,32 @@ export const defaultQps: QpSchema = {
   host: [],
   mode: 'and',
   page: 0,
-  sort: 'episodeNumber',
+  sort: 'title',
   movie: [],
+  oscarCategories: [],
   revenue: [],
   runtime: [],
   streamer: [],
   year: [],
+  yearGte: 0,
+  yearLte: 0,
 };
 
-export const qpTokenKeys = [
-  'actor',
-  'budget',
-  'director',
-  'genre',
-  'host',
-  'movie',
-  'revenue',
-  'runtime',
-  'streamer',
-  'year',
-] satisfies (keyof QpSchema)[] & TokenType[];
+const tokenSchema = qpSchema.pick({
+  actor: true,
+  budget: true,
+  director: true,
+  genre: true,
+  host: true,
+  movie: true,
+  oscarCategories: true,
+  revenue: true,
+  runtime: true,
+  streamer: true,
+  year: true,
+});
 
-export const tokenQps = (qps: QpSchema) => pick(qps, qpTokenKeys);
+export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];
 
 export const qpParse = (search: object, defaultValues: QpSchema) => {
   const parsed = qpSchema.safeParse(search);
@@ -139,7 +147,7 @@ export const useQueryParams = (defaultValues: QpSchema) => {
 
   const clearTokens = () => {
     const newValues = { ...values };
-    tokenSchema.options.forEach(key => {
+    tokenKeys.forEach(key => {
       newValues[key] = [];
     });
     push(newValues);
