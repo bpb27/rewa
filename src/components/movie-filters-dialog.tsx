@@ -72,17 +72,15 @@ export const MovieFiltersDialog = ({ initialRange, onSelect }: MovieFiltersDialo
           {(categories || [])
             .filter(c => c.relevance === 'high')
             .map(({ id, name }) => (
-              <span key={id} className="flex">
+              <span key={id} className="my-1 flex">
                 <Checkbox
                   checked={values.oscarsCategoriesNom.includes(id)}
-                  className="my-1"
                   id={id}
                   label=""
                   onCheck={() => update('oscarsCategoriesNom', id)}
                 />
                 <Checkbox
                   checked={values.oscarsCategoriesWon.includes(id)}
-                  className="my-1"
                   id={id}
                   label={titleCase(name)}
                   onCheck={() => update('oscarsCategoriesWon', id)}
