@@ -4,7 +4,8 @@ import { QpSchema, tokenKeys } from '~/data/query-params';
 import {
   tokenize,
   tokenizeBudget,
-  tokenizeOscarCategory,
+  tokenizeOscarsCategoriesNom,
+  tokenizeOscarsCategoriesWon,
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
@@ -40,10 +41,14 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
       if (key === 'yearRange') return ids.map((id, i) => tokenizeYearRange(id, i ? '<' : '>'));
-      if (key === 'oscarCategory')
+      if (key === 'oscarsCategoriesNom')
         return prisma.oscars_categories
           .findMany(findParams)
-          .then(cats => cats.map(c => tokenizeOscarCategory(c.id, c.name)));
+          .then(cats => cats.map(c => tokenizeOscarsCategoriesNom(c.id, c.name)));
+      if (key === 'oscarsCategoriesWon')
+        return prisma.oscars_categories
+          .findMany(findParams)
+          .then(cats => cats.map(c => tokenizeOscarsCategoriesWon(c.id, c.name)));
       if (key === 'movie') {
         return prisma.movies
           .findMany({ where: { id: { in: ids } }, select: { title: true, id: true } })

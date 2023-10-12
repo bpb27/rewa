@@ -3,6 +3,7 @@ import { getYear, moneyShort, titleCase } from '~/utils/format';
 
 export type Token = { type: TokenType; id: number; name: string };
 
+// TODO: this should be able to handle all cases - use switch for special key handling
 export const tokenize = (
   tokenType: TokenType,
   item: { id: number; name: string } | { id: number; title: string }
@@ -14,10 +15,16 @@ export const tokenizeBudget = (budget: number): Token => ({
   type: 'budget',
 });
 
-export const tokenizeOscarCategory = (id: number, name: string): Token => ({
+export const tokenizeOscarsCategoriesNom = (id: number, name: string): Token => ({
   id,
-  name: `Oscar: ${titleCase(name)}`,
-  type: 'oscarCategory',
+  name: `Oscar Nom: ${titleCase(name)}`,
+  type: 'oscarsCategoriesNom',
+});
+
+export const tokenizeOscarsCategoriesWon = (id: number, name: string): Token => ({
+  id,
+  name: `Oscar Won: ${titleCase(name)}`,
+  type: 'oscarsCategoriesWon',
 });
 
 export const tokenizeRevenue = (revenue: number): Token => ({

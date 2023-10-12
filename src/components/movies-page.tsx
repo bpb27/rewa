@@ -82,9 +82,11 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           filter={hasEpisode ? 'episode' : 'oscar'}
           onSelect={token => update(token.type, token.id)}
         />
-        <Box.Tokens>
-          <TokenBar clear={clearTokens} update={update} tokens={tokens} mode={searchMode} />
-        </Box.Tokens>
+        {!!tokens.length && (
+          <Box.Tokens>
+            <TokenBar clear={clearTokens} update={update} tokens={tokens} mode={searchMode} />
+          </Box.Tokens>
+        )}
         <Box.FilterButtons>
           <h2 className="text-xl font-semibold tracking-wide">{total}</h2>
           <Icon.Movie className="ml-1" />
@@ -126,5 +128,5 @@ const Box = {
   FilterButtons: ({ children }) => (
     <div className="mt-3 flex items-center justify-center">{children}</div>
   ),
-  Tokens: ({ children }) => <div className="mt-1 flex space-x-2 overflow-scroll">{children}</div>,
+  Tokens: ({ children }) => <div className="mt-2 flex space-x-2 overflow-scroll">{children}</div>,
 } satisfies Boxes;

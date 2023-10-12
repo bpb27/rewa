@@ -64,10 +64,21 @@ export const searchMap: Record<TokenType, SearchFn> = {
     movies.map(id => ({
       id: id,
     })),
-  oscarCategory: categories =>
+  oscarsCategoriesNom: categories =>
     categories.map(id => ({
       oscars_nominations: {
         some: {
+          award: {
+            category_id: id,
+          },
+        },
+      },
+    })),
+  oscarsCategoriesWon: categories =>
+    categories.map(id => ({
+      oscars_nominations: {
+        some: {
+          won: true,
           award: {
             category_id: id,
           },
@@ -104,7 +115,7 @@ export const searchMap: Record<TokenType, SearchFn> = {
       },
     })),
   yearRange: years =>
-    years.map((year, i) => ({
+    years.filter(Boolean).map((year, i) => ({
       release_date: {
         [i ? 'lte' : 'gte']: year.toString(),
       },

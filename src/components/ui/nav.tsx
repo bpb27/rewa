@@ -2,20 +2,18 @@ import * as Nav from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Icon } from '~/components/ui/icons';
-import { defaultQps, useQueryParams } from '~/data/query-params';
 import { capitalize } from '~/utils/format';
 import { cn } from '~/utils/style';
 
+// TODO: preserve params across mode
 export const Navbar = () => {
   const router = useRouter();
   const mode = router.asPath.includes('rewa') ? 'rewa' : 'oscars';
-  // TODO: better system, consider mode instead of hasEpisode and hasOscar
-  const { queryString } = useQueryParams();
   return (
     <Nav.Root
       className={cn(
         'fixed left-0 right-0 top-0 z-[9999] w-full flex-row',
-        'space-x-3 bg-slate-800 font-semibold text-blue-50'
+        'space-x-3 bg-slate-800 font-semibold tracking-wide text-blue-50'
       )}
     >
       <Nav.List className="relative flex space-x-3 px-2">
@@ -32,8 +30,8 @@ export const Navbar = () => {
           <Nav.Content className="absolute rounded-b-md bg-slate-600 shadow-lg">
             <Menu
               items={[
-                { href: `/rewa/movies?${queryString}`, text: 'Rewa' },
-                { href: `/oscars/movies?${queryString}`, text: 'Oscars' },
+                { href: '/rewa/movies', text: 'Rewa' },
+                { href: '/oscars/movies', text: 'Oscars' },
               ]}
             />
           </Nav.Content>

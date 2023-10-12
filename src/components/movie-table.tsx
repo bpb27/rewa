@@ -6,6 +6,7 @@ import { type Movie } from '~/components/movies-page';
 import { type Token } from '~/data/tokens';
 import { type SortKey } from '~/data/query-params';
 import { cn } from '~/utils/style';
+import { streamerShortName } from '~/data/streamers';
 
 type MovieTableProps = {
   movies: Movie[];
@@ -18,7 +19,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b-slate-200 bg-blue-50 text-left shadow-md [&>th]:pr-2">
+          <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:pr-2">
             <TableHeader>Poster</TableHeader>
             <TableHeader onSort={onSortClick} sort="title">
               Title
@@ -70,7 +71,10 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                   <span>{m.oscars.wins} wins</span>
                 </td>
                 <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
-                <ClickableTd tokens={m.streamers} onClick={onTokenClick} />
+                <ClickableTd
+                  tokens={m.streamers.map(s => ({ ...s, name: streamerShortName(s.name) }))}
+                  onClick={onTokenClick}
+                />
                 <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
@@ -98,8 +102,8 @@ const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => (
   <td>
     {tokens.map(item => (
       <div
-        className="cursor-pointer px-1 hover:underline"
-        key={item.name}
+        className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+        key={item.id}
         onClick={() => onClick(item)}
       >
         {item.name}

@@ -9,3 +9,20 @@ export const relevantStreamers = [
   'Starz',
   'Showtime',
 ];
+
+const streamersShortNames = {
+  Netflix: 'Netflix',
+  'Amazon Prime Video': 'Amazon',
+  'Disney Plus': 'Disney+',
+  'Apple TV': 'Apple',
+  Hulu: 'Hulu',
+  'HBO Max': 'HBO',
+  'Paramount Plus': 'Paramount',
+  Starz: 'Starz',
+  Showtime: 'Showtime',
+} satisfies Record<(typeof relevantStreamers)[number], string>;
+
+export const streamerShortName = (name: string) => {
+  const nameIndex = name as keyof typeof streamerShortName;
+  return streamersShortNames[nameIndex] || name;
+};
