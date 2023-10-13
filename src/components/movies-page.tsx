@@ -103,10 +103,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
             <Icon.Card />
           </Button>
           <Space w={3} />
-          <MovieFiltersDialog
-            initialRange={values.yearRange}
-            onSelect={yearRange => update('yearRange', yearRange)}
-          />
+          <MovieFiltersDialog />
         </Box.FilterButtons>
       </Box.Filters>
       {display.isTable && (

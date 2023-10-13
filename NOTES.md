@@ -2,7 +2,7 @@
 
 - page QP will fuckup shareable links
 - empty search results have an empty results w/ transparent background on mobile
-- clicking year range token
+- clicking year range token (might be better to have separate qps - still technically lists so its easily tokenized though) - and just use inputs rather than slider
 - old year range persisting in dialog after tokens cleared
 
 # Minor UI

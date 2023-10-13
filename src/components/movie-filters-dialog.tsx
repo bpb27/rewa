@@ -9,20 +9,18 @@ import { useToggle } from '~/utils/use-toggle';
 import { Checkbox } from './ui/checkbox';
 import { useQueryParams } from '~/data/query-params';
 
-type MovieFiltersDialogProps = {
-  initialRange: number[];
-  onSelect: (years: number[]) => void;
-};
-
+// TODO: all real cats checkbox
 // TODO: still retains old values after clearing tokens
 // TODO: clicking the filter button w/ dialog open closes (interactOutside) and reopens
-export const MovieFiltersDialog = ({ initialRange, onSelect }: MovieFiltersDialogProps) => {
+export const MovieFiltersDialog = () => {
   const { values, update } = useQueryParams();
+  const [filterCategories, setFilterCategories] = useState(true);
   const [minYear, setMinYear] = useState(values.yearRange[0] || 1945);
   const [maxYear, setMaxYear] = useState(values.yearRange[1] || new Date().getFullYear() + 1);
   const [container, setContainer] = useState<HTMLSpanElement | null>(null);
   const dialog = useToggle('closed', 'open');
-  const { data: categories } = useAPI('/api/oscars/categories');
+  const { data } = useAPI('/api/oscars/categories');
+  const categories = (data || []).filter(c => (filterCategories ? c.relevance === 'high' : true));
   return (
     <span ref={setContainer}>
       <Button variant="icon" onClick={dialog.toggle}>
@@ -69,24 +67,29 @@ export const MovieFiltersDialog = ({ initialRange, onSelect }: MovieFiltersDialo
         </div>
         <div>
           <label className="font-semibold">Nominated/Won Oscars</label>
-          {(categories || [])
-            .filter(c => c.relevance === 'high')
-            .map(({ id, name }) => (
-              <span key={id} className="my-1 flex">
-                <Checkbox
-                  checked={values.oscarsCategoriesNom.includes(id)}
-                  id={id}
-                  label=""
-                  onCheck={() => update('oscarsCategoriesNom', id)}
-                />
-                <Checkbox
-                  checked={values.oscarsCategoriesWon.includes(id)}
-                  id={id}
-                  label={titleCase(name)}
-                  onCheck={() => update('oscarsCategoriesWon', id)}
-                />
-              </span>
-            ))}
+          {categories.map(({ id, name }) => (
+            <span key={id} className="my-1 flex">
+              <Checkbox
+                checked={values.oscarsCategoriesNom.includes(id)}
+                id={id}
+                label=""
+                onCheck={() => update('oscarsCategoriesNom', id)}
+              />
+              <Checkbox
+                checked={values.oscarsCategoriesWon.includes(id)}
+                id={id}
+                label={titleCase(name)}
+                onCheck={() => update('oscarsCategoriesWon', id)}
+              />
+            </span>
+          ))}
+          <Button
+            variant="card"
+            onClick={() => setFilterCategories(!filterCategories)}
+            className="mt-2"
+          >
+            {filterCategories ? 'More' : 'Fewer'} categories...
+          </Button>
         </div>
       </DialogOverlay>
     </span>
