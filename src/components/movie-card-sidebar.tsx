@@ -1,24 +1,19 @@
 import { type PropsWithChildren, useState } from 'react';
-import useSWR from 'swr';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon, type IconKey } from '~/components/icons';
+import { Icon, type IconKey } from '~/components/ui/icons';
 import { Sidebar } from '~/components/ui/sidebar';
-import { type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
-import { fetcher } from '~/utils/api';
+import { useAPI } from '~/utils/use-api';
 import { formatDate } from '~/utils/format';
 
 type MovieCardSidebar = {
-  movieId: number;
   actorId?: number;
+  movieId: number;
   onClose: () => void;
 };
 
-export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar) => {
+export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const [showDesc, setShowDesc] = useState(false);
-  const { data: movie } = useSWR<ApiGetMovieResponse>(
-    `/api/movies/${movieId}?${actorId ? `actorId=${actorId}` : ''}`,
-    fetcher
-  );
+  const { data: movie } = useAPI(`/api/movies/${movieId}`, { actorId });
 
   if (!movie) return null;
   return (
@@ -41,12 +36,16 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
       </div>
       <div>
         <Sidebar.Separator />
-        {movie.hosts.map(({ id, name }) => (
-          <IconField icon="Mic" key={id}>
-            {name}
-          </IconField>
-        ))}
-        <Sidebar.Separator />
+        {movie.episode && (
+          <>
+            {movie.hosts.map(({ id, name }) => (
+              <IconField icon="Mic" key={id}>
+                {name}
+              </IconField>
+            ))}
+            <Sidebar.Separator />
+          </>
+        )}
         {movie.directors.map(({ id, name }) => (
           <IconField icon="Video" key={id}>
             {name}
@@ -57,12 +56,16 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
             {name}
           </IconField>
         ))}
-        {movie.streamers.length > 0 && <Sidebar.Separator />}
-        {movie.streamers.map(({ id, name }) => (
-          <IconField icon="Tv" key={id}>
-            {name}
-          </IconField>
-        ))}
+        {movie.streamers.length > 0 && (
+          <>
+            <Sidebar.Separator />
+            {movie.streamers.map(({ id, name }) => (
+              <IconField icon="Tv" key={id}>
+                {name}
+              </IconField>
+            ))}
+          </>
+        )}
         <Sidebar.Separator />
         <IconField icon="Calendar">{formatDate(movie.release_date)}</IconField>
         <IconField icon="Clock">{movie.runtime.name}</IconField>
@@ -75,11 +78,13 @@ export const MovieCardSidebar = ({ movieId, onClose, actorId }: MovieCardSidebar
             IMDB
           </ImdbLink>
         </IconField>
-        <IconField icon="Link">
-          <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
-            Spotify
-          </SpotifyLink>
-        </IconField>
+        {movie.episode && (
+          <IconField icon="Link">
+            <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
+              Spotify
+            </SpotifyLink>
+          </IconField>
+        )}
       </div>
     </Sidebar>
   );

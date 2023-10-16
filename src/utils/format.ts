@@ -1,3 +1,6 @@
+import { isError, isObject, isString } from 'remeda';
+import { ApiError } from './general-types';
+
 export const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
@@ -22,6 +25,29 @@ export const formatDate = (d: string) => {
 
 export const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
+export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(capitalize).join(' ');
+
 export const getYear = (d: string) => {
   return d.length === 4 ? d : d.split('-')[0];
 };
+
+export const parseError = (e: unknown): string => {
+  if (isString(e)) return e;
+  if (isError(e)) return e.message;
+  return 'Well shit :(';
+};
+
+export const apiError = (message: string, e: unknown): ApiError => ({
+  success: false,
+  message,
+  cause: parseError(e),
+});
+
+export const normalizeName = (str: string) =>
+  str
+    .toLowerCase()
+    .replace(/[^\w\s]|_/g, '')
+    .replace(/\s+/g, ' ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();

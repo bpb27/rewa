@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -8,48 +9,46 @@ datasource db {
 }
 
 model actors {
-  id               Int                @id @default(autoincrement())
-  gender           Int
-  tmdb_id          Int                @unique(map: "sqlite_autoindex_actors_1")
-  name             String
-  profile_path     String?
-  actors_on_movies actors_on_movies[]
+  id                 Int                  @id @default(autoincrement())
+  gender             Int
+  tmdb_id            Int                  @unique(map: "sqlite_autoindex_actors_1")
+  name               String
+  profile_path       String?
+  actors_on_movies   actors_on_movies[]
+  oscars_nominations oscars_nominations[]
 }
 
 model actors_on_movies {
-  id           Int     @id @default(autoincrement())
-  movie_id     Int?
-  actor_id     Int?
+  id           Int    @id @default(autoincrement())
+  movie_id     Int
+  actor_id     Int
   character    String
-  credit_id    String  @unique(map: "sqlite_autoindex_actors_on_movies_1")
+  credit_id    String @unique(map: "sqlite_autoindex_actors_on_movies_1")
   credit_order Int
-  actors       actors? @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies       movies? @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([movie_id, actor_id], map: "sqlite_autoindex_actors_on_movies_2")
+  actors       actors @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies       movies @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model crew {
-  id             Int              @id @default(autoincrement())
-  gender         Int
-  tmdb_id        Int              @unique(map: "sqlite_autoindex_crew_1")
-  name           String
-  profile_path   String?
-  crew_on_movies crew_on_movies[]
+  id                 Int                  @id @default(autoincrement())
+  gender             Int
+  tmdb_id            Int                  @unique(map: "sqlite_autoindex_crew_1")
+  name               String
+  profile_path       String?
+  crew_on_movies     crew_on_movies[]
+  oscars_nominations oscars_nominations[]
 }
 
 model crew_on_movies {
-  id                   Int     @id @default(autoincrement())
-  movie_id             Int?
-  crew_id              Int?
+  id                   Int    @id @default(autoincrement())
+  movie_id             Int
+  crew_id              Int
   known_for_department String
-  credit_id            String  @unique(map: "sqlite_autoindex_crew_on_movies_1")
+  credit_id            String @unique(map: "sqlite_autoindex_crew_on_movies_1")
   department           String
   job                  String
-  crew                 crew?   @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies               movies? @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-
-  @@unique([movie_id, crew_id], map: "sqlite_autoindex_crew_on_movies_2")
+  crew                 crew   @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies               movies @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model episodes {
@@ -58,8 +57,8 @@ model episodes {
   episode_order     Int
   date              String
   spotify_url       String
-  movie_id          Int?
-  movies            movies?             @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movie_id          Int
+  movies            movies              @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   hosts_on_episodes hosts_on_episodes[]
 }
 
@@ -70,11 +69,11 @@ model genres {
 }
 
 model genres_on_movies {
-  id       Int     @id @default(autoincrement())
-  movie_id Int?
-  genre_id Int?
-  genres   genres? @relation(fields: [genre_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies   movies? @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id       Int    @id @default(autoincrement())
+  movie_id Int
+  genre_id Int
+  genres   genres @relation(fields: [genre_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies   movies @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, genre_id], map: "sqlite_autoindex_genres_on_movies_1")
 }
@@ -86,11 +85,11 @@ model hosts {
 }
 
 model hosts_on_episodes {
-  id         Int       @id @default(autoincrement())
-  host_id    Int?
-  episode_id Int?
-  episodes   episodes? @relation(fields: [episode_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  hosts      hosts?    @relation(fields: [host_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id         Int      @id @default(autoincrement())
+  host_id    Int
+  episode_id Int
+  episodes   episodes @relation(fields: [episode_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  hosts      hosts    @relation(fields: [host_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([host_id, episode_id], map: "sqlite_autoindex_hosts_on_episodes_1")
 }
@@ -111,8 +110,10 @@ model movies {
   crew_on_movies                 crew_on_movies[]
   episodes                       episodes[]
   genres_on_movies               genres_on_movies[]
+  oscars_nominations             oscars_nominations[]
   production_companies_on_movies production_companies_on_movies[]
   streamers_on_movies            streamers_on_movies[]
+  computed                       movies_with_computed_fields[]
 }
 
 model production_companies {
@@ -124,11 +125,11 @@ model production_companies {
 }
 
 model production_companies_on_movies {
-  id                    Int                   @id @default(autoincrement())
-  movie_id              Int?
-  production_company_id Int?
-  production_companies  production_companies? @relation(fields: [production_company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies                movies?               @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id                    Int                  @id @default(autoincrement())
+  movie_id              Int
+  production_company_id Int
+  production_companies  production_companies @relation(fields: [production_company_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies                movies               @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, production_company_id], map: "sqlite_autoindex_production_companies_on_movies_1")
 }
@@ -142,11 +143,59 @@ model streamers {
 }
 
 model streamers_on_movies {
-  id          Int        @id @default(autoincrement())
-  movie_id    Int?
-  streamer_id Int?
-  streamers   streamers? @relation(fields: [streamer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies      movies?    @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id          Int       @id @default(autoincrement())
+  movie_id    Int
+  streamer_id Int
+  streamers   streamers @relation(fields: [streamer_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies      movies    @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, streamer_id], map: "sqlite_autoindex_streamers_on_movies_1")
+}
+
+model oscars_awards {
+  id                Int                  @id @default(autoincrement())
+  name              String
+  category_id       Int
+  oscars_categories oscars_categories    @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  nominations       oscars_nominations[]
+}
+
+model oscars_nominations {
+  id            Int           @id @default(autoincrement())
+  film_year     Int
+  ceremony_year Int
+  won           Boolean
+  recipient     String
+  movie_id      Int
+  award_id      Int
+  actor_id      Int?
+  crew_id       Int?
+  crew          crew?         @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  actors        actors?       @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  award         oscars_awards @relation(fields: [award_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movie         movies        @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([movie_id, award_id, recipient], map: "sqlite_autoindex_oscars_nominations_1")
+}
+
+model oscars_categories {
+  id            Int             @id @default(autoincrement())
+  name          String
+  relevance     String
+  oscars_awards oscars_awards[]
+}
+
+view movies_with_computed_fields {
+  movie_id                Int              @unique
+  budget                  Int
+  release_date            String
+  revenue                 Int
+  runtime                 Int
+  title                   String
+  profit_percentage       Int
+  episode_order           Int
+  director_name           String
+  total_oscar_nominations Int
+  total_oscar_wins        Int
+  movie                   movies?          @relation(fields: [movie_id], references: [id])
 }

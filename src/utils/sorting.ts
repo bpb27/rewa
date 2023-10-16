@@ -1,32 +1,6 @@
 import { SortKey } from '~/data/query-params';
 
-type PartialMovieForSorting = {
-  budget: { id: number };
-  directors: { name: string }[];
-  episode: { episode_order: number };
-  revenue: { id: number };
-  release_date: string;
-  runtime: { id: number };
-  title: string;
-};
-
-const sortFns = Object.freeze({
-  budget: m => m.budget.id,
-  director: m => m.directors[0]?.name,
-  episodeNumber: m => m.episode.episode_order,
-  profit: m => {
-    const budget = m.budget.id;
-    const revenue = m.revenue.id;
-    if (!budget || !revenue) return 0;
-    return (revenue - budget) / budget;
-  },
-  release_date: m => m.release_date,
-  revenue: m => m.revenue.id,
-  runtime: m => m.runtime.id,
-  title: m => m.title,
-} satisfies Record<SortKey, (m: PartialMovieForSorting) => string | number>);
-
-const sortOptions = [
+export const sortOptions = [
   { value: 'title', label: 'Title' },
   { value: 'release_date', label: 'Year' },
   { value: 'episodeNumber', label: 'Episode' },
@@ -35,9 +9,9 @@ const sortOptions = [
   { value: 'budget', label: 'Budget' },
   { value: 'profit', label: 'Profit %' },
   { value: 'director', label: 'Director' },
+  { value: 'total_oscar_nominations', label: 'Oscar noms' },
+  { value: 'total_oscar_wins', label: 'Oscar wins' },
 ] satisfies { value: SortKey; label: string }[];
-
-export const sortingUtils = { options: sortOptions, fns: sortFns };
 
 const longDateRegEx = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/;
 const shortDateRegEx = /^\d{4}-\d{2}-\d{2}$/;
@@ -74,3 +48,6 @@ export const smartSort = <TEntry extends SortableObject>(
 };
 
 export const sortByDate = (a: string, b: string) => Date.parse(a) - Date.parse(b);
+
+export const withinYearRange = (one: string | number, two: string | number): boolean =>
+  Math.abs(Number(one.toString().slice(0, 4)) - Number(two.toString().slice(0, 4))) <= 5;

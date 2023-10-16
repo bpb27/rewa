@@ -15,7 +15,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/tables/movies',
+        destination: '/rewa/movies',
         permanent: true,
       },
     ];

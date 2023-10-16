@@ -4,30 +4,46 @@ import { tokenize } from '~/data/tokens';
 
 const prisma = Prisma.getPrisma();
 
-type SearchTokensParams = { search: string };
+export type SearchTokensParams = {
+  filter: 'episode' | 'oscar';
+  search: string;
+};
 export type SearchTokensResponse = Awaited<ReturnType<typeof searchTokens>>;
 
-export const searchTokens = async ({ search }: SearchTokensParams) => {
+export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
+  const filterField =
+    filter === 'episode' ? ('episodes' as const) : ('oscars_nominations' as const);
+
   const movies = await prisma.movies.findMany({
     select: { id: true, title: true },
-    where: { title: { contains: search } },
+    orderBy: { title: 'asc' },
+    where: {
+      title: { contains: search },
+      AND: { [filterField]: { some: {} } },
+    },
     take: 5,
   });
 
   const actors = await prisma.actors.findMany({
     select: { id: true, name: true },
-    where: { name: { contains: search } },
+    orderBy: { name: 'asc' },
+    where: {
+      name: { contains: search },
+      AND: { actors_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+    },
     take: 5,
   });
 
   const hosts = await prisma.hosts.findMany({
     select: { id: true, name: true },
+    orderBy: { name: 'asc' },
     where: { name: { contains: search } },
     take: 5,
   });
 
   const streamers = await prisma.streamers.findMany({
     select: { id: true, name: true },
+    orderBy: { name: 'asc' },
     where: {
       name: { contains: search },
       AND: {
@@ -39,13 +55,13 @@ export const searchTokens = async ({ search }: SearchTokensParams) => {
 
   const directors = await prisma.crew.findMany({
     select: { id: true, name: true },
+    orderBy: { name: 'asc' },
     where: {
       name: { contains: search },
-      AND: {
-        crew_on_movies: {
-          some: { job: 'Director' },
-        },
-      },
+      AND: [
+        { crew_on_movies: { some: { job: 'Director' } } },
+        { crew_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+      ],
     },
     take: 5,
   });

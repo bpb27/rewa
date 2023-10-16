@@ -1,5 +1,5 @@
 import { Button } from './ui/button';
-import { Icon } from './icons';
+import { Icon } from './ui/icons';
 import { useQueryParams } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 
@@ -23,7 +23,7 @@ export const TokenBar = ({ clear, mode, tokens, update }: TokenBarProps) => {
         <Button
           className="flex"
           variant="token"
-          onClick={() => update('mode', mode === 'and' ? 'or' : 'and')}
+          onClick={() => update('searchMode', mode === 'and' ? 'or' : 'and')}
         >
           <Icon.Filter className="mr-2" />
           {mode === 'and' ? 'And' : 'Or'}

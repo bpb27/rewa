@@ -1,12 +1,15 @@
 import { isDefined } from 'remeda';
 import { Prisma } from '~/prisma';
-import { QpSchema, qpTokenKeys } from '~/data/query-params';
+import { QpSchema, tokenKeys } from '~/data/query-params';
 import {
   tokenize,
   tokenizeBudget,
+  tokenizeOscarsCategoriesNom,
+  tokenizeOscarsCategoriesWon,
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
+  tokenizeYearRange,
 } from '~/data/tokens';
 
 const prisma = Prisma.getPrisma();
@@ -15,7 +18,7 @@ export type GetTokensResponse = Awaited<ReturnType<typeof getTokens>>;
 
 export const getTokens = async (params: QpSchema) => {
   const response = await Promise.all(
-    qpTokenKeys.map(key => {
+    tokenKeys.map(key => {
       const ids = params[key] || [];
       if (!ids.length) return undefined;
 
@@ -37,11 +40,21 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'genre') return prisma.genres.findMany(findParams).then(callback);
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
+      if (key === 'yearRange') return ids.map((id, i) => tokenizeYearRange(id, i ? '<' : '>'));
+      if (key === 'oscarsCategoriesNom')
+        return prisma.oscars_categories
+          .findMany(findParams)
+          .then(cats => cats.map(c => tokenizeOscarsCategoriesNom(c.id, c.name)));
+      if (key === 'oscarsCategoriesWon')
+        return prisma.oscars_categories
+          .findMany(findParams)
+          .then(cats => cats.map(c => tokenizeOscarsCategoriesWon(c.id, c.name)));
       if (key === 'movie') {
         return prisma.movies
           .findMany({ where: { id: { in: ids } }, select: { title: true, id: true } })
           .then(callback);
       }
+      // TODO: exhaustive check, maybe switch
     })
   );
 

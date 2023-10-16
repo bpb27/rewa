@@ -9,7 +9,7 @@ export class Prisma {
   public static Prisma: PrismaClient;
 
   static getPrisma() {
-    this.Prisma ||= new PrismaClient();
+    this.Prisma ||= new PrismaClient(); // { log: ['query'] }
     return this.Prisma;
   }
 }

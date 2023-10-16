@@ -13,10 +13,11 @@ import { cn } from '~/utils/style';
 
 type TopCategoryProps = {
   category: 'actor' | 'director' | 'writer' | 'cinematographer' | 'producer';
+  mode: 'rewa' | 'oscars';
   people: GetTopActorsResponse | GetTopCrewResponse;
 };
 
-const titles = {
+const tabTitles = {
   actor: 'Top Actors',
   cinematographer: 'Top Cinematographers',
   director: 'Top Directors',
@@ -24,7 +25,16 @@ const titles = {
   writer: 'Top Writers',
 };
 
-export const TopCategory = ({ category, people }: TopCategoryProps) => {
+const pt = 'the most Oscar-nominated movies';
+const pageTitles = {
+  actor: `Acted in ${pt}`,
+  cinematographer: `Filmed ${pt}`,
+  director: `Directed ${pt}`,
+  producer: `Produced ${pt}`,
+  writer: `Wrote ${pt}`,
+};
+
+export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
 
   const [selected, select] = useState<
@@ -41,7 +51,8 @@ export const TopCategory = ({ category, people }: TopCategoryProps) => {
   }, [people, category, isActor]);
 
   return (
-    <Layout title={titles[category]}>
+    <Layout title={tabTitles[category]}>
+      {mode === 'oscars' && <h1 className="text-center text-lg">{pageTitles[category]}</h1>}
       {selected && 'movieId' in selected && (
         <MovieCardSidebar {...selected} onClose={() => select(undefined)} />
       )}

@@ -3,6 +3,7 @@ import { TOP_PEOPLE_MOVIE_SELECT } from './get-top-actors';
 
 const prisma = Prisma.getPrisma();
 
+type GetTopCrewParams = { job: keyof typeof WHERE_JOB; mode: 'rewa' | 'oscars' };
 export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
 
 const WHERE_JOB = {
@@ -20,7 +21,7 @@ const WHERE_JOB = {
   },
 };
 
-export const getTopCrew = async (job: keyof typeof WHERE_JOB) => {
+export const getTopCrew = async ({ job, mode }: GetTopCrewParams) => {
   const top = await prisma.crew_on_movies.groupBy({
     by: ['crew_id'],
     _count: {
@@ -31,7 +32,15 @@ export const getTopCrew = async (job: keyof typeof WHERE_JOB) => {
         crew_id: 'desc',
       },
     },
-    where: WHERE_JOB[job],
+    where: {
+      ...WHERE_JOB[job],
+      AND: {
+        movies: {
+          ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),
+          ...(mode === 'rewa' ? { episodes: { some: {} } } : undefined),
+        },
+      },
+    },
     take: 30,
   });
 
@@ -52,7 +61,16 @@ export const getTopCrew = async (job: keyof typeof WHERE_JOB) => {
           profile_path: true,
         },
       },
-      movies: { select: TOP_PEOPLE_MOVIE_SELECT.select },
+      movies: {
+        select: {
+          id: true,
+          poster_path: true,
+          release_date: true,
+          title: true,
+          episodes: { select: { id: true } },
+          oscars_nominations: { select: { id: true } },
+        },
+      },
     },
   });
 
@@ -75,11 +93,15 @@ export const getTopCrew = async (job: keyof typeof WHERE_JOB) => {
   }, {});
 
   const response = Object.values(parsed)
-    .sort((a, b) => b.movies.length - a.movies.length)
     .map(entry => ({
       ...entry.person,
-      movies: entry.movies,
-    }));
+      movies: entry.movies.filter(movie => {
+        if (mode === 'oscars') return movie.oscars_nominations.length;
+        if (mode === 'rewa') return movie.episodes.length;
+        return true;
+      }),
+    }))
+    .sort((a, b) => b.movies.length - a.movies.length);
 
   return response;
 };

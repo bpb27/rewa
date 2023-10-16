@@ -1,4 +1,4 @@
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import { cn } from '~/utils/style';
 
 type SelectProps<TValue extends string = string> = {

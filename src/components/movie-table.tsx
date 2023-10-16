@@ -1,11 +1,12 @@
 import { type PropsWithChildren, Fragment } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon } from '~/components/icons';
+import { Icon } from '~/components/ui/icons';
 import { MovieTablePoster } from '~/components/images';
-import { type Movie } from '~/components/movie-table-page';
+import { type Movie } from '~/components/movies-page';
 import { type Token } from '~/data/tokens';
 import { type SortKey } from '~/data/query-params';
 import { cn } from '~/utils/style';
+import { streamerShortName } from '~/data/streamers';
 
 type MovieTableProps = {
   movies: Movie[];
@@ -18,7 +19,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b-slate-200 bg-blue-50 text-left shadow-md [&>th]:pr-2">
+          <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:pr-2">
             <TableHeader>Poster</TableHeader>
             <TableHeader onSort={onSortClick} sort="title">
               Title
@@ -30,6 +31,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
               Director
             </TableHeader>
             <TableHeader>Top Cast</TableHeader>
+            <TableHeader>Oscars</TableHeader>
             <TableHeader>Hosts</TableHeader>
             <TableHeader>Streaming</TableHeader>
             <TableHeader onSort={onSortClick} sort="budget">
@@ -63,8 +65,16 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
+                <td>
+                  <span>{m.oscars.noms} noms</span>
+                  <br />
+                  <span>{m.oscars.wins} wins</span>
+                </td>
                 <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
-                <ClickableTd tokens={m.streamers} onClick={onTokenClick} />
+                <ClickableTd
+                  tokens={m.streamers.map(s => ({ ...s, name: streamerShortName(s.name) }))}
+                  onClick={onTokenClick}
+                />
                 <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
@@ -72,7 +82,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <td>
                   <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
                   <br />
-                  <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>
+                  {m.episode && <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>}
                 </td>
               </tr>
             </Fragment>
@@ -92,8 +102,8 @@ const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => (
   <td>
     {tokens.map(item => (
       <div
-        className="cursor-pointer px-1 hover:underline"
-        key={item.name}
+        className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+        key={item.id}
         onClick={() => onClick(item)}
       >
         {item.name}

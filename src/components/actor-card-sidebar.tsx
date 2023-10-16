@@ -1,7 +1,6 @@
-import useSWR from 'swr';
 import { Sidebar } from '~/components/ui/sidebar';
 import { type ApiGetActorResponse } from '~/pages/api/actors/[id]';
-import { fetcher } from '~/utils/api';
+import { useAPI } from '~/utils/use-api';
 import { getYear } from '~/utils/format';
 
 type ActorCardSidebar = {
@@ -11,7 +10,7 @@ type ActorCardSidebar = {
 };
 
 export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardSidebar) => {
-  const { data: actor } = useSWR<ApiGetActorResponse>(`/api/actors/${actorId}`, fetcher);
+  const { data: actor } = useAPI(`/api/actors/${actorId}`);
 
   if (!actor) return null;
   const firstMovieYear = getYear(actor.movies[0].release_date);
