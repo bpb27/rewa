@@ -39,6 +39,7 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'director') return prisma.crew.findMany(findParams).then(callback);
       if (key === 'genre') return prisma.genres.findMany(findParams).then(callback);
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
+      if (key === 'keyword') return prisma.keywords.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
       if (key === 'yearRange') return ids.map((id, i) => tokenizeYearRange(id, i ? '<' : '>'));
       if (key === 'oscarsCategoriesNom')

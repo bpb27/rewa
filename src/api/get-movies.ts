@@ -162,7 +162,10 @@ export const getMovies = async (params: GetMoviesParams) => {
         .filter(jt => jt.hosts)
         .map(jt => jt.hosts!)
         .map(item => tokenize('host', item)),
-      keyword: movie.keywords_on_movies.filter(jt => jt.keywords).map(jt => jt.keywords!),
+      keywords: movie.keywords_on_movies
+        .filter(jt => jt.keywords)
+        .map(jt => jt.keywords!)
+        .map(item => tokenize('keyword', item)),
       revenue: tokenizeRevenue(movie.revenue),
       runtime: tokenizeRuntime(movie.runtime),
       streamers: movie.streamers_on_movies

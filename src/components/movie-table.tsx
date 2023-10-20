@@ -44,6 +44,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
               Runtime
             </TableHeader>
             <TableHeader>Genres</TableHeader>
+            {/* <TableHeader>Keywords</TableHeader> */}
             <TableHeader>
               <div className="flex">
                 Links
@@ -79,6 +80,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.genres} onClick={onTokenClick} />
+                {/* <ClickableTd tokens={m.keywords} onClick={onTokenClick} /> */}
                 <td>
                   <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
                   <br />

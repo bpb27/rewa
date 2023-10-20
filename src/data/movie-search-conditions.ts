@@ -60,6 +60,14 @@ export const searchMap: Record<TokenType, SearchFn> = {
         },
       },
     })),
+  keyword: keywords =>
+    keywords.map(id => ({
+      keywords_on_movies: {
+        some: {
+          keyword_id: id,
+        },
+      },
+    })),
   movie: movies =>
     movies.map(id => ({
       id: id,
