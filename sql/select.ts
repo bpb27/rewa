@@ -28,6 +28,8 @@ export const getGenreByName = (name: string) => prisma.genres.findFirst(byName(n
 
 export const getHostByName = (name: string) => prisma.hosts.findFirst(byName(name));
 
+export const getKeywordByName = (name: string) => prisma.keywords.findFirst(byName(name));
+
 export const getMovieByTmdbId = (id: number) => prisma.movies.findFirst(byTmdbId(id));
 
 export const getAllMoviesWithEpisodes = () =>

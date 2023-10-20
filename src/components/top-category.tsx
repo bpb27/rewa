@@ -25,7 +25,7 @@ const tabTitles = {
   writer: 'Top Writers',
 };
 
-const pt = 'the most Oscar-nominated movies';
+const pt = 'the most Oscar-nominated movies since 1950';
 const pageTitles = {
   actor: `Acted in ${pt}`,
   cinematographer: `Filmed ${pt}`,

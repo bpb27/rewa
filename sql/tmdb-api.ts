@@ -10,6 +10,13 @@ const getMovieById = async ({ tmdb_id }: { tmdb_id: number }) => {
   return movie as Movie;
 };
 
+const getMovieKeywordsById = async ({ tmdb_id }: { tmdb_id: number }) => {
+  const route = `https://api.themoviedb.org/3/movie/${tmdb_id}/keywords?api_key=${API_KEY}`;
+  const response = await fetch(route);
+  const keywords = await response.json();
+  return keywords as { id: number; keywords: { id: number; name: string }[] };
+};
+
 const getMovieByName = async ({ name, year }: { name: string; year: number }) => {
   const filmName = encodeURI(name);
   const route = `https://api.themoviedb.org/3/search/movie?query=${filmName}&include_adult=false&language=en-US&page=1&api_key=${API_KEY}`;
@@ -101,6 +108,7 @@ const parseMovieById = (movie: Movie) => {
 export const tmdbApi = {
   getMovieById,
   getMovieByName,
+  getMovieKeywordsById,
   getStreamersForMovie,
   getTmdbIdByImdbId,
   parseMovieById,

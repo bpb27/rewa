@@ -114,6 +114,9 @@ export const getMovies = async (params: GetMoviesParams) => {
           genres_on_movies: {
             select: { genres: selectIdAndName },
           },
+          keywords_on_movies: {
+            select: { keywords: selectIdAndName },
+          },
           streamers_on_movies: {
             select: { streamers: selectIdAndName },
           },
@@ -159,6 +162,7 @@ export const getMovies = async (params: GetMoviesParams) => {
         .filter(jt => jt.hosts)
         .map(jt => jt.hosts!)
         .map(item => tokenize('host', item)),
+      keyword: movie.keywords_on_movies.filter(jt => jt.keywords).map(jt => jt.keywords!),
       revenue: tokenizeRevenue(movie.revenue),
       runtime: tokenizeRuntime(movie.runtime),
       streamers: movie.streamers_on_movies

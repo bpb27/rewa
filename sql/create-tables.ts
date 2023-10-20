@@ -82,6 +82,24 @@ CREATE TABLE IF NOT EXISTS ${TABLES.genres_on_movies} (
 );
 `;
 
+export const createKeywordsTableSql = `
+CREATE TABLE IF NOT EXISTS ${TABLES.keywords} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL UNIQUE
+);
+`;
+
+export const createKeywordsOnMoviesTableSql = `
+CREATE TABLE IF NOT EXISTS ${TABLES.keywords_on_movies} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  movie_id INTEGER NOT NULL,
+  keyword_id INTEGER NOT NULL,
+  FOREIGN KEY (movie_id) REFERENCES ${TABLES.movies} (id) ON DELETE CASCADE,
+  FOREIGN KEY (keyword_id) REFERENCES ${TABLES.keywords} (id) ON DELETE CASCADE,
+  UNIQUE (movie_id, keyword_id)
+);
+`;
+
 export const createProductionCompaniesSql = `
 CREATE TABLE IF NOT EXISTS ${TABLES.production_companies} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -198,6 +216,8 @@ const createMap = {
   [TABLES.genres_on_movies]: createGenresOnMoviesTableSql,
   [TABLES.hosts]: createHostsTableSql,
   [TABLES.hosts_on_episodes]: createHostsOnEpisodesSql,
+  [TABLES.keywords]: createKeywordsTableSql,
+  [TABLES.keywords_on_movies]: createKeywordsOnMoviesTableSql,
   [TABLES.movies]: createMoviesTableSql,
   [TABLES.oscars_awards]: createOscarAwardNamesTable,
   [TABLES.oscars_categories]: createOscarCategoryTable,

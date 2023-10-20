@@ -2,6 +2,7 @@ import { insertNewEpisode, insertNewMovie } from '../insert';
 import { connectToDb } from '../general';
 import { tmdbApi } from '../tmdb-api';
 
+// TODO: add keywords to getMovieById and insertNewMovie
 const run = async (
   movie: { tmdb_id: number },
   episode?: {

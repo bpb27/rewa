@@ -63,6 +63,13 @@ const insertSchema = z.object({
     episode_id: z.number(),
     host_id: z.number(),
   }),
+  keyword: z.object({
+    name: z.string(),
+  }),
+  keywords_on_movie: z.object({
+    keyword_id: z.number(),
+    movie_id: z.number(),
+  }),
   movie: z.object({
     budget: z.number(),
     imdb_id: z.string(),
@@ -140,6 +147,10 @@ export const prepareInsert = (db: Database) => {
     host: db.prepare<InsertSchema['host']>(buildInsertSql('hosts', getFields('host'))),
     hostsOnEpisode: db.prepare<InsertSchema['hosts_on_episode']>(
       buildInsertSql('hosts_on_episodes', getFields('hosts_on_episode'))
+    ),
+    keyword: db.prepare<InsertSchema['keyword']>(buildInsertSql('keywords', getFields('keyword'))),
+    keywordsOnMovie: db.prepare<InsertSchema['keywords_on_movie']>(
+      buildInsertSql('keywords_on_movies', getFields('keywords_on_movie'))
     ),
     movie: db.prepare<InsertSchema['movie']>(buildInsertSql('movies', getFields('movie'))),
     oscarAward: db.prepare<InsertSchema['oscars_award']>(

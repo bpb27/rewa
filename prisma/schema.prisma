@@ -110,6 +110,7 @@ model movies {
   crew_on_movies                 crew_on_movies[]
   episodes                       episodes[]
   genres_on_movies               genres_on_movies[]
+  keywords_on_movies             keywords_on_movies[]
   oscars_nominations             oscars_nominations[]
   production_companies_on_movies production_companies_on_movies[]
   streamers_on_movies            streamers_on_movies[]
@@ -183,6 +184,22 @@ model oscars_categories {
   name          String
   relevance     String
   oscars_awards oscars_awards[]
+}
+
+model keywords {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique(map: "sqlite_autoindex_keywords_1")
+  keywords_on_movies keywords_on_movies[]
+}
+
+model keywords_on_movies {
+  id         Int      @id @default(autoincrement())
+  movie_id   Int
+  keyword_id Int
+  keywords   keywords @relation(fields: [keyword_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies     movies   @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([movie_id, keyword_id], map: "sqlite_autoindex_keywords_on_movies_1")
 }
 
 view movies_with_computed_fields {
