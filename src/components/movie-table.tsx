@@ -7,6 +7,9 @@ import { type Token } from '~/data/tokens';
 import { type SortKey } from '~/data/query-params';
 import { cn } from '~/utils/style';
 import { streamerShortName } from '~/data/streamers';
+import { Popover } from '@radix-ui/react-popover';
+import { PopoverMenu } from './ui/popover';
+import { smartSort } from '~/utils/sorting';
 
 type MovieTableProps = {
   movies: Movie[];
@@ -119,12 +122,11 @@ type ClickableTdProps = {
 
 // better to show in dialog maybe - be aware of performance issues
 const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
-  const [limit, setLimit] = useState(max);
   const total = tokens.length;
   const needsPagination = total > max;
   return (
     <td>
-      {tokens.slice(0, limit).map(item => (
+      {tokens.slice(0, max).map(item => (
         <div
           className="cursor-pointer whitespace-nowrap px-1 hover:underline"
           key={item.id}
@@ -133,21 +135,24 @@ const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
           {item.name}
         </div>
       ))}
-      {needsPagination && limit < total && (
-        <div
-          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
-          onClick={() => setLimit(total)}
+      {needsPagination && max < total && (
+        <PopoverMenu
+          trigger={
+            <div className="cursor-pointer px-1 hover:underline">Show {total - max} more</div>
+          }
         >
-          Show {total - limit} more
-        </div>
-      )}
-      {needsPagination && limit >= total && (
-        <div
-          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
-          onClick={() => setLimit(max)}
-        >
-          Show fewer
-        </div>
+          <div>
+            {smartSort([...tokens], t => t.name, true).map(item => (
+              <div
+                className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+                key={item.id}
+                onClick={() => onClick(item)}
+              >
+                {item.name}
+              </div>
+            ))}
+          </div>
+        </PopoverMenu>
       )}
     </td>
   );
