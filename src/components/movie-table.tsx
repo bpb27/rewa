@@ -1,5 +1,5 @@
 import { type PropsWithChildren, Fragment, useState } from 'react';
-import { ImdbLink, SpotifyLink } from '~/components/external-links';
+import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/ui/icons';
 import { MovieTablePoster } from '~/components/images';
 import { type Movie } from '~/components/movies-page';
@@ -43,6 +43,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
             <TableHeader onSort={onSortClick} sort="runtime">
               Runtime
             </TableHeader>
+            <TableHeader>Our Guy</TableHeader>
             <TableHeader>Genres</TableHeader>
             <TableHeader>Keywords</TableHeader>
             <TableHeader>
@@ -79,12 +80,19 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
+                <td>
+                  <Rating value={m.ebertReview?.rating} />
+                </td>
                 <ClickableTd tokens={m.genres} onClick={onTokenClick} />
                 <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <td>
-                  <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
-                  <br />
-                  {m.episode && <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>}
+                  <div className="flex flex-col">
+                    {!!m.episode && <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>}
+                    <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
+                    {!!m.ebertReview?.path && (
+                      <EbertLink path={m.ebertReview.path}>Ebert</EbertLink>
+                    )}
+                  </div>
                 </td>
               </tr>
             </Fragment>
@@ -155,3 +163,19 @@ const TableHeader = ({ className, children, onSort, sort }: THProps) => (
     {children}
   </th>
 );
+
+const Rating = ({ value }: { value?: number }) => {
+  if (!value) return null;
+  const full = Math.floor(value);
+  const hasHalf = value % 1 === 0.5;
+  return (
+    <div className="flex">
+      {Array(full)
+        .fill(null)
+        .map((_, index) => (
+          <Icon.Star key={index} className="fill-yellow-500 text-yellow-600" size={15} />
+        ))}
+      {hasHalf && <Icon.StarHalf className="fill-yellow-500 text-yellow-600" size={15} />}
+    </div>
+  );
+};

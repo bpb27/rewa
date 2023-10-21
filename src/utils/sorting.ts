@@ -11,6 +11,7 @@ export const sortOptions = [
   { value: 'director', label: 'Director' },
   { value: 'total_oscar_nominations', label: 'Oscar noms' },
   { value: 'total_oscar_wins', label: 'Oscar wins' },
+  // { value: 'ebert', label: 'Ebert rating' },
 ] satisfies { value: SortKey; label: string }[];
 
 const longDateRegEx = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/;

@@ -108,6 +108,7 @@ model movies {
   title                          String
   actors_on_movies               actors_on_movies[]
   crew_on_movies                 crew_on_movies[]
+  ebert_reviews                  ebert_reviews?
   episodes                       episodes[]
   genres_on_movies               genres_on_movies[]
   keywords_on_movies             keywords_on_movies[]
@@ -200,6 +201,14 @@ model keywords_on_movies {
   movies     movies   @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, keyword_id], map: "sqlite_autoindex_keywords_on_movies_1")
+}
+
+model ebert_reviews {
+  id       Int     @id @default(autoincrement())
+  movie_id Int     @unique(map: "sqlite_autoindex_ebert_reviews_1")
+  rating   Float
+  path     String?
+  movies   movies  @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 view movies_with_computed_fields {

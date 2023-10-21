@@ -29,6 +29,7 @@ export const qpSchema = z.object({
     .enum([
       'budget',
       'director',
+      // 'ebert',
       'episodeNumber',
       'profit',
       'release_date',

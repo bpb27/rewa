@@ -1,3 +1,11 @@
+# Latest
+
+- ebert sort
+- hide ebert + hosts column for oscars
+- combine budget and box office
+- hide genres (keywords is more interesting)
+- maybe add genres to dialog
+
 # Bugs
 
 - page QP will fuckup shareable links

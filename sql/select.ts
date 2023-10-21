@@ -35,7 +35,7 @@ export const getMovieByTmdbId = (id: number) => prisma.movies.findFirst(byTmdbId
 export const getAllMoviesWithEpisodes = () =>
   prisma.movies.findMany({
     where: { episodes: { some: {} } },
-    select: { id: true, tmdb_id: true, title: true },
+    select: { id: true, tmdb_id: true, title: true, release_date: true },
   });
 
 export const getAllMovies = () =>

@@ -13,6 +13,7 @@ const tableNameSchema = z.enum([
   'actors_on_movies',
   'crew',
   'crew_on_movies',
+  'ebert_reviews',
   'episodes',
   'genres',
   'genres_on_movies',

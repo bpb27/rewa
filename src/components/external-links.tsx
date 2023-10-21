@@ -21,3 +21,13 @@ export const SpotifyLink = ({
     {children}
   </a>
 );
+
+export const EbertLink = ({
+  children,
+  className,
+  path,
+}: PropsWithChildren<{ className?: string; path: string }>) => (
+  <a href={`https://www.rogerebert.com${path}/`} className={className} {...newTab}>
+    {children}
+  </a>
+);

@@ -206,11 +206,23 @@ CREATE TABLE IF NOT EXISTS ${TABLES.oscars_categories} (
 );
 `;
 
+export const createEbertReviewsTable = `
+CREATE TABLE IF NOT EXISTS ${TABLES.ebert_reviews} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  movie_id INTEGER NOT NULL,
+  rating REAL NOT NULL,
+  path TEXT,
+  FOREIGN KEY (movie_id) REFERENCES ${TABLES.movies} (id) ON DELETE CASCADE,
+  UNIQUE (movie_id)
+);
+`;
+
 const createMap = {
   [TABLES.actors]: createActorsTableSql,
   [TABLES.actors_on_movies]: createActorsOnMoviesTableSql,
   [TABLES.crew]: createCrewTableSql,
   [TABLES.crew_on_movies]: createCrewOnMoviesSql,
+  [TABLES.ebert_reviews]: createEbertReviewsTable,
   [TABLES.episodes]: createEpisodesTableSql,
   [TABLES.genres]: createGenresTableSql,
   [TABLES.genres_on_movies]: createGenresOnMoviesTableSql,

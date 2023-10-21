@@ -102,6 +102,7 @@ export const getMovies = async (params: GetMoviesParams) => {
               crew: selectIdAndName,
             },
           },
+          ebert_reviews: true,
           episodes: {
             take: 1,
             select: {
@@ -139,9 +140,6 @@ export const getMovies = async (params: GetMoviesParams) => {
         'tagline',
         'title',
       ]),
-      episode: movie.episodes[0]
-        ? pick(movie.episodes[0], ['episode_order', 'id', 'spotify_url'])
-        : null,
       actors: uniqBy(
         movie.actors_on_movies
           .filter(jt => jt.actors)
@@ -154,6 +152,10 @@ export const getMovies = async (params: GetMoviesParams) => {
         .filter(jt => jt.job === 'Director')
         .map(jt => jt.crew!)
         .map(item => tokenize('director', item)),
+      ebertReview: movie.ebert_reviews,
+      episode: movie.episodes[0]
+        ? pick(movie.episodes[0], ['episode_order', 'id', 'spotify_url'])
+        : null,
       genres: movie.genres_on_movies
         .filter(jt => jt.genres)
         .map(jt => jt.genres!)

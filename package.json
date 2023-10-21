@@ -53,6 +53,7 @@
     "@types/node": "^18.15.11",
     "@types/qs": "^6.9.8",
     "autoprefixer": "^10.4.14",
+    "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
     "esbuild-register": "^3.4.2",
     "postcss": "^8.4.23",

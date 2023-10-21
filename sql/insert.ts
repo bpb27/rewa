@@ -42,6 +42,11 @@ const insertSchema = z.object({
     known_for_department: z.string(),
     movie_id: z.number(),
   }),
+  ebert_review: z.object({
+    movie_id: z.number(),
+    path: z.string(),
+    rating: z.number(),
+  }),
   episode: z.object({
     date: z.string(),
     episode_order: z.number(),
@@ -138,6 +143,9 @@ export const prepareInsert = (db: Database) => {
     crew: db.prepare<InsertSchema['crew']>(buildInsertSql('crew', getFields('crew'))),
     crewOnMovie: db.prepare<InsertSchema['crew_on_movie']>(
       buildInsertSql('crew_on_movies', getFields('crew_on_movie'))
+    ),
+    ebert_review: db.prepare<InsertSchema['ebert_review']>(
+      buildInsertSql('ebert_reviews', getFields('ebert_review'))
     ),
     episode: db.prepare<InsertSchema['episode']>(buildInsertSql('episodes', getFields('episode'))),
     genre: db.prepare<InsertSchema['genre']>(buildInsertSql('genres', getFields('genre'))),
