@@ -8,10 +8,11 @@ import { useAPI } from '~/utils/use-api';
 import { useToggle } from '~/utils/use-toggle';
 import { Checkbox } from './ui/checkbox';
 import { useQueryParams } from '~/data/query-params';
+import { cn } from '~/utils/style';
 
 // TODO: all real cats checkbox
 // TODO: still retains old values after clearing tokens
-// TODO: clicking the filter button w/ dialog open closes (interactOutside) and reopens
+
 export const MovieFiltersDialog = () => {
   const { values, update } = useQueryParams();
   const [filterCategories, setFilterCategories] = useState(true);
@@ -23,7 +24,11 @@ export const MovieFiltersDialog = () => {
   const categories = (data || []).filter(c => (filterCategories ? c.relevance === 'high' : true));
   return (
     <span ref={setContainer}>
-      <Button variant="icon" onClick={dialog.toggle}>
+      <Button
+        className={cn(dialog.isOpen && 'pointer-events-none')}
+        onClick={dialog.setOpen}
+        variant="icon"
+      >
         <Icon.FilterSlider />
       </Button>
       <DialogOverlay

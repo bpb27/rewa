@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Film,
   Frown,
+  KeyRound,
   Meh,
   Mic,
   Popcorn,
@@ -24,6 +25,7 @@ import {
   Tv,
   User2,
   Video,
+  WholeWord,
   XCircle,
 } from 'lucide-react';
 import { type ComponentPropsWithoutRef } from 'react';
@@ -53,6 +55,7 @@ export const Icon = {
   Filter: CircleEqual,
   FilterSlider: SlidersHorizontal,
   FilmStrip: Film,
+  Key: KeyRound,
   Link: ExternalLink,
   Mic: Mic,
   Movie: Clapperboard,
@@ -61,4 +64,5 @@ export const Icon = {
   Table: Table,
   Tv: Tv,
   Video: Video,
+  Word: WholeWord,
 };

@@ -26,7 +26,7 @@ export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
 
   const actors = await prisma.actors.findMany({
     select: { id: true, name: true },
-    orderBy: { name: 'asc' },
+    orderBy: { actors_on_movies: { _count: 'desc' } },
     where: {
       name: { contains: search },
       AND: { actors_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
@@ -38,6 +38,16 @@ export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
     where: { name: { contains: search } },
+    take: 5,
+  });
+
+  const keywords = await prisma.keywords.findMany({
+    select: { id: true, name: true },
+    orderBy: { keywords_on_movies: { _count: 'desc' } },
+    where: {
+      name: { contains: search },
+      AND: { keywords_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+    },
     take: 5,
   });
 
@@ -55,7 +65,7 @@ export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
 
   const directors = await prisma.crew.findMany({
     select: { id: true, name: true },
-    orderBy: { name: 'asc' },
+    orderBy: { crew_on_movies: { _count: 'desc' } },
     where: {
       name: { contains: search },
       AND: [
@@ -72,6 +82,7 @@ export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
     ...actors.map(item => tokenize('actor', item)),
     ...directors.map(item => tokenize('director', item)),
     ...streamers.map(item => tokenize('streamer', item)),
+    ...keywords.map(item => tokenize('keyword', item)),
   ];
 
   return results;

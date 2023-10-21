@@ -4,10 +4,13 @@
 - empty search results have an empty results w/ transparent background on mobile
 - clicking year range token (might be better to have separate qps - still technically lists so its easily tokenized though) - and just use inputs rather than slider
 - old year range persisting in dialog after tokens cleared
+- total movies icon is incredibly small on mobile
 
 # Minor UI
 
 - searching for title, selecting, searching for another, selecting - results will always be empty (two title tokens) - should probably replace / only allow one
+- movie table/card to dialog?
+- dialog for show-more stuff in table
 
 # Data probs
 

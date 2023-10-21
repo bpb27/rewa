@@ -1,4 +1,4 @@
-import { type PropsWithChildren, Fragment } from 'react';
+import { type PropsWithChildren, Fragment, useState } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon } from '~/components/ui/icons';
 import { MovieTablePoster } from '~/components/images';
@@ -44,7 +44,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
               Runtime
             </TableHeader>
             <TableHeader>Genres</TableHeader>
-            {/* <TableHeader>Keywords</TableHeader> */}
+            <TableHeader>Keywords</TableHeader>
             <TableHeader>
               <div className="flex">
                 Links
@@ -80,7 +80,7 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.genres} onClick={onTokenClick} />
-                {/* <ClickableTd tokens={m.keywords} onClick={onTokenClick} /> */}
+                <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <td>
                   <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
                   <br />
@@ -96,23 +96,46 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
 };
 
 type ClickableTdProps = {
+  max?: number;
   onClick: (v: Token) => void;
   tokens: Token[];
 };
 
-const ClickableTd = ({ onClick, tokens }: ClickableTdProps) => (
-  <td>
-    {tokens.map(item => (
-      <div
-        className="cursor-pointer whitespace-nowrap px-1 hover:underline"
-        key={item.id}
-        onClick={() => onClick(item)}
-      >
-        {item.name}
-      </div>
-    ))}
-  </td>
-);
+// better to show in dialog maybe - be aware of performance issues
+const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
+  const [limit, setLimit] = useState(max);
+  const total = tokens.length;
+  const needsPagination = total > max;
+  return (
+    <td>
+      {tokens.slice(0, limit).map(item => (
+        <div
+          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+          key={item.id}
+          onClick={() => onClick(item)}
+        >
+          {item.name}
+        </div>
+      ))}
+      {needsPagination && limit < total && (
+        <div
+          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+          onClick={() => setLimit(total)}
+        >
+          Show {total - limit} more
+        </div>
+      )}
+      {needsPagination && limit >= total && (
+        <div
+          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
+          onClick={() => setLimit(max)}
+        >
+          Show fewer
+        </div>
+      )}
+    </td>
+  );
+};
 
 type THProps = PropsWithChildren<{
   sort?: SortKey;

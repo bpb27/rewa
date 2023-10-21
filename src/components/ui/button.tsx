@@ -5,6 +5,7 @@ type ButtonProps = PropsWithChildren<{
   className?: string;
   onClick: () => void;
   selected?: boolean;
+  disabled?: boolean;
   variant: 'icon' | 'token' | 'card';
 }>;
 
@@ -16,13 +17,21 @@ const variants = ({ selected }: { selected?: boolean }) => ({
   card: 'border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2',
 });
 
-export const Button = ({ className, children, onClick, selected, variant }: ButtonProps) => (
+export const Button = ({
+  className,
+  children,
+  disabled,
+  onClick,
+  selected,
+  variant,
+}: ButtonProps) => (
   <button
     className={cn(
       'inline-flex items-center justify-center rounded-md text-sm font-medium',
       variants({ selected })[variant],
       className
     )}
+    disabled={disabled}
     onClick={() => onClick()}
   >
     {children}
