@@ -87,10 +87,18 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <td>
                   <div className="flex flex-col">
-                    {!!m.episode && <SpotifyLink url={m.episode.spotify_url}>Spotify</SpotifyLink>}
-                    <ImdbLink id={m.imdb_id}>IMDB</ImdbLink>
+                    {!!m.episode && (
+                      <SpotifyLink url={m.episode.spotify_url} className="text-blue-500 underline">
+                        Spotify
+                      </SpotifyLink>
+                    )}
+                    <ImdbLink id={m.imdb_id} className="text-blue-500 underline">
+                      IMDB
+                    </ImdbLink>
                     {!!m.ebertReview?.path && (
-                      <EbertLink path={m.ebertReview.path}>Ebert</EbertLink>
+                      <EbertLink path={m.ebertReview.path} className="text-blue-500 underline">
+                        Ebert
+                      </EbertLink>
                     )}
                   </div>
                 </td>
