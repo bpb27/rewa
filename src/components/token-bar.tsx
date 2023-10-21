@@ -1,16 +1,16 @@
 import { Button } from './ui/button';
 import { Icon } from './ui/icons';
-import { useQueryParams } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 
 type TokenBarProps = {
   clear: () => void;
-  update: ReturnType<typeof useQueryParams>['update'];
-  tokens: Token[];
   mode: 'and' | 'or';
+  toggleSearchMode: () => void;
+  toggleToken: (token: Token) => void;
+  tokens: Token[];
 };
 
-export const TokenBar = ({ clear, mode, tokens, update }: TokenBarProps) => {
+export const TokenBar = ({ clear, mode, tokens, toggleSearchMode, toggleToken }: TokenBarProps) => {
   return (
     <>
       {tokens.length > 0 && (
@@ -20,11 +20,7 @@ export const TokenBar = ({ clear, mode, tokens, update }: TokenBarProps) => {
         </Button>
       )}
       {tokens.length > 1 && (
-        <Button
-          className="flex"
-          variant="token"
-          onClick={() => update('searchMode', mode === 'and' ? 'or' : 'and')}
-        >
+        <Button className="flex" variant="token" onClick={toggleSearchMode}>
           <Icon.Filter className="mr-2" />
           {mode === 'and' ? 'And' : 'Or'}
         </Button>
@@ -32,7 +28,7 @@ export const TokenBar = ({ clear, mode, tokens, update }: TokenBarProps) => {
       {tokens.map(token => (
         <Button
           key={`${token.id}-${token.type}`}
-          onClick={() => update(token.type, token.id)}
+          onClick={() => toggleToken(token)}
           variant="token"
         >
           {token.name}

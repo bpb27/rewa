@@ -1,18 +1,17 @@
-import { type PropsWithChildren, Fragment, useState } from 'react';
+import { Fragment, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon } from '~/components/ui/icons';
 import { MovieTablePoster } from '~/components/images';
-import { type Movie } from '~/components/movies-page';
-import { type Token } from '~/data/tokens';
+import { type MoviesPageMovie } from '~/components/movies-page';
+import { Icon } from '~/components/ui/icons';
 import { type SortKey } from '~/data/query-params';
-import { cn } from '~/utils/style';
 import { streamerShortName } from '~/data/streamers';
-import { Popover } from '@radix-ui/react-popover';
-import { PopoverMenu } from './ui/popover';
+import { type Token } from '~/data/tokens';
 import { smartSort } from '~/utils/sorting';
+import { cn } from '~/utils/style';
+import { PopoverMenu } from './ui/popover';
 
 type MovieTableProps = {
-  movies: Movie[];
+  movies: MoviesPageMovie[];
   onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
 };
@@ -46,7 +45,9 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
             <TableHeader onSort={onSortClick} sort="runtime">
               Runtime
             </TableHeader>
-            <TableHeader>Our Guy</TableHeader>
+            <TableHeader onSort={onSortClick} sort="ebert">
+              Our Guy
+            </TableHeader>
             <TableHeader>Genres</TableHeader>
             <TableHeader>Keywords</TableHeader>
             <TableHeader>

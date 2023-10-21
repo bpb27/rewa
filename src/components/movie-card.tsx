@@ -1,12 +1,12 @@
 import { useState, type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon } from '~/components/ui/icons';
 import { MovieCardPoster, TheaterBackground } from '~/components/images';
-import { type Movie } from '~/components/movies-page';
+import { type MoviesPageMovie } from '~/components/movies-page';
+import { Icon } from '~/components/ui/icons';
 import { type Token } from '~/data/tokens';
 import { formatDate } from '~/utils/format';
 
-interface MovieCardProps extends Movie {
+interface MovieCardProps extends MoviesPageMovie {
   onTokenClick: (token: Token) => void;
 }
 
@@ -81,7 +81,7 @@ export const MovieCard = ({ onTokenClick, ...movie }: MovieCardProps) => {
 };
 
 type MovieCardsProps = {
-  movies: Movie[];
+  movies: MoviesPageMovie[];
   onTokenClick: (token: Token) => void;
 };
 
