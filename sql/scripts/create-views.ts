@@ -26,9 +26,11 @@ const run = () => {
             COALESCE(e.episode_order, 0) as episode_order,
             COALESCE(c.name, 'N/A') as director_name,
             COALESCE(o.total_nominations, 0) AS total_oscar_nominations,
-            COALESCE(o.total_wins, 0) AS total_oscar_wins
+            COALESCE(o.total_wins, 0) AS total_oscar_wins,
+            COALESCE(eb.rating, 0) AS ebert_rating
         FROM movies m
         LEFT JOIN episodes e ON m.id = e.movie_id
+        LEFT JOIN ebert_reviews eb ON m.id = eb.movie_id
         LEFT JOIN (
             SELECT com.movie_id, c.name
             FROM crew_on_movies com

@@ -26,6 +26,7 @@ const take = 25;
 const sortMap = {
   budget: 'budget',
   director: 'director_name',
+  ebert: 'ebert_rating',
   episodeNumber: 'episode_order',
   profit: 'profit_percentage',
   release_date: 'release_date',

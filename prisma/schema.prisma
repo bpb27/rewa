@@ -223,5 +223,6 @@ view movies_with_computed_fields {
   director_name           String
   total_oscar_nominations Int
   total_oscar_wins        Int
+  ebert_rating            Int
   movie                   movies?          @relation(fields: [movie_id], references: [id])
 }

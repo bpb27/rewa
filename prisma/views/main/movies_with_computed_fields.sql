@@ -14,10 +14,12 @@ SELECT
   COALESCE(e.episode_order, 0) AS episode_order,
   COALESCE(c.name, 'N/A') AS director_name,
   COALESCE(o.total_nominations, 0) AS total_oscar_nominations,
-  COALESCE(o.total_wins, 0) AS total_oscar_wins
+  COALESCE(o.total_wins, 0) AS total_oscar_wins,
+  COALESCE(eb.rating, 0) AS ebert_rating
 FROM
   movies AS m
   LEFT JOIN episodes AS e ON m.id = e.movie_id
+  LEFT JOIN ebert_reviews AS eb ON m.id = eb.movie_id
   LEFT JOIN (
     SELECT
       com.movie_id,
