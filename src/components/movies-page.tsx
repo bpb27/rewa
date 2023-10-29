@@ -1,7 +1,8 @@
-import { FullTypeahead } from '~/components/full-typeahead';
+import { useState } from 'react';
 import Layout from '~/components/layout';
 import { MovieCards } from '~/components/movie-card';
 import { MovieTable } from '~/components/movie-table';
+import { SearchBar } from '~/components/search-bar';
 import { TokenBar } from '~/components/token-bar';
 import { type Boxes } from '~/components/ui/box';
 import { Button } from '~/components/ui/button';
@@ -25,8 +26,9 @@ type MoviesPageProps = {
 
 export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   const { actions, conditions, data } = useMoviePageData({ defaultQps, initialData });
-  const oscarsModal = useToggle('closed', 'open');
   const display = useToggle('table', 'card', null);
+  const oscarsModal = useToggle('closed', 'open');
+  const [oscarsModalYear, setOscarsModalYear] = useState(2022);
 
   useScreenSizeOnMount({
     onDesktop: display.setTable,
@@ -36,7 +38,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   return (
     <Layout title="All movies">
       <Box.Filters>
-        <FullTypeahead filter={data.mode} onSelect={actions.toggleToken} />
+        <SearchBar filter={data.mode} onSelect={actions.toggleToken} />
         {conditions.hasTokens && (
           <Box.Tokens>
             <TokenBar
@@ -74,16 +76,32 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
       </Box.Filters>
       {display.isTable && (
         <MovieTable
+          mode={data.mode}
           movies={data.movies}
           onTokenClick={actions.toggleToken}
           onSortClick={actions.sort}
+          onOscarYearClick={(year: number) => {
+            setOscarsModalYear(year);
+            oscarsModal.setOpen();
+          }}
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
       {display.isDefined && conditions.showVizSensor && <div ref={data.vizSensorRef} />}
       {oscarsModal.isOpen && (
-        <OscarYearModal isOpen={oscarsModal.isOpen} onClose={oscarsModal.setClosed} year={1987} />
+        <OscarYearModal
+          isOpen={oscarsModal.isOpen}
+          onClose={oscarsModal.setClosed}
+          year={oscarsModalYear}
+        />
       )}
+      <Button
+        variant="icon"
+        onClick={() => window?.scrollTo(0, 0)}
+        className="fixed bottom-1 right-1 bg-slate-800 text-white opacity-50"
+      >
+        <Icon.ArrowUp />
+      </Button>
     </Layout>
   );
 };

@@ -37,7 +37,7 @@ export const useMoviePageData = ({ defaultQps, initialData }: UseMoviePageDataPr
   const vizSensorRef = useRef<HTMLDivElement>(null);
   const showVizSensor = !!(!isLoading && data?.hasNext && movies.length);
 
-  // add default params to URL
+  // add default params to URL (if missing)
   useEffect(() => {
     if (isEmpty) updateAll(values);
   }, [isEmpty]);

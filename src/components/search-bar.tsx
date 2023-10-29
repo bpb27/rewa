@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 import { groupBy } from 'remeda';
-import { Icon } from '~/components/ui/icons';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
+import { Icon } from '~/components/ui/icons';
 import { type Token } from '~/data/tokens';
 import { capitalize } from '~/utils/format';
-import { useDebounce } from '~/utils/use-debounce';
 import { useAPI } from '~/utils/use-api';
+import { useDebounce } from '~/utils/use-debounce';
 
-type FullTypeaheadProps = {
+type SearchBarProps = {
   filter: 'episode' | 'oscar';
   onSelect: (selection: Token) => void;
 };
 
-export const FullTypeahead = ({ filter, onSelect }: FullTypeaheadProps) => {
+export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
   const [resultsContainer, setResultsContainer] = useState<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [search, setSearch] = useState('');

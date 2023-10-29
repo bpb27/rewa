@@ -1,4 +1,4 @@
-import { RefObject, type PropsWithChildren } from 'react';
+import { type PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
 
 type ButtonProps = PropsWithChildren<{
@@ -14,7 +14,9 @@ const variants = ({ selected }: { selected?: boolean }) => ({
   token: cn(
     'bg-slate-50 hover:bg-slate-200 border border-slate-200 hover:text-slate-900 h-10 px-4 py-2 whitespace-nowrap'
   ),
-  card: 'border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2',
+  card: cn(
+    'border border-slate-200 focus:outline-slate-400 bg-white hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2'
+  ),
 });
 
 export const Button = ({

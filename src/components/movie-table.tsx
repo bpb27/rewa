@@ -1,6 +1,6 @@
 import { Fragment, type PropsWithChildren } from 'react';
+import { noop } from 'remeda';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
-import { MovieTablePoster } from '~/components/images';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
 import { type SortKey } from '~/data/query-params';
@@ -8,48 +8,52 @@ import { streamerShortName } from '~/data/streamers';
 import { type Token } from '~/data/tokens';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
+import { MovieTablePoster } from './images';
+import { MovieOscarsPopover } from './popovers';
 import { PopoverMenu } from './ui/popover';
+import { StarRating } from './ui/stars';
+import { Text } from './ui/text';
 
 type MovieTableProps = {
+  mode: 'episode' | 'oscar';
   movies: MoviesPageMovie[];
   onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
+  onOscarYearClick: (year: number) => void;
 };
 
-export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProps) => {
+export const MovieTable = ({
+  mode,
+  movies,
+  onOscarYearClick,
+  onSortClick,
+  onTokenClick,
+}: MovieTableProps) => {
+  const showHosts = mode === 'episode';
+  const showEbert = mode === 'episode';
+  const showGenres = false;
+  const sort = (key: SortKey) => () => onSortClick(key);
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:pr-2">
             <TableHeader>Poster</TableHeader>
-            <TableHeader onSort={onSortClick} sort="title">
-              Title
-            </TableHeader>
-            <TableHeader onSort={onSortClick} sort="release_date">
-              Year
-            </TableHeader>
-            <TableHeader onSort={onSortClick} sort="director">
-              Director
-            </TableHeader>
+            <TableHeader onClick={sort('title')}>Title</TableHeader>
+            <TableHeader onClick={sort('release_date')}>Year</TableHeader>
+            <TableHeader onClick={sort('director')}>Director</TableHeader>
             <TableHeader>Top Cast</TableHeader>
             <TableHeader>Oscars</TableHeader>
-            <TableHeader>Hosts</TableHeader>
-            <TableHeader>Streaming</TableHeader>
-            <TableHeader onSort={onSortClick} sort="budget">
-              Budget
-            </TableHeader>
-            <TableHeader onSort={onSortClick} sort="revenue" className="min-w-[90px]">
-              Box Office
-            </TableHeader>
-            <TableHeader onSort={onSortClick} sort="runtime">
-              Runtime
-            </TableHeader>
-            <TableHeader onSort={onSortClick} sort="ebert">
+            <TableHeader show={showHosts}>Hosts</TableHeader>
+            <TableHeader onClick={sort('budget')}>Budget</TableHeader>
+            <TableHeader onClick={sort('revenue')}>Box Office</TableHeader>
+            <TableHeader onClick={sort('runtime')}>Runtime</TableHeader>
+            <TableHeader onClick={sort('ebert')} show={showEbert}>
               Our Guy
             </TableHeader>
-            <TableHeader>Genres</TableHeader>
+            <TableHeader show={showGenres}>Genres</TableHeader>
             <TableHeader>Keywords</TableHeader>
+            <TableHeader>Streaming</TableHeader>
             <TableHeader>
               <div className="flex">
                 Links
@@ -72,23 +76,33 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
                 <td>
-                  <span>{m.oscars.noms} noms</span>
-                  <br />
-                  <span>{m.oscars.wins} wins</span>
+                  <div className="flex flex-col">
+                    <Text>{m.oscars.noms} noms</Text>
+                    <Text>{m.oscars.wins} wins</Text>
+                    {m.oscars.noms > 0 && (
+                      <MovieOscarsPopover
+                        awards={m.oscars.awards.map(a => ({ ...a, awardName: a.awardCategory }))}
+                        onYearClick={() => onOscarYearClick(m.oscars.year)}
+                        trigger={<span className="cursor-pointer hover:underline">Show</span>}
+                      />
+                    )}
+                  </div>
                 </td>
-                <ClickableTd tokens={m.hosts} onClick={onTokenClick} />
+                {showHosts && <ClickableTd tokens={m.hosts} onClick={onTokenClick} />}
+                <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
+                <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
+                <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
+                {showEbert && (
+                  <td>
+                    <StarRating value={m.ebertReview?.rating} />
+                  </td>
+                )}
+                {showGenres && <ClickableTd tokens={m.genres} onClick={onTokenClick} />}
+                <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <ClickableTd
                   tokens={m.streamers.map(s => ({ ...s, name: streamerShortName(s.name) }))}
                   onClick={onTokenClick}
                 />
-                <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
-                <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
-                <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
-                <td>
-                  <Rating value={m.ebertReview?.rating} />
-                </td>
-                <ClickableTd tokens={m.genres} onClick={onTokenClick} />
-                <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <td>
                   <div className="flex flex-col">
                     {!!m.episode && (
@@ -115,42 +129,49 @@ export const MovieTable = ({ movies, onSortClick, onTokenClick }: MovieTableProp
   );
 };
 
+type TableHeaderProps = PropsWithChildren<{
+  className?: string;
+  onClick?: () => void;
+  show?: boolean;
+}>;
+
+const TableHeader = ({ className, children, onClick, show }: TableHeaderProps) => {
+  return show === false ? null : (
+    <th
+      onClick={onClick || noop}
+      className={cn(
+        onClick ? 'cursor-pointer hover:underline' : undefined,
+        'whitespace-nowrap px-2 py-3',
+        className
+      )}
+    >
+      {children}
+    </th>
+  );
+};
+
 type ClickableTdProps = {
   max?: number;
   onClick: (v: Token) => void;
   tokens: Token[];
 };
 
-// better to show in dialog maybe - be aware of performance issues
 const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
   const total = tokens.length;
   const needsPagination = total > max;
+  const MoreButton = (
+    <div className="cursor-pointer px-1 hover:underline">Show {total - max} more</div>
+  );
   return (
     <td>
-      {tokens.slice(0, max).map(item => (
-        <div
-          className="cursor-pointer whitespace-nowrap px-1 hover:underline"
-          key={item.id}
-          onClick={() => onClick(item)}
-        >
-          {item.name}
-        </div>
+      {tokens.slice(0, max).map(token => (
+        <ClickableField key={token.id} {...token} onClick={() => onClick(token)} />
       ))}
       {needsPagination && max < total && (
-        <PopoverMenu
-          trigger={
-            <div className="cursor-pointer px-1 hover:underline">Show {total - max} more</div>
-          }
-        >
+        <PopoverMenu trigger={MoreButton}>
           <div>
-            {smartSort([...tokens], t => t.name, true).map(item => (
-              <div
-                className="cursor-pointer whitespace-nowrap px-1 hover:underline"
-                key={item.id}
-                onClick={() => onClick(item)}
-              >
-                {item.name}
-              </div>
+            {smartSort([...tokens], t => t.name, true).map(token => (
+              <ClickableField key={token.id} {...token} onClick={() => onClick(token)} />
             ))}
           </div>
         </PopoverMenu>
@@ -159,37 +180,14 @@ const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
   );
 };
 
-type THProps = PropsWithChildren<{
-  sort?: SortKey;
-  onSort?: (prop: SortKey) => void;
-  className?: string;
-}>;
-
-const TableHeader = ({ className, children, onSort, sort }: THProps) => (
-  <th
-    onClick={() => onSort && sort && onSort(sort)}
-    className={cn(
-      sort ? 'cursor-pointer hover:underline' : undefined,
-      'whitespace-nowrap px-2 py-3',
-      className
-    )}
-  >
-    {children}
-  </th>
-);
-
-const Rating = ({ value }: { value?: number }) => {
-  if (!value) return null;
-  const full = Math.floor(value);
-  const hasHalf = value % 1 === 0.5;
-  return (
-    <div className="flex">
-      {Array(full)
-        .fill(null)
-        .map((_, index) => (
-          <Icon.Star key={index} className="fill-yellow-500 text-yellow-600" size={15} />
-        ))}
-      {hasHalf && <Icon.StarHalf className="fill-yellow-500 text-yellow-600" size={15} />}
-    </div>
-  );
+type ClickableFieldProps = {
+  id: number;
+  name: string;
+  onClick: () => void;
 };
+
+const ClickableField = ({ id, name, onClick }: ClickableFieldProps) => (
+  <div className="cursor-pointer whitespace-nowrap px-1 hover:underline" key={id} onClick={onClick}>
+    {name}
+  </div>
+);

@@ -1,15 +1,16 @@
+import { Prisma as PrismaBaseType } from '@prisma/client';
 import { pick, uniqBy } from 'remeda';
 import { createFilters, getSearches } from '~/data/movie-search-conditions';
 import { QpSchema, SortKey } from '~/data/query-params';
 import {
+  tokenize,
   tokenizeBudget,
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
-  tokenize,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
-import { Prisma as PrismaBaseType } from '@prisma/client';
+import { getYear } from '~/utils/format';
 
 // NB: searchMode AND === all conditions present, searchMode OR === any conditions present
 // NB: using a view (movies_with_computed_fields) to sort across tables (e.g. episode order) + custom fields (e.g. profit percentage)
@@ -119,6 +120,14 @@ export const getMovies = async (params: GetMoviesParams) => {
           keywords_on_movies: {
             select: { keywords: selectIdAndName },
           },
+          oscars_nominations: {
+            select: {
+              recipient: true,
+              won: true,
+              ceremony_year: true,
+              award: { select: { oscars_categories: selectIdAndName } },
+            },
+          },
           streamers_on_movies: {
             select: { streamers: selectIdAndName },
           },
@@ -178,6 +187,13 @@ export const getMovies = async (params: GetMoviesParams) => {
       oscars: {
         noms: item.total_oscar_nominations,
         wins: item.total_oscar_wins,
+        year: movie.oscars_nominations[0]?.ceremony_year || Number(getYear(movie.release_date)),
+        awards: movie.oscars_nominations.map(on => ({
+          awardCategory: on.award.oscars_categories.name,
+          awardCategoryId: on.award.oscars_categories.id,
+          recipient: on.recipient,
+          won: on.won,
+        })),
       },
       year: tokenizeYear(movie.release_date),
     };
