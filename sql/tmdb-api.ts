@@ -4,7 +4,7 @@ import { relevantStreamers } from '../src/data/streamers';
 const API_KEY = process.env.TMDB_API_KEY;
 
 const getMovieById = async ({ tmdb_id }: { tmdb_id: number }) => {
-  const route = `https://api.themoviedb.org/3/movie/${tmdb_id}?api_key=${API_KEY}&append_to_response=credits`;
+  const route = `https://api.themoviedb.org/3/movie/${tmdb_id}?api_key=${API_KEY}&append_to_response=credits,keywords`;
   const response = await fetch(route);
   const movie = await response.json();
   return movie as Movie;
@@ -81,6 +81,7 @@ const parseMovieById = (movie: Movie) => {
       revenue: movie.revenue / 1000,
     },
     genres: movie.genres.map(genre => pick(genre, ['name'])),
+    keywords: movie.genres.map(keyword => pick(keyword, ['name'])),
     productionCompanies: movie.production_companies.map(c => ({
       ...pick(c, ['name', 'logo_path']),
       tmdb_id: c.id,
@@ -122,6 +123,7 @@ interface Movie {
   homepage: string;
   id: number;
   imdb_id: string;
+  keywords: Keyword[];
   original_language: string;
   original_title: string;
   overview: string;
@@ -142,6 +144,11 @@ interface Movie {
   spoken_languages: any;
   production_countries: any;
   belongs_to_collection: any;
+}
+
+interface Keyword {
+  id: number;
+  name: string;
 }
 
 interface Genre {

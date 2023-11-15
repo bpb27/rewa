@@ -1,16 +1,17 @@
 import { type Database } from 'better-sqlite3';
 import { z } from 'zod';
 import { type TableName } from './general';
-import { tmdbApi } from './tmdb-api';
 import {
   getActorByTmdbId,
   getCrewByTmdbId,
   getEpisodeByUrl,
   getGenreByName,
   getHostByName,
+  getKeywordByName,
   getMovieByTmdbId,
   getProductionCompanyByTmdbId,
 } from './select';
+import { tmdbApi } from './tmdb-api';
 
 // NB: prisma can't handle lots of inserts, so need to use better-sqlite
 
@@ -249,6 +250,19 @@ export const insertNewMovie = async (
     if (!genre_id) throw new Error('Failed to get genre');
     inserter.genresOnMovie.run({ genre_id, movie_id });
   });
+
+  // add keywords
+  parsedMovie.keywords.forEach(keyword => {
+    inserter.keyword.run(keyword);
+  });
+  const insertedKeywords = await Promise.all(
+    parsedMovie.keywords.map(keyword => getKeywordByName(keyword.name))
+  );
+  parsedMovie.keywords.forEach(keyword => {
+    const keyword_id = insertedKeywords.find(g => g?.name === keyword.name)?.id;
+    if (!keyword_id) throw new Error('Failed to get keyword');
+    inserter.keywordsOnMovie.run({ keyword_id, movie_id });
+  });
 };
 
 export const insertNewEpisode = async (
@@ -284,4 +298,18 @@ export const insertNewEpisode = async (
     if (!host_id) throw new Error('Failed to get host');
     inserter.hostsOnEpisode.run({ host_id, episode_id: insertedEpisode.id });
   });
+};
+
+export const insertNewEbert = async (
+  db: Database,
+  review: {
+    rating: number;
+    path: string;
+    tmdb_id: number;
+  }
+) => {
+  const inserter = prepareInsert(db);
+  const movie = await getMovieByTmdbId(review.tmdb_id);
+  if (!movie) throw new Error('Failed to get movie');
+  inserter.ebert_review.run({ ...review, movie_id: movie.id });
 };
