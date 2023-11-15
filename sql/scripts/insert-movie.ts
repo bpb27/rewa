@@ -3,28 +3,23 @@ import { insertNewEbert, insertNewEpisode, insertNewMovie } from '../insert';
 import { tmdbApi } from '../tmdb-api';
 
 // TODO: add keywords to getMovieById and insertNewMovie
-const run = async (
-  movie: { tmdb_id: number },
-  episode?: {
-    date: string;
-    episode_order: number;
-    hosts: string[];
-    spotify_url: string;
-    title: string;
-  },
-  ebert?: {
-    path: string;
-    rating: number;
-  }
-) => {
+const run = async (params: {
+  tmdb_id: number;
+  title: string;
+  episode_order: number;
+  date: string;
+  spotify_url: string;
+  hosts: string[];
+  ebert?: { rating: number; path: string };
+}) => {
   const db = connectToDb();
-  const { tmdb_id } = movie;
+  const { tmdb_id } = params;
   const parsedMovie = await tmdbApi.getMovieById({ tmdb_id }).then(tmdbApi.parseMovieById);
 
   db.transaction(async () => {
     await insertNewMovie(db, parsedMovie);
-    if (episode) await insertNewEpisode(db, { ...episode, tmdb_id });
-    if (ebert) await insertNewEbert(db, { ...ebert, tmdb_id });
+    await insertNewEpisode(db, params);
+    if (params.ebert) await insertNewEbert(db, { ...params.ebert, tmdb_id });
   })();
 };
 

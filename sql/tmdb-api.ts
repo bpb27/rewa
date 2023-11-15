@@ -81,7 +81,7 @@ const parseMovieById = (movie: Movie) => {
       revenue: movie.revenue / 1000,
     },
     genres: movie.genres.map(genre => pick(genre, ['name'])),
-    keywords: movie.genres.map(keyword => pick(keyword, ['name'])),
+    keywords: movie.keywords.map(keyword => pick(keyword, ['name'])),
     productionCompanies: movie.production_companies.map(c => ({
       ...pick(c, ['name', 'logo_path']),
       tmdb_id: c.id,
