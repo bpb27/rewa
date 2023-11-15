@@ -34,7 +34,7 @@ const newEps = [
     ebert: { rating: 1, path: '/reviews/toy-soldiers-1991' },
   },
   {
-    tmdb_id: 0,
+    tmdb_id: 8337,
     title: 'They Live',
     episode_order: 315,
     date: 'Oct 2023',
@@ -42,7 +42,7 @@ const newEps = [
     hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
   },
   {
-    tmdb_id: 0,
+    tmdb_id: 10442,
     title: 'So I Married an Axe Murderer',
     episode_order: 316,
     date: 'Oct 2023',
@@ -51,7 +51,7 @@ const newEps = [
     ebert: { rating: 2.5, path: '/reviews/so-i-married-an-axe-murderer-1993' },
   },
   {
-    tmdb_id: 0,
+    tmdb_id: 9386,
     title: 'In the Line of Fire',
     episode_order: 317,
     date: 'Oct 2023',
@@ -60,7 +60,7 @@ const newEps = [
     ebert: { rating: 3.5, path: '/reviews/in-the-line-of-fire-1993' },
   },
   {
-    tmdb_id: 0,
+    tmdb_id: 794,
     title: 'The Omen',
     episode_order: 318,
     date: 'Oct 2023',
@@ -69,7 +69,7 @@ const newEps = [
     ebert: { rating: 2.5, path: '/reviews/the-omen-1976' },
   },
   {
-    tmdb_id: 0,
+    tmdb_id: 8367,
     title: 'Robin Hood: Prince of Thieves',
     episode_order: 319,
     date: 'Nov 2023',
@@ -77,6 +77,15 @@ const newEps = [
     hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
     ebert: { rating: 2, path: '/reviews/robin-hood-prince-of-thieves-1991' },
   },
+  {
+    tmdb_id: 2623,
+    title: 'An Officer and a Gentleman',
+    episode_order: 320,
+    date: 'Nov 2023',
+    spotify_url: 'https://open.spotify.com/episode/1VHThPCTrt4F2r3CesZIeI?si=d41cc5eed4304970',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
+    ebert: { rating: 4, path: '/reviews/an-officer-and-a-gentleman-1982' },
+  },
 ];
 
-run(newEps[0]);
+run(newEps[6]);

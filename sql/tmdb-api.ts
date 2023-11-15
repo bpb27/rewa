@@ -1,5 +1,8 @@
+import dotenvFlow from 'dotenv-flow';
 import { pick } from 'remeda';
 import { relevantStreamers } from '../src/data/streamers';
+
+dotenvFlow.config();
 
 const API_KEY = process.env.TMDB_API_KEY;
 
@@ -81,7 +84,7 @@ const parseMovieById = (movie: Movie) => {
       revenue: movie.revenue / 1000,
     },
     genres: movie.genres.map(genre => pick(genre, ['name'])),
-    keywords: movie.keywords.map(keyword => pick(keyword, ['name'])),
+    keywords: movie.keywords.keywords.map(keyword => pick(keyword, ['name'])),
     productionCompanies: movie.production_companies.map(c => ({
       ...pick(c, ['name', 'logo_path']),
       tmdb_id: c.id,
@@ -123,7 +126,7 @@ interface Movie {
   homepage: string;
   id: number;
   imdb_id: string;
-  keywords: Keyword[];
+  keywords: { keywords: Keyword[] };
   original_language: string;
   original_title: string;
   overview: string;

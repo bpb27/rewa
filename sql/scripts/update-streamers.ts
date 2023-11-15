@@ -1,8 +1,8 @@
 import { createTable } from '../create-tables';
 import { connectToDb, dropTable } from '../general';
-import { tmdbApi } from '../tmdb-api';
-import { getAllMoviesWithEpisodes, getAllStreamers } from '../select';
 import { prepareInsert } from '../insert';
+import { getAllMoviesWithEpisodes, getAllStreamers } from '../select';
+import { tmdbApi } from '../tmdb-api';
 
 const run = async () => {
   const db = connectToDb();
