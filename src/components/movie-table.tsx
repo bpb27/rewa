@@ -39,7 +39,12 @@ export const MovieTable = ({
         <thead>
           <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:pr-2">
             <TableHeader>Poster</TableHeader>
-            <TableHeader onClick={sort('title')}>Title</TableHeader>
+            <TableHeader
+              onClick={sort('title')}
+              className="sticky left-0 bg-gradient-to-r from-blue-100 from-90% to-blue-100/90"
+            >
+              Title
+            </TableHeader>
             <TableHeader onClick={sort('release_date')}>Year</TableHeader>
             <TableHeader onClick={sort('director')}>Director</TableHeader>
             <TableHeader>Top Cast</TableHeader>
@@ -68,10 +73,12 @@ export const MovieTable = ({
               {/* NB: can't add padding or margin to trs, or using empty row as a spacer */}
               <tr className="h-4"></tr>
               <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md">
-                <td className="p-2">
+                <td>
                   <MovieTablePoster title={m.title} poster_path={m.poster_path} />
                 </td>
-                <td className="max-w-[200px] pl-3 font-bold text-slate-700">{m.title}</td>
+                <td className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3 font-bold text-slate-700">
+                  {m.title}
+                </td>
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
@@ -187,7 +194,11 @@ type ClickableFieldProps = {
 };
 
 const ClickableField = ({ id, name, onClick }: ClickableFieldProps) => (
-  <div className="cursor-pointer whitespace-nowrap px-1 hover:underline" key={id} onClick={onClick}>
+  <div
+    className="max-w-[200px] cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 hover:underline"
+    key={id}
+    onClick={onClick}
+  >
     {name}
   </div>
 );

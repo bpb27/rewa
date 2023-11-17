@@ -30,10 +30,10 @@ type UseMoviePageDataProps = { initialData: ApiGetMoviesResponse; defaultQps: Qp
 export const useMoviePageData = ({ defaultQps, initialData }: UseMoviePageDataProps) => {
   const { values, update, updateAll, clearTokens, isEmpty } = useQueryParams(defaultQps);
   const { asc, hasEpisode, searchMode, sort } = values;
-  const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
   const [{ hasNext, movies, page, tokens, total }, updateResponse] = useState<ApiGetMoviesResponse>(
     isEmpty ? initialData : { hasNext: false, movies: [], page: 0, tokens: [], total: 0 }
   );
+  const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
   const vizSensorRef = useRef<HTMLDivElement>(null);
   const showVizSensor = !!(!isLoading && data?.hasNext && movies.length);
 

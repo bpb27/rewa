@@ -3,7 +3,7 @@ import { MoviesPage } from '~/components/movies-page';
 import { defaultQps, type QpSchema } from '~/data/query-params';
 import { type StaticProps } from '~/utils/general-types';
 
-const qps: QpSchema = { ...defaultQps, hasOscar: true, sort: 'title', asc: true };
+const qps: QpSchema = { ...defaultQps, hasOscar: true, sort: 'total_oscar_wins', asc: false };
 
 export const getStaticProps = async () => {
   const movies = await getMovies(qps);
