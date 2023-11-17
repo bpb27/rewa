@@ -61,12 +61,17 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
               {conditions.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>
           </span>
-          <span className="flex">
+          <span className="hidden md:flex">
             <Button onClick={display.setTable} selected={display.isTable} variant="icon">
               <Icon.Table />
             </Button>
             <Button onClick={display.setCard} selected={display.isCard} variant="icon">
               <Icon.Card />
+            </Button>
+          </span>
+          <span className="flex md:hidden">
+            <Button onClick={display.toggle} variant="icon">
+              {display.isTable ? <Icon.Table /> : <Icon.Card />}
             </Button>
           </span>
           <span className="flex">
