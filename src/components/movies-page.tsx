@@ -114,7 +114,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
 const Box = {
   Filters: ({ children }) => <div className="mb-1 mt-3 flex flex-col py-2">{children}</div>,
   FilterButtons: ({ children }) => (
-    <div className="mt-3 flex items-center justify-center gap-x-3">{children}</div>
+    <div className="mt-3 flex items-center justify-center gap-x-1 md:gap-x-3">{children}</div>
   ),
   Tokens: ({ children }) => <div className="mt-2 flex space-x-2 overflow-scroll">{children}</div>,
 } satisfies Boxes;

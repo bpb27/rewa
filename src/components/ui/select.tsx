@@ -17,7 +17,7 @@ export const Select = <TValue extends string = string>({
   return (
     <div className={cn('relative flex items-center', className)}>
       <select
-        className="flex h-10 appearance-none items-center justify-between rounded-md border border-slate-200 bg-transparent py-2 pl-3 pr-8 text-sm"
+        className="flex h-10 max-w-[130px] appearance-none items-center justify-between rounded-md border border-slate-200 bg-transparent py-2 pl-3 pr-8 text-sm md:max-w-[200px]"
         onChange={e => onSelect(e.target.value as (typeof options)[number]['value'])}
         value={value}
       >
