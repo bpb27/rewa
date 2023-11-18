@@ -3,16 +3,22 @@ import { smartSort } from '~/utils/sorting';
 
 const prisma = Prisma.getPrisma();
 
-type GetActorParams = { id: number };
+type GetActorParams = { id: number; filter?: 'oscar' | 'episode' };
 export type GetActorResponse = Awaited<ReturnType<typeof getActor>>;
 
 const MOVIE_SELECT = { select: { title: true, release_date: true, id: true } };
+const episodeWhere = { movies: { episodes: { some: {} } } };
+const oscarWhere = { movies: { oscars_nominations: { some: {} } } };
 
-export const getActor = async ({ id }: GetActorParams) => {
+export const getActor = async ({ id, filter }: GetActorParams) => {
   const actorResponse = await prisma.actors.findFirstOrThrow({
     where: { id },
     include: {
       actors_on_movies: {
+        where: {
+          ...(filter === 'episode' ? episodeWhere : undefined),
+          ...(filter === 'oscar' ? oscarWhere : undefined),
+        },
         include: {
           movies: MOVIE_SELECT,
         },
@@ -22,7 +28,15 @@ export const getActor = async ({ id }: GetActorParams) => {
 
   const crewResponse = await prisma.crew.findFirst({
     where: { tmdb_id: actorResponse.tmdb_id },
-    select: { crew_on_movies: { include: { movies: MOVIE_SELECT } } },
+    select: {
+      crew_on_movies: {
+        where: {
+          ...(filter === 'episode' ? episodeWhere : undefined),
+          ...(filter === 'oscar' ? oscarWhere : undefined),
+        },
+        include: { movies: { ...MOVIE_SELECT } },
+      },
+    },
   });
 
   return {

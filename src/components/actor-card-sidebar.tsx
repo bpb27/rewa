@@ -1,7 +1,8 @@
+import { useRouter } from 'next/router';
 import { Sidebar } from '~/components/ui/sidebar';
 import { type ApiGetActorResponse } from '~/pages/api/actors/[id]';
-import { useAPI } from '~/utils/use-api';
 import { getYear } from '~/utils/format';
+import { useAPI } from '~/utils/use-api';
 
 type ActorCardSidebar = {
   actorId: number;
@@ -10,7 +11,9 @@ type ActorCardSidebar = {
 };
 
 export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardSidebar) => {
-  const { data: actor } = useAPI(`/api/actors/${actorId}`);
+  const router = useRouter();
+  const filter = router.asPath.includes('rewa') ? ('episode' as const) : ('oscar' as const); // TODO: make a hook that does this
+  const { data: actor } = useAPI(`/api/actors/${actorId}`, { filter });
 
   if (!actor) return null;
   const firstMovieYear = getYear(actor.movies[0].release_date);

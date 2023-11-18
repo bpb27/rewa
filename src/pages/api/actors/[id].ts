@@ -3,13 +3,14 @@ import { z } from 'zod';
 import { getActor, type GetActorResponse } from '~/api/get-actor';
 import { apiError } from '~/utils/format';
 import { type ApiError } from '~/utils/general-types';
-import { integer } from '~/utils/zschema';
+import { zqp } from '~/utils/zschema';
 
-export type ApiGetActorParams = undefined;
+export type ApiGetActorParams = { filter: 'oscar' | 'episode' };
 export type ApiGetActorResponse = GetActorResponse;
 
 const paramsSchema = z.object({
-  id: integer,
+  id: zqp.integer,
+  filter: z.enum(['oscar', 'episode']).optional(),
 });
 
 const handler: NextApiHandler<ApiGetActorResponse | ApiError> = async (req, res) => {

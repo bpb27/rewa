@@ -8,3 +8,9 @@ export const integerList = z
   .pipe(integer.array());
 
 export const boolean = z.enum(['true', 'false']).transform(v => v === 'true');
+
+export const zqp = {
+  integer,
+  integerList,
+  boolean,
+};
