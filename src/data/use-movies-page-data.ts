@@ -30,9 +30,10 @@ type UseMoviePageDataProps = { initialData: ApiGetMoviesResponse; defaultQps: Qp
 export const useMoviePageData = ({ defaultQps, initialData }: UseMoviePageDataProps) => {
   const { values, update, updateAll, clearTokens, isEmpty } = useQueryParams(defaultQps);
   const { asc, hasEpisode, searchMode, sort } = values;
-  const [{ hasNext, movies, page, tokens, total }, updateResponse] = useState<ApiGetMoviesResponse>(
+  const [storedResults, setStoredResults] = useState<ApiGetMoviesResponse>(
     isEmpty ? initialData : { hasNext: false, movies: [], page: 0, tokens: [], total: 0 }
   );
+  const { hasNext, movies, page, tokens, total } = storedResults;
   const { data, isLoading } = useAPI('/api/movies', values, { skip: isEmpty });
   const vizSensorRef = useRef<HTMLDivElement>(null);
   const showVizSensor = !!(!isLoading && data?.hasNext && movies.length);
@@ -45,8 +46,20 @@ export const useMoviePageData = ({ defaultQps, initialData }: UseMoviePageDataPr
   // store latest API response (append movies if paginated)
   useEffect(() => {
     if (data) {
-      const updatedMovies = data.page ? [...movies, ...data.movies] : data.movies;
-      updateResponse({ ...data, movies: updatedMovies });
+      setStoredResults(prevResults => {
+        // pretty bad form to have a function call inside a setState
+        // but the page needs to be reset if a user first arrives with page > 0 in the URL
+        // because the prior pages won't be loaded/fetchable
+        // such are the pitfalls of infinite scroll + URL state
+        if (data.page && !prevResults.movies.length) {
+          update('page', 0);
+          return prevResults;
+        }
+        return {
+          ...data,
+          movies: data.page ? [...prevResults.movies, ...data.movies] : data.movies,
+        };
+      });
     }
   }, [data]);
 
