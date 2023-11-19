@@ -1,22 +1,10 @@
 # Latest
 
-- ebert sort
-- hide ebert + hosts column for oscars
-- combine budget and box office
-- hide genres (keywords is more interesting)
-- maybe add genres to dialog
-
-page probs - maybe if first render set page to 0?
-
-# Bugs
-
-- page QP will fuckup shareable links
-- table controls don't fit on mobile
-- clicking leaderboard name needs oscar or episode filtering
-- empty search results have an empty results w/ transparent background on mobile
-- clicking year range token (might be better to have separate qps - still technically lists so its easily tokenized though) - and just use inputs rather than slider
-- old year range persisting in dialog after tokens cleared
-- total movies icon is incredibly small on mobile
+- hide ebert + hosts column and sort for oscars
+- change year range to start and end
+- better oscars popover and modal
+- maybe remove the movie card view and always show table
+- make title in table clickable, show a card modal or sidebar w/ tagline, desc, crew
 
 # Minor UI
 
