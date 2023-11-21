@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useMachine } from '@xstate/react';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import Layout from '~/components/layout';
 import { MovieCards } from '~/components/movie-card';
 import { MovieTable } from '~/components/movie-table';
@@ -8,6 +10,7 @@ import { type Boxes } from '~/components/ui/box';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
+import { movieTableMachine } from '~/data/movie-data-machine';
 import { QpSchema } from '~/data/query-params';
 import { useMoviePageData } from '~/data/use-movies-page-data';
 import { type ApiGetMoviesResponse } from '~/pages/api/movies';
@@ -29,6 +32,19 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
   const display = useToggle('table', 'card', null);
   const oscarsModal = useToggle('closed', 'open');
   const [oscarsModalYear, setOscarsModalYear] = useState(2022);
+  const router = useRouter();
+
+  const [state, send] = useMachine(movieTableMachine, {
+    input: {
+      push: router.push,
+      url: router.asPath,
+    },
+  });
+
+  // TODO: this will fire too many times... :(
+  useEffect(() => {
+    send({ type: 'URL_HAS_CHANGED', url: router.asPath });
+  }, [router.asPath, send]);
 
   useScreenSizeOnMount({
     onDesktop: display.setTable,

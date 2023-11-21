@@ -1,4 +1,4 @@
-import { isError, isObject, isString } from 'remeda';
+import { isError, isString } from 'remeda';
 import { ApiError } from './general-types';
 
 export const numberWithCommas = (x: number) => {
@@ -51,3 +51,10 @@ export const normalizeName = (str: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim();
+
+export const getQueryString = (url: string): string => url.split('?')[1] || '';
+
+export const parsePath = (url: string) => ({
+  route: url.split('?')[0] || '',
+  queryString: url.split('?')[1] || '',
+});
