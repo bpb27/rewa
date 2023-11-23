@@ -1,4 +1,4 @@
-import { StateFrom, assign, createMachine, fromPromise } from 'xstate';
+import { StateFrom, assign, createMachine, fromPromise, raise } from 'xstate';
 import { ApiGetMoviesResponse } from '~/pages/api/movies';
 import {
   QpSchema,
@@ -65,10 +65,11 @@ export const movieTableMachine = createMachine(
         always: [
           {
             guard: ({ context }) => urlToQueryString(context.url).length === 0,
-            actions: [
-              assign(({ context }) => context.preloaded),
-              ({ context }) => context.push(context.preloaded.url),
-            ],
+            actions: assign(({ context }) => ({
+              url: context.preloaded.url,
+              data: context.preloaded.data,
+              queryParams: urlToParsedParams(context.preloaded.url, qpSchema),
+            })),
             target: 'idle',
           },
           {
@@ -82,7 +83,7 @@ export const movieTableMachine = createMachine(
       idle: {
         on: {
           URL_HAS_CHANGED: {
-            // could guard here for present qs
+            guard: ({ event }) => urlToQueryString(event.url).length > 0,
             target: 'fetching',
             actions: assign(({ event }) => ({
               url: event.url,
@@ -133,13 +134,13 @@ export const movieTableMachine = createMachine(
         },
       },
       fetching: {
-        // on: {
-        //   // forward both? wildcard?
-        //   UPDATE_URL: {
-        //     target: 'idle',
-        //     actions: raise(({ event }) => event),
-        //   },
-        // },
+        // on any event, cancel invoke by transitioning to idle and forwarding the event
+        on: {
+          '*': {
+            target: 'idle',
+            actions: raise(({ event }) => event),
+          },
+        },
         invoke: {
           src: 'fetchMovies',
           input: ({ context }) => context.url,
@@ -179,10 +180,22 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
 
 // abstracting machine events for easy component consumption
 export const movieTableActions = (send: (event: Event) => void) => ({
-  clearTokens: () => send({ type: 'CLEAR_ALL_TOKENS' }),
-  onUrlUpdate: (url: string) => send({ type: 'URL_HAS_CHANGED', url }),
-  sort: (field: QpSchema['sort']) => send({ type: 'SORT', field }),
-  toggleSearchMode: () => send({ type: 'TOGGLE_SEARCH_MODE' }),
-  toggleSortOrder: () => send({ type: 'TOGGLE_SORT_ORDER' }),
-  toggleToken: (token: Token) => send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id }),
+  clearTokens: () => {
+    send({ type: 'CLEAR_ALL_TOKENS' });
+  },
+  onUrlUpdate: (url: string) => {
+    send({ type: 'URL_HAS_CHANGED', url });
+  },
+  sort: (field: QpSchema['sort']) => {
+    send({ type: 'SORT', field });
+  },
+  toggleSearchMode: () => {
+    send({ type: 'TOGGLE_SEARCH_MODE' });
+  },
+  toggleSortOrder: () => {
+    send({ type: 'TOGGLE_SORT_ORDER' });
+  },
+  toggleToken: (token: Token) => {
+    send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
+  },
 });
