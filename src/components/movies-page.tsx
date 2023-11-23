@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Layout from '~/components/layout';
 import { MovieCards } from '~/components/movie-card';
 import { MovieTable } from '~/components/movie-table';
@@ -10,9 +10,7 @@ import { type Boxes } from '~/components/ui/box';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
-import { movieTableMachine } from '~/data/movie-data-machine';
-import { QpSchema } from '~/data/query-params';
-import { useMoviePageData } from '~/data/use-movies-page-data';
+import { movieTableActions, movieTableData, movieTableMachine } from '~/data/movie-data-machine';
 import { type ApiGetMoviesResponse } from '~/pages/api/movies';
 import { sortOptions } from '~/utils/sorting';
 import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
@@ -23,28 +21,32 @@ import { OscarYearModal } from './oscar-year-modal';
 export type MoviesPageMovie = ApiGetMoviesResponse['movies'][number];
 
 type MoviesPageProps = {
-  defaultQps: QpSchema;
-  initialData: ApiGetMoviesResponse;
+  preloaded: { url: string; data: ApiGetMoviesResponse };
 };
 
-export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
-  const { actions, conditions, data } = useMoviePageData({ defaultQps, initialData });
+// TODO: how to handle default + initial
+// TODO: viz sensor
+export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
+  const router = useRouter();
   const display = useToggle('table', 'card', null);
   const oscarsModal = useToggle('closed', 'open');
   const [oscarsModalYear, setOscarsModalYear] = useState(2022);
-  const router = useRouter();
 
   const [state, send] = useMachine(movieTableMachine, {
+    logger: stuff => console.log(stuff),
     input: {
-      push: router.push,
+      preloaded,
+      push: url => router.replace(url, undefined, { shallow: true, scroll: false }),
       url: router.asPath,
     },
   });
 
-  // TODO: this will fire too many times... :(
+  const data = useMemo(() => movieTableData(state), [state]);
+  const actions = useMemo(() => movieTableActions(send), [send]);
+
   useEffect(() => {
-    send({ type: 'URL_HAS_CHANGED', url: router.asPath });
-  }, [router.asPath, send]);
+    actions.onUrlUpdate(router.asPath);
+  }, [router.asPath, actions]);
 
   useScreenSizeOnMount({
     onDesktop: display.setTable,
@@ -55,10 +57,10 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
     <Layout title="All movies">
       <Box.Filters>
         <SearchBar filter={data.mode} onSelect={actions.toggleToken} />
-        {conditions.hasTokens && (
+        {data.hasTokens && (
           <Box.Tokens>
             <TokenBar
-              clear={actions.clearTokens}
+              clear={() => send({ type: 'CLEAR_ALL_TOKENS' })}
               mode={data.searchMode}
               toggleSearchMode={actions.toggleSearchMode}
               toggleToken={actions.toggleToken}
@@ -74,7 +76,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
           <span className="flex items-center">
             <Select onSelect={actions.sort} options={sortOptions} value={data.sort} />
             <Button className="ml-1" onClick={actions.toggleSortOrder} variant="icon">
-              {conditions.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
+              {data.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>
           </span>
           <span className="hidden md:flex">
@@ -108,7 +110,7 @@ export const MoviesPage = ({ defaultQps, initialData }: MoviesPageProps) => {
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
-      {display.isDefined && conditions.showVizSensor && <div ref={data.vizSensorRef} />}
+      {/* {display.isDefined && data.showVizSensor && <div ref={data.vizSensorRef} />} */}
       {oscarsModal.isOpen && (
         <OscarYearModal
           isOpen={oscarsModal.isOpen}

@@ -1,77 +1,52 @@
-import { parse as qsParse, stringify as qsStringify } from 'qs';
-import { isArray, isNumber } from 'remeda';
-import { assign, createMachine, fromPromise } from 'xstate';
-import { z } from 'zod';
+import { StateFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ApiGetMoviesResponse } from '~/pages/api/movies';
-import { parsePath } from '~/utils/format';
-import { zqp } from '~/utils/zschema';
-// import { qpParse } from './query-params';
-
-export const qpSchema = z.object({
-  actor: zqp.integerList.optional().default(''),
-  asc: zqp.boolean.optional().default('false'),
-  budget: zqp.integerList.optional().default(''),
-  director: zqp.integerList.optional().default(''),
-  genre: zqp.integerList.optional().default(''),
-  hasEpisode: zqp.boolean.optional().default('false'),
-  hasOscar: zqp.boolean.optional().default('false'),
-  host: zqp.integerList.optional().default(''),
-  keyword: zqp.integerList.optional().default(''),
-  movie: zqp.integerList.optional().default(''),
-  oscarsCategoriesNom: zqp.integerList.optional().default(''),
-  oscarsCategoriesWon: zqp.integerList.optional().default(''),
-  page: zqp.integer.optional().default(0),
-  revenue: zqp.integerList.optional().default(''),
-  runtime: zqp.integerList.optional().default(''),
-  searchMode: z.enum(['and', 'or']).optional().default('and'),
-  sort: z
-    .enum([
-      'budget',
-      'director',
-      'ebert',
-      'episodeNumber',
-      'profit',
-      'release_date',
-      'revenue',
-      'runtime',
-      'title',
-      'total_oscar_nominations',
-      'total_oscar_wins',
-    ])
-    .optional()
-    .default('title'),
-  streamer: zqp.integerList.optional().default(''),
-  year: zqp.integerList.optional().default(''),
-  yearRange: zqp.integerList.optional().default(''),
-});
-
-type QpSchema = z.infer<typeof qpSchema>;
+import {
+  QpSchema,
+  TokenType,
+  assembleUrl,
+  qpSchema,
+  tokenKeys,
+  urlToParsedParams,
+  urlToQueryString,
+} from './query-params';
+import { Token } from './tokens';
 
 const fetchMovies = fromPromise<ApiGetMoviesResponse, string>(async ({ input }) => {
-  const response = await fetch(`/api/movies?${parsePath(input).queryString}`);
+  const response = await fetch(`/api/movies?${urlToQueryString(input)}`);
   const data: ApiGetMoviesResponse = await response.json();
   return data;
 });
+
+const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
+  const newUrl = assembleUrl(context.url, { ...context.queryParams, ...newQueryParams });
+  context.push(newUrl);
+};
 
 type Actor = { src: 'fetchMovies'; logic: typeof fetchMovies };
 
 type Context = {
   data: ApiGetMoviesResponse;
+  preloaded: { data: ApiGetMoviesResponse; url: string };
   push: (url: string) => void;
   queryParams: QpSchema;
   url: string;
 };
 
 type Event =
-  | { type: 'URL_HAS_CHANGED'; url: string }
-  | { type: 'UPDATE_URL'; queryParams: QpSchema };
+  | { type: 'CLEAR_ALL_TOKENS' }
+  | { type: 'GET_NEXT_PAGE' }
+  | { type: 'SORT'; field: QpSchema['sort'] }
+  | { type: 'TOGGLE_SEARCH_MODE' }
+  | { type: 'TOGGLE_SORT_ORDER' }
+  | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
+  | { type: 'URL_HAS_CHANGED'; url: string };
 
-type Input = Pick<Context, 'push' | 'url'>;
+type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
 
 export const movieTableMachine = createMachine(
   {
     id: 'movieTable',
-    initial: 'idle',
+    initial: 'setup',
     types: {
       actors: {} as Actor,
       context: {} as Context,
@@ -80,58 +55,102 @@ export const movieTableMachine = createMachine(
     },
     context: ({ input }) => ({
       data: { hasNext: false, movies: [], page: 0, tokens: [], total: 0 },
+      preloaded: input.preloaded,
       push: input.push,
-      queryParams: qpSchema.parse(qsParse(input.url)),
+      queryParams: urlToParsedParams(input.url, qpSchema),
       url: input.url,
     }),
     states: {
+      setup: {
+        always: [
+          {
+            guard: ({ context }) => urlToQueryString(context.url).length === 0,
+            actions: [
+              assign(({ context }) => context.preloaded),
+              ({ context }) => context.push(context.preloaded.url),
+            ],
+            target: 'idle',
+          },
+          {
+            guard: ({ context }) => context.queryParams.page > 0 && !context.data.movies.length,
+            actions: ({ context }) => updateUrl(context, { page: 0 }),
+            target: 'idle',
+          },
+          { target: 'idle' },
+        ],
+      },
       idle: {
         on: {
           URL_HAS_CHANGED: {
+            // could guard here for present qs
             target: 'fetching',
-            actions: assign(params => ({
-              url: params.event.url,
-              // TODO: probably better to put in a separate function
-              queryParams: qpSchema.parse(qsParse(params.event.url)),
+            actions: assign(({ event }) => ({
+              url: event.url,
+              queryParams: urlToParsedParams(event.url, qpSchema),
             })),
           },
-          UPDATE_URL: {
+          CLEAR_ALL_TOKENS: {
+            actions: ({ context }) => {
+              const cleared = tokenKeys.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
+              updateUrl(context, cleared);
+            },
+          },
+          GET_NEXT_PAGE: {
+            guard: ({ context }) => context.data.hasNext,
+            actions: ({ context }) => {
+              const page = context.data.page + 1;
+              updateUrl(context, { page });
+            },
+          },
+          SORT: {
             actions: ({ context, event }) => {
-              const newUrl = `${parsePath(context.url)}?${qsStringify(event.queryParams)}`;
-              context.push(newUrl);
+              const sort = event.field;
+              updateUrl(context, { sort });
+            },
+          },
+          TOGGLE_SEARCH_MODE: {
+            actions: ({ context }) => {
+              const searchMode = context.queryParams.searchMode === 'and' ? 'or' : 'and';
+              updateUrl(context, { searchMode });
+            },
+          },
+          TOGGLE_SORT_ORDER: {
+            actions: ({ context }) => {
+              const asc = !context.queryParams.asc;
+              updateUrl(context, { asc });
+            },
+          },
+          TOGGLE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name, value } = event;
+              const current = context.queryParams[name];
+              const updated = current.includes(value)
+                ? current.filter(v => v !== value)
+                : [...current, value];
+              updateUrl(context, { [name]: updated.sort() });
             },
           },
         },
       },
-      // events will miss if in fetching state - maybe parallel?
       fetching: {
+        // on: {
+        //   // forward both? wildcard?
+        //   UPDATE_URL: {
+        //     target: 'idle',
+        //     actions: raise(({ event }) => event),
+        //   },
+        // },
         invoke: {
           src: 'fetchMovies',
           input: ({ context }) => context.url,
-          onDone: [
-            // TODO: this should be elsewhere
-            {
-              guard: ({ context }) => context.data.page > 0 && context.data.movies.length === 0,
-              target: 'idle',
-              actions: {
-                type: 'updateQueryParam',
-                params: { field: 'page', value: 0 },
-              },
-            },
-            {
-              target: 'idle',
-              actions: {
-                type: 'storeUpdatedMovieResponse',
-                params: ({ context, event }) => ({
-                  ...event.output,
-                  movies:
-                    event.output.page > 0
-                      ? [...context.data.movies, ...event.output.movies]
-                      : event.output.movies,
-                }),
-              },
-            },
-          ],
+          onDone: {
+            target: 'idle',
+            actions: assign(({ context, event }) => {
+              const data = { ...event.output };
+              if (data.page > 0) data.movies = [...context.data.movies, ...data.movies];
+              return { data };
+            }),
+          },
           onError: 'idle',
         },
       },
@@ -142,45 +161,28 @@ export const movieTableMachine = createMachine(
   }
 );
 
-// MEH maybe just change 'UPDATE_URL' to Partial<QqSchema> and filter or merge arrays
-
-export const movieTableMachineWrapper = ({
-  context,
-  send,
-}: {
-  context: Context;
-  send: (event: Event) => void;
-}) => {
-  const update = <TKey extends keyof QpSchema, TValue extends QpSchema[TKey]>(
-    key: TKey,
-    value: TValue extends any[] ? TValue[number] | TValue : TValue
-  ) => {
-    const currentValues = context.queryParams;
-    const target = currentValues[key];
-    let newValues: QpSchema;
-
-    if (isArray(target) && isNumber(value) && target.includes(value)) {
-      newValues = { ...currentValues, [key]: target.filter(v => v !== value) };
-    } else if (isArray(target) && isNumber(value)) {
-      newValues = { ...currentValues, [key]: [...target, value] };
-    } else {
-      newValues = { ...currentValues, [key]: value };
-    }
-
-    if (key !== 'page') {
-      newValues.page = 0;
-    }
-
-    send({ type: 'UPDATE_URL', queryParams: newValues });
+// abstracting machine context structure for easy component consumption
+export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
+  const { data, queryParams } = state.context;
+  return {
+    asc: queryParams.asc,
+    hasTokens: data.tokens.length > 0,
+    mode: queryParams.hasEpisode ? ('episode' as const) : ('oscar' as const),
+    movies: data.movies,
+    searchMode: queryParams.searchMode,
+    showVizSensor: state.matches('idle') && data.hasNext && data.movies.length,
+    sort: queryParams.sort,
+    tokens: data.tokens,
+    total: data.total,
   };
-
-  const onUrlUpdate = (url: string) => {
-    send({ type: 'URL_HAS_CHANGED', url });
-  };
-
-  const getNextPage = (page: number) => {
-    send({ type: 'UPDATE_URL', queryParams: { ...context.queryParams, page } });
-  };
-
-  return { update, onUrlUpdate, getNextPage };
 };
+
+// abstracting machine events for easy component consumption
+export const movieTableActions = (send: (event: Event) => void) => ({
+  clearTokens: () => send({ type: 'CLEAR_ALL_TOKENS' }),
+  onUrlUpdate: (url: string) => send({ type: 'URL_HAS_CHANGED', url }),
+  sort: (field: QpSchema['sort']) => send({ type: 'SORT', field }),
+  toggleSearchMode: () => send({ type: 'TOGGLE_SEARCH_MODE' }),
+  toggleSortOrder: () => send({ type: 'TOGGLE_SORT_ORDER' }),
+  toggleToken: (token: Token) => send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id }),
+});

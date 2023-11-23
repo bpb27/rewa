@@ -1,8 +1,32 @@
 import { useRouter } from 'next/router';
-import { stringify } from 'qs';
-import { omitBy, isArray, isNumber } from 'remeda';
+import { parse as qsParse, stringify } from 'qs';
+import { isArray, isNumber, omitBy } from 'remeda';
 import { z } from 'zod';
-import { integer, integerList, boolean } from '~/utils/zschema';
+import { boolean, integer, integerList } from '~/utils/zschema';
+
+export const urlToQueryString = (url: string) => url.split('?')[1] || '';
+
+export const urlToPathString = (url: string) => url.split('?')[0] || '';
+
+export const urlToParsedParams = <TSchema extends z.AnyZodObject>(
+  url: string,
+  schema: TSchema
+): z.infer<TSchema> => {
+  const result = schema.safeParse(qsParse(urlToQueryString(url)));
+  return result.success ? result.data : schema.parse({});
+};
+
+export const assembleUrl = (
+  url: string,
+  params: Record<string, string | number | boolean | string[] | number[]>
+) => {
+  const trimmed = omitBy(
+    params,
+    value => value === undefined || (Array.isArray(value) && !value.length)
+  );
+  const qpString = stringify(trimmed, { encode: false, arrayFormat: 'comma' });
+  return `${urlToPathString(url)}?${qpString}`;
+};
 
 export type QpSchema = z.infer<typeof qpSchema>;
 export type TokenType = keyof z.infer<typeof tokenSchema>;
@@ -46,28 +70,7 @@ export const qpSchema = z.object({
   yearRange: integerList.optional().default(''),
 });
 
-export const defaultQps: QpSchema = {
-  actor: [],
-  asc: false,
-  budget: [],
-  director: [],
-  genre: [],
-  hasEpisode: false,
-  hasOscar: false,
-  host: [],
-  keyword: [],
-  movie: [],
-  oscarsCategoriesNom: [],
-  oscarsCategoriesWon: [],
-  page: 0,
-  revenue: [],
-  runtime: [],
-  searchMode: 'and',
-  sort: 'title',
-  streamer: [],
-  year: [],
-  yearRange: [],
-};
+export const defaultQps = qpSchema.parse({});
 
 // adding a new token? make sure to update api/get-tokens.ts so they'll display
 const tokenSchema = qpSchema.pick({
