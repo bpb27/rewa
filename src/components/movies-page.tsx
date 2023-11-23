@@ -15,6 +15,7 @@ import { type ApiGetMoviesResponse } from '~/pages/api/movies';
 import { sortOptions } from '~/utils/sorting';
 import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
 import { useToggle } from '~/utils/use-toggle';
+import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './movie-filters-dialog';
 import { OscarYearModal } from './oscar-year-modal';
 
@@ -24,8 +25,6 @@ type MoviesPageProps = {
   preloaded: { url: string; data: ApiGetMoviesResponse };
 };
 
-// TODO: how to handle default + initial
-// TODO: viz sensor
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const router = useRouter();
   const display = useToggle('table', 'card', null);
@@ -33,16 +32,17 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const [oscarsModalYear, setOscarsModalYear] = useState(2022);
 
   const [state, send] = useMachine(movieTableMachine, {
-    logger: stuff => console.log(stuff),
     input: {
       preloaded,
-      push: url => router.replace(url, undefined, { shallow: true, scroll: false }),
       url: router.asPath,
+      push: url => router.replace(url, undefined, { shallow: true, scroll: false }),
     },
   });
 
   const data = useMemo(() => movieTableData(state), [state]);
   const actions = useMemo(() => movieTableActions(send), [send]);
+
+  const loadMoreRef = useVizSensor({ callback: actions.nextPage });
 
   useEffect(() => {
     actions.onUrlUpdate(router.asPath);
@@ -93,7 +93,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
             </Button>
           </span>
           <span className="flex">
-            <MovieFiltersDialog />
+            <MovieFiltersDialog {...data} toggleToken={actions.toggleToken} />
           </span>
         </Box.FilterButtons>
       </Box.Filters>
@@ -110,7 +110,9 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
-      {/* {display.isDefined && data.showVizSensor && <div ref={data.vizSensorRef} />} */}
+      {display.isDefined && data.showVizSensor && (
+        <div className="h-4 bg-pink-400" ref={loadMoreRef} />
+      )}
       {oscarsModal.isOpen && (
         <OscarYearModal
           isOpen={oscarsModal.isOpen}

@@ -43,6 +43,12 @@ type Event =
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
 
+/*
+  TODO:
+    hook up GET_NEXT_PAGE
+    remove old crap
+*/
+
 export const movieTableMachine = createMachine(
   {
     id: 'movieTable',
@@ -170,8 +176,10 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
     hasTokens: data.tokens.length > 0,
     mode: queryParams.hasEpisode ? ('episode' as const) : ('oscar' as const),
     movies: data.movies,
+    oscarsCategoriesNom: queryParams.oscarsCategoriesNom,
+    oscarsCategoriesWon: queryParams.oscarsCategoriesWon,
     searchMode: queryParams.searchMode,
-    showVizSensor: state.matches('idle') && data.hasNext && data.movies.length,
+    showVizSensor: state.matches('idle') && data.hasNext && data.movies.length > 0,
     sort: queryParams.sort,
     tokens: data.tokens,
     total: data.total,
@@ -182,6 +190,9 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
 export const movieTableActions = (send: (event: Event) => void) => ({
   clearTokens: () => {
     send({ type: 'CLEAR_ALL_TOKENS' });
+  },
+  nextPage: () => {
+    send({ type: 'GET_NEXT_PAGE' });
   },
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
@@ -195,7 +206,7 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   toggleSortOrder: () => {
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
-  toggleToken: (token: Token) => {
+  toggleToken: (token: Omit<Token, 'name'>) => {
     send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
   },
 });
