@@ -6,7 +6,7 @@ import { type StaticProps } from '~/utils/general-types';
 const qps: QpSchema = { ...defaultQps, hasOscar: true, sort: 'total_oscar_wins', asc: false };
 
 export const getStaticProps = async () => {
-  const url = assembleUrl('/rewa/movies', qps);
+  const url = assembleUrl('/oscars/movies', qps);
   const response = await getMovies(qps);
   const data = { ...response, tokens: [] };
   return { props: { data, url } };
