@@ -1,4 +1,4 @@
-import { isError, isObject, isString } from 'remeda';
+import { isError, isString } from 'remeda';
 import { ApiError } from './general-types';
 
 export const numberWithCommas = (x: number) => {

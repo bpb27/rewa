@@ -1,8 +1,31 @@
-import { useRouter } from 'next/router';
-import { stringify } from 'qs';
-import { omitBy, isArray, isNumber } from 'remeda';
+import { parse as qsParse, stringify as qsStringify } from 'qs';
+import { omitBy } from 'remeda';
 import { z } from 'zod';
-import { integer, integerList, boolean } from '~/utils/zschema';
+import { boolean, integer, integerList } from '~/utils/zschema';
+
+export const urlToQueryString = (url: string) => url.split('?')[1] || '';
+
+export const urlToPathString = (url: string) => url.split('?')[0] || '';
+
+export const urlToParsedParams = <TSchema extends z.AnyZodObject>(
+  url: string,
+  schema: TSchema
+): z.infer<TSchema> => {
+  const result = schema.safeParse(qsParse(urlToQueryString(url)));
+  return result.success ? result.data : schema.parse({});
+};
+
+export const assembleUrl = (
+  url: string,
+  params: Record<string, string | number | boolean | string[] | number[]>
+) => {
+  const trimmed = omitBy(
+    params,
+    value => value === undefined || (Array.isArray(value) && !value.length)
+  );
+  const qpString = qsStringify(trimmed, { encode: false, arrayFormat: 'comma' });
+  return `${urlToPathString(url)}?${qpString}`;
+};
 
 export type QpSchema = z.infer<typeof qpSchema>;
 export type TokenType = keyof z.infer<typeof tokenSchema>;
@@ -46,28 +69,7 @@ export const qpSchema = z.object({
   yearRange: integerList.optional().default(''),
 });
 
-export const defaultQps: QpSchema = {
-  actor: [],
-  asc: false,
-  budget: [],
-  director: [],
-  genre: [],
-  hasEpisode: false,
-  hasOscar: false,
-  host: [],
-  keyword: [],
-  movie: [],
-  oscarsCategoriesNom: [],
-  oscarsCategoriesWon: [],
-  page: 0,
-  revenue: [],
-  runtime: [],
-  searchMode: 'and',
-  sort: 'title',
-  streamer: [],
-  year: [],
-  yearRange: [],
-};
+export const defaultQps = qpSchema.parse({});
 
 // adding a new token? make sure to update api/get-tokens.ts so they'll display
 const tokenSchema = qpSchema.pick({
@@ -88,89 +90,3 @@ const tokenSchema = qpSchema.pick({
 });
 
 export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];
-
-export const qpParse = (search: object, defaultValues: QpSchema) => {
-  const parsed = qpSchema.safeParse(search);
-  return parsed.success ? parsed.data : defaultValues;
-};
-
-export const qpStringify = (
-  search: Record<string, string | number | boolean | string[] | number[]>,
-  path?: string
-) => {
-  const trimmed = omitBy(
-    search,
-    value => value === undefined || (Array.isArray(value) && !value.length)
-  );
-  const qpString = stringify(trimmed, { encode: false, arrayFormat: 'comma' });
-  return path ? `${path.split('?')[0]}?${qpString}` : qpString;
-};
-
-export const useQueryParams = (defaultValues: QpSchema = defaultQps) => {
-  const router = useRouter();
-  const isEmpty = !router.asPath.split('?')[1]?.length;
-  const values = isEmpty ? defaultValues : qpParse(router.query, defaultValues);
-  const queryString = qpStringify({
-    ...values,
-    ...(router.asPath.includes('/rewa/') ? { hasEpisode: true } : undefined),
-    ...(router.asPath.includes('/oscars/') ? { hasOscar: true } : undefined),
-  });
-
-  const push = (newValues: QpSchema) => {
-    router.replace(qpStringify(newValues, router.asPath), undefined, {
-      shallow: true,
-      scroll: false,
-    });
-  };
-
-  /*
-    if the target is an array, can specify one value in the array to toggle
-    e.g. update('actor', 1)
-  */
-
-  const update = <TKey extends keyof QpSchema, TValue extends QpSchema[TKey]>(
-    key: TKey,
-    value: TValue extends any[] ? TValue[number] | TValue : TValue
-  ) => {
-    let newValues: QpSchema;
-    const target = values[key];
-
-    if (isArray(target) && isNumber(value)) {
-      if (target.includes(value)) {
-        newValues = { ...values, [key]: target.filter(v => v !== value) };
-      } else {
-        newValues = { ...values, [key]: [...target, value] };
-      }
-    } else {
-      newValues = { ...values, [key]: value };
-    }
-
-    if (key !== 'page') {
-      newValues.page = 0;
-    }
-    if (key === 'year') {
-      newValues.yearRange = [];
-    } else if (key === 'yearRange') {
-      newValues.year = [];
-    }
-
-    push(newValues);
-  };
-
-  const clearTokens = () => {
-    const newValues = { ...values };
-    tokenKeys.forEach(key => {
-      newValues[key] = [];
-    });
-    push(newValues);
-  };
-
-  return {
-    values,
-    update,
-    updateAll: push,
-    clearTokens,
-    queryString,
-    isEmpty,
-  };
-};

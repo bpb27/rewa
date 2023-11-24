@@ -1,17 +1,17 @@
 import useSWR from 'swr';
-import { qpStringify } from '~/data/query-params';
-import { type ApiGetMoviesParams, type ApiGetMoviesResponse } from '~/pages/api/movies';
-import { type ApiSearchParams, type ApiSearchResponse } from '~/pages/api/search';
-import { type ApiGetMovieParams, type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
+import { assembleUrl } from '~/data/query-params';
 import { type ApiGetActorParams, type ApiGetActorResponse } from '~/pages/api/actors/[id]';
-import {
-  type ApiGetOscarsByYearParams,
-  type ApiGetOscarsByYearResponse,
-} from '~/pages/api/oscars/year/[year]';
+import { type ApiGetMoviesParams, type ApiGetMoviesResponse } from '~/pages/api/movies';
+import { type ApiGetMovieParams, type ApiGetMovieResponse } from '~/pages/api/movies/[id]';
 import {
   ApiGetOscarCategoriesParams,
   ApiGetOscarCategoriesResponse,
 } from '~/pages/api/oscars/categories';
+import {
+  type ApiGetOscarsByYearParams,
+  type ApiGetOscarsByYearResponse,
+} from '~/pages/api/oscars/year/[year]';
+import { type ApiSearchParams, type ApiSearchResponse } from '~/pages/api/search';
 
 export const fetcher = async (url: string) => {
   const response = await fetch(url);
@@ -67,7 +67,7 @@ export const useAPI = <TPath extends ApiPath>(
   params?: ApiRoute<TPath>['params'],
   options?: { skip?: boolean }
 ) => {
-  const withParams = params ? qpStringify(params, route) : route;
+  const withParams = params ? assembleUrl(route, params) : route;
   const response = useSWR<ApiRoute<TPath>['response']>(options?.skip ? null : withParams, fetcher);
   return response;
 };
