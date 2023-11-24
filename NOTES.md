@@ -1,5 +1,7 @@
 # Latest
 
+- proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
+
 - hide ebert + hosts column and sort for oscars
 - change year range to start and end
 - better oscars popover and modal

@@ -18,7 +18,11 @@ const fetchMovies = fromPromise<ApiGetMoviesResponse, string>(async ({ input }) 
 });
 
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
-  const newUrl = assembleUrl(context.url, { ...context.queryParams, ...newQueryParams });
+  const newUrl = assembleUrl(context.url, {
+    ...context.queryParams,
+    ...newQueryParams,
+    page: newQueryParams.page === undefined ? 0 : newQueryParams.page,
+  });
   context.push(newUrl);
 };
 
@@ -42,12 +46,6 @@ type Event =
   | { type: 'URL_HAS_CHANGED'; url: string };
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
-
-/*
-  TODO:
-    hook up GET_NEXT_PAGE
-    remove old crap
-*/
 
 export const movieTableMachine = createMachine(
   {
@@ -140,11 +138,13 @@ export const movieTableMachine = createMachine(
         },
       },
       fetching: {
-        // on any event, cancel invoke by transitioning to idle and forwarding the event
         on: {
           '*': {
             target: 'idle',
-            actions: raise(({ event }) => event),
+            actions: [
+              raise(({ event }) => event),
+              ({ event }) => console.log('canceling fetch and forwarding', event),
+            ],
           },
         },
         invoke: {

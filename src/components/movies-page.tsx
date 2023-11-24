@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Layout from '~/components/layout';
 import { MovieCards } from '~/components/movie-card';
 import { MovieTable } from '~/components/movie-table';
@@ -15,6 +15,7 @@ import { type ApiGetMoviesResponse } from '~/pages/api/movies';
 import { sortOptions } from '~/utils/sorting';
 import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
 import { useToggle } from '~/utils/use-toggle';
+import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './movie-filters-dialog';
 import { OscarYearModal } from './oscar-year-modal';
@@ -44,9 +45,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
 
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
 
-  useEffect(() => {
-    actions.onUrlUpdate(router.asPath);
-  }, [router.asPath, actions]);
+  useUrlChange(actions.onUrlUpdate);
 
   useScreenSizeOnMount({
     onDesktop: display.setTable,
@@ -60,7 +59,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         {data.hasTokens && (
           <Box.Tokens>
             <TokenBar
-              clear={() => send({ type: 'CLEAR_ALL_TOKENS' })}
+              clear={actions.clearTokens}
               mode={data.searchMode}
               toggleSearchMode={actions.toggleSearchMode}
               toggleToken={actions.toggleToken}
@@ -110,9 +109,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
-      {display.isDefined && data.showVizSensor && (
-        <div className="h-4 bg-pink-400" ref={loadMoreRef} />
-      )}
+      {display.isDefined && data.showVizSensor && <div ref={loadMoreRef} />}
       {oscarsModal.isOpen && (
         <OscarYearModal
           isOpen={oscarsModal.isOpen}
