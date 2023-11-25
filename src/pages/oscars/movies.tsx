@@ -3,7 +3,7 @@ import { MoviesPage } from '~/components/movies-page';
 import { assembleUrl, defaultQps, type QpSchema } from '~/data/query-params';
 import { type StaticProps } from '~/utils/general-types';
 
-const qps: QpSchema = { ...defaultQps, hasOscar: true, sort: 'total_oscar_wins', asc: false };
+const qps: QpSchema = { ...defaultQps, movieMode: 'oscar', sort: 'total_oscar_wins', asc: false };
 
 export const getStaticProps = async () => {
   const url = assembleUrl('/oscars/movies', qps);

@@ -1,11 +1,12 @@
 import { type NextApiHandler } from 'next';
 import { z } from 'zod';
 import { searchTokens, type SearchTokensResponse } from '~/api/search-tokens';
+import { qpSchema } from '~/data/query-params';
 import { apiError } from '~/utils/format';
 import { type ApiError } from '~/utils/general-types';
 
 const paramsSchema = z.object({
-  filter: z.enum(['episode', 'oscar']),
+  filter: qpSchema.shape.movieMode,
   search: z.string(),
 });
 

@@ -174,7 +174,7 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
   return {
     asc: queryParams.asc,
     hasTokens: data.tokens.length > 0,
-    mode: queryParams.hasEpisode ? ('episode' as const) : ('oscar' as const),
+    movieMode: queryParams.movieMode,
     movies: data.movies,
     oscarsCategoriesNom: queryParams.oscarsCategoriesNom,
     oscarsCategoriesWon: queryParams.oscarsCategoriesWon,

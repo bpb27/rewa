@@ -50,8 +50,8 @@ export const getMovies = async (params: GetMoviesParams) => {
 
   const where: QueryWhere = {
     where: {
-      ...(params.hasEpisode ? { episodes: { some: {} } } : undefined),
-      ...(params.hasOscar ? { oscars_nominations: { some: {} } } : undefined),
+      ...(params.movieMode === 'rewa' ? { episodes: { some: {} } } : undefined),
+      ...(params.movieMode === 'oscar' ? { oscars_nominations: { some: {} } } : undefined),
       ...prismaSearch,
     },
   };

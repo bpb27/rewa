@@ -1,5 +1,4 @@
 import { isDefined } from 'remeda';
-import { Prisma } from '~/prisma';
 import { QpSchema, tokenKeys } from '~/data/query-params';
 import {
   tokenize,
@@ -9,8 +8,8 @@ import {
   tokenizeRevenue,
   tokenizeRuntime,
   tokenizeYear,
-  tokenizeYearRange,
 } from '~/data/tokens';
+import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
@@ -41,7 +40,6 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'keyword') return prisma.keywords.findMany(findParams).then(callback);
       if (key === 'streamer') return prisma.streamers.findMany(findParams).then(callback);
-      if (key === 'yearRange') return ids.map((id, i) => tokenizeYearRange(id, i ? '<' : '>'));
       if (key === 'oscarsCategoriesNom')
         return prisma.oscars_categories
           .findMany(findParams)

@@ -3,7 +3,7 @@ import { noop } from 'remeda';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
-import { type SortKey } from '~/data/query-params';
+import { QpSchema, type SortKey } from '~/data/query-params';
 import { streamerShortName } from '~/data/streamers';
 import { type Token } from '~/data/tokens';
 import { smartSort } from '~/utils/sorting';
@@ -15,7 +15,7 @@ import { StarRating } from './ui/stars';
 import { Text } from './ui/text';
 
 type MovieTableProps = {
-  mode: 'episode' | 'oscar';
+  mode: QpSchema['movieMode'];
   movies: MoviesPageMovie[];
   onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
@@ -29,9 +29,8 @@ export const MovieTable = ({
   onSortClick,
   onTokenClick,
 }: MovieTableProps) => {
-  const showHosts = mode === 'episode';
-  const showEbert = mode === 'episode';
-  const showGenres = false;
+  const showHosts = mode === 'rewa';
+  const showEbert = mode === 'rewa';
   const sort = (key: SortKey) => () => onSortClick(key);
   return (
     <div className="overflow-x-auto">
@@ -56,7 +55,6 @@ export const MovieTable = ({
             <TableHeader onClick={sort('ebert')} show={showEbert}>
               Our Guy
             </TableHeader>
-            <TableHeader show={showGenres}>Genres</TableHeader>
             <TableHeader>Keywords</TableHeader>
             <TableHeader>Streaming</TableHeader>
             <TableHeader>
@@ -104,7 +102,6 @@ export const MovieTable = ({
                     <StarRating value={m.ebertReview?.rating} />
                   </td>
                 )}
-                {showGenres && <ClickableTd tokens={m.genres} onClick={onTokenClick} />}
                 <ClickableTd tokens={m.keywords} onClick={onTokenClick} max={3} />
                 <ClickableTd
                   tokens={m.streamers.map(s => ({ ...s, name: streamerShortName(s.name) }))}

@@ -55,7 +55,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   return (
     <Layout title="All movies">
       <Box.Filters>
-        <SearchBar filter={data.mode} onSelect={actions.toggleToken} />
+        <SearchBar filter={data.movieMode} onSelect={actions.toggleToken} />
         {data.hasTokens && (
           <Box.Tokens>
             <TokenBar
@@ -98,7 +98,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
       </Box.Filters>
       {display.isTable && (
         <MovieTable
-          mode={data.mode}
+          mode={data.movieMode}
           movies={data.movies}
           onTokenClick={actions.toggleToken}
           onSortClick={actions.sort}

@@ -37,11 +37,10 @@ export const qpSchema = z.object({
   budget: integerList.optional().default(''),
   director: integerList.optional().default(''),
   genre: integerList.optional().default(''),
-  hasEpisode: boolean.optional().default('false'),
-  hasOscar: boolean.optional().default('false'),
   host: integerList.optional().default(''),
   keyword: integerList.optional().default(''),
   movie: integerList.optional().default(''),
+  movieMode: z.enum(['rewa', 'oscar']).optional().default('rewa'),
   oscarsCategoriesNom: integerList.optional().default(''),
   oscarsCategoriesWon: integerList.optional().default(''),
   page: integer.optional().default(0),
@@ -66,7 +65,6 @@ export const qpSchema = z.object({
     .default('title'),
   streamer: integerList.optional().default(''),
   year: integerList.optional().default(''),
-  yearRange: integerList.optional().default(''),
 });
 
 export const defaultQps = qpSchema.parse({});
@@ -86,7 +84,6 @@ const tokenSchema = qpSchema.pick({
   runtime: true,
   streamer: true,
   year: true,
-  yearRange: true,
 });
 
 export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];

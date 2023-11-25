@@ -1,18 +1,18 @@
-import { Prisma } from '~/prisma';
+import { QpSchema } from '~/data/query-params';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
+import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
 export type SearchTokensParams = {
-  filter: 'episode' | 'oscar';
+  filter: QpSchema['movieMode'];
   search: string;
 };
 export type SearchTokensResponse = Awaited<ReturnType<typeof searchTokens>>;
 
 export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
-  const filterField =
-    filter === 'episode' ? ('episodes' as const) : ('oscars_nominations' as const);
+  const filterField = filter === 'rewa' ? ('episodes' as const) : ('oscars_nominations' as const);
 
   const movies = await prisma.movies.findMany({
     select: { id: true, title: true },

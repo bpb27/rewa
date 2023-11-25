@@ -122,12 +122,6 @@ export const searchMap: Record<TokenType, SearchFn> = {
         startsWith: year.toString(),
       },
     })),
-  yearRange: years =>
-    years.filter(Boolean).map((year, i) => ({
-      release_date: {
-        [i ? 'lte' : 'gte']: year.toString(),
-      },
-    })),
 };
 
 export const getSearches = (options: QpSchema) => {

@@ -3,13 +3,14 @@ import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
+import { type QpSchema } from '~/data/query-params';
 import { type Token } from '~/data/tokens';
 import { capitalize } from '~/utils/format';
 import { useAPI } from '~/utils/use-api';
 import { useDebounce } from '~/utils/use-debounce';
 
 type SearchBarProps = {
-  filter: 'episode' | 'oscar';
+  filter: QpSchema['movieMode'];
   onSelect: (selection: Token) => void;
 };
 
