@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
@@ -6,9 +6,9 @@ import { Modal, type ModalProps } from '~/components/ui/modal';
 import { smartSort } from '~/utils/sorting';
 import { useAPI } from '~/utils/use-api';
 
-type OscarYearModalProps = { year: number } & ModalProps;
+type OscarYearModalProps = { movieId: number; year: number } & ModalProps;
 
-export const OscarYearModal = ({ year, ...modalProps }: OscarYearModalProps) => {
+export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
@@ -24,7 +24,7 @@ export const OscarYearModal = ({ year, ...modalProps }: OscarYearModalProps) => 
         >
           <Icon.ArrowLeft />
         </Button>
-        <h2 className="text-xl font-semibold">{selectedYear}</h2>
+        <h2 className="text-xl font-semibold">{selectedYear} Oscars</h2>
         <Button
           className="bg-yellow-200"
           disabled={selectedYear >= 2023}
@@ -33,6 +33,25 @@ export const OscarYearModal = ({ year, ...modalProps }: OscarYearModalProps) => 
         >
           <Icon.ArrowRight />
         </Button>
+      </div>
+      <div>
+        {data
+          .filter(a => a.movie_id === movieId)
+          .map((oscar, i, list) => (
+            <Fragment key={oscar.id}>
+              {i == 0 && (
+                <h3 className="mb-1 mt-6 text-xl font-bold underline">{oscar.movie.title}</h3>
+              )}
+              <div className="my-1 flex items-center justify-between space-x-2">
+                <span>
+                  <p className="font-bold italic">{oscar.award.name}</p>
+                  <p>{oscar.recipient}</p>
+                </span>
+                {oscar.won && <Icon.Trophy className="flex-shrink-0" />}
+              </div>
+              {i === list.length - 1 && <div className="my-4" />}
+            </Fragment>
+          ))}
       </div>
       <div>
         {Object.values(groupBy(data, item => item.award.id))
@@ -48,7 +67,7 @@ export const OscarYearModal = ({ year, ...modalProps }: OscarYearModalProps) => 
                     <p className="font-bold italic">{oscar.movie.title}</p>
                     {showRecipient(oscar.award.oscars_categories.name) && <p>{oscar.recipient}</p>}
                   </span>
-                  {oscar.won && <Icon.Trophy />}
+                  {oscar.won && <Icon.Trophy className="flex-shrink-0" />}
                 </div>
               ))}
             </div>
