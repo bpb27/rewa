@@ -1,18 +1,17 @@
 # Latest
 
 - proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
+- could use in more places
 
-- hide ebert + hosts column and sort for oscars
-- change year range to start and end
-- better oscars popover and modal
+- show in oscars column should open a modal rather than dialog
+  - show all high pri awards that year
+  - pull movie-specific ones to the top, add highlight
+  - year arrows to jump to other years
+- clicking title should open a modal with more details (tagline + description + crew + production)
+- leaderboard hover should show title somewhere (maybe make posters a little bigger)
+- year gte lte, maybe budget revenue runtime also
 - maybe remove the movie card view and always show table
-- make title in table clickable, show a card modal or sidebar w/ tagline, desc, crew
-
-# Minor UI
-
-- searching for title, selecting, searching for another, selecting - results will always be empty (two title tokens) - should probably replace / only allow one
-- movie table/card to dialog?
-- dialog for show-more stuff in table
+- title search should replace rather than add
 
 # Data probs
 
@@ -21,15 +20,8 @@
 
 # TODO
 
-- oscars modal - could also take a movie id - clicking in table would open modal w/ movie's oscars + the whole year below
-- clicking table title opens movie sidebar w/ more info
 - budget, revenue, runtime range?
-- oscars by year page (would help verify data is right)
 - lots of oscar movie cards dont have taglines but do have overviews - need a way to access it
-- maxlist box when lots of directors, hosts, oscars, genres
-- more UI
-  - handle oscar/rewa discrepancies (e.g. hosts, episode columns), sortable fields
-  - maxwidth on TDs (cast, title, director)
 - oscar streamers strategy
   - 3.9k movies
   - filter out movies w/ bullshit awards (doc short, animated short, e.g.)
@@ -42,8 +34,7 @@
 - basic smoke test
 - top appearance since year
 - more linting rules
-- expandable place for description, crew, cast + load more in table
-- imdb rating / rottenmater rating / roger ebert
+- imdb rating / rottenmater rating
 - person most involved list
 - ditch css modules
 - search on top appearances pages

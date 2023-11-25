@@ -73,7 +73,15 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
             <Icon.Movie className="ml-1" />
           </span>
           <span className="flex items-center">
-            <Select onSelect={actions.sort} options={sortOptions} value={data.sort} />
+            <Select
+              onSelect={actions.sort}
+              options={sortOptions.filter(o => {
+                if (data.movieMode === 'oscar' && ['episodeNumber', 'ebert'].includes(o.value))
+                  return false;
+                return true;
+              })}
+              value={data.sort}
+            />
             <Button className="ml-1" onClick={actions.toggleSortOrder} variant="icon">
               {data.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>

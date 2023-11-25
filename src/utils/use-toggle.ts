@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { capitalize } from './format';
 
 const cap = <TStr extends string>(str: TStr) => capitalize(str) as Capitalize<TStr>;
@@ -23,14 +23,22 @@ export const useToggle = <TOne extends string, TTwo extends string>(
   const [value, setValue] = useState<TOne | TTwo | undefined>(
     initialValue === null ? undefined : firstValue
   );
+
+  const staticResponse = useMemo(
+    () => ({
+      [setBrand(firstValue)]: () => setValue(firstValue),
+      [setBrand(secondValue)]: () => setValue(secondValue),
+      toggle: () => setValue(v => (v === firstValue ? secondValue : firstValue)),
+      set: (v: TOne | TTwo) => setValue(v),
+    }),
+    [firstValue, secondValue, setValue]
+  );
+
   const response = {
     [isBrand(firstValue)]: value === firstValue,
     [isBrand(secondValue)]: value === secondValue,
-    [setBrand(firstValue)]: () => setValue(firstValue),
-    [setBrand(secondValue)]: () => setValue(secondValue),
-    toggle: () => setValue(value === firstValue ? secondValue : firstValue),
-    set: (value: TOne | TTwo) => setValue(value),
     isDefined: value !== undefined,
+    ...staticResponse,
   } as UseToggleResponse<TOne | TTwo>;
   return response;
 };
