@@ -50,8 +50,7 @@ export const getActor = async ({ id, filter }: GetActorParams) => {
         release_date: role.movies?.release_date!,
         title: role.movies?.title!,
       })),
-      movie => movie.release_date,
-      true
+      movie => movie.release_date
     ),
     crewMovies: smartSort(
       (crewResponse?.crew_on_movies || []).map(crew => ({
@@ -60,8 +59,7 @@ export const getActor = async ({ id, filter }: GetActorParams) => {
         title: crew.movies?.title!,
         movieId: crew.movies?.id!,
       })),
-      movie => movie.release_date,
-      true
+      movie => movie.release_date
     ),
   };
 };

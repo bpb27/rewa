@@ -29,8 +29,7 @@ type MoviesPageProps = {
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const router = useRouter();
   const display = useToggle('table', 'card', null);
-  const oscarsModal = useToggle('closed', 'open');
-  const [oscarsModalYear, setOscarsModalYear] = useState(2022);
+  const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
 
   const [state, send] = useMachine(movieTableMachine, {
     input: {
@@ -110,19 +109,16 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           movies={data.movies}
           onTokenClick={actions.toggleToken}
           onSortClick={actions.sort}
-          onOscarYearClick={(year: number) => {
-            setOscarsModalYear(year);
-            oscarsModal.setOpen();
-          }}
+          onOscarYearClick={params => setOscarsModal(params)}
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
       {display.isDefined && data.showVizSensor && <div ref={loadMoreRef} />}
-      {oscarsModal.isOpen && (
+      {!!oscarsModal && (
         <OscarYearModal
-          isOpen={oscarsModal.isOpen}
-          onClose={oscarsModal.setClosed}
-          year={oscarsModalYear}
+          {...oscarsModal}
+          isOpen={!!oscarsModal}
+          onClose={() => setOscarsModal(undefined)}
         />
       )}
       <Button

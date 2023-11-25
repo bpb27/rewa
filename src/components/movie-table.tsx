@@ -9,7 +9,6 @@ import { type Token } from '~/data/tokens';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { MovieTablePoster } from './images';
-import { MovieOscarsPopover } from './popovers';
 import { PopoverMenu } from './ui/popover';
 import { StarRating } from './ui/stars';
 import { Text } from './ui/text';
@@ -19,7 +18,7 @@ type MovieTableProps = {
   movies: MoviesPageMovie[];
   onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
-  onOscarYearClick: (year: number) => void;
+  onOscarYearClick: (params: { movieId: number; year: number }) => void;
 };
 
 export const MovieTable = ({
@@ -85,11 +84,11 @@ export const MovieTable = ({
                     <Text>{m.oscars.noms} noms</Text>
                     <Text>{m.oscars.wins} wins</Text>
                     {m.oscars.noms > 0 && (
-                      <MovieOscarsPopover
-                        awards={m.oscars.awards.map(a => ({ ...a, awardName: a.awardCategory }))}
-                        onYearClick={() => onOscarYearClick(m.oscars.year)}
-                        trigger={<span className="cursor-pointer hover:underline">Show</span>}
-                      />
+                      <Text
+                        onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
+                      >
+                        Show
+                      </Text>
                     )}
                   </div>
                 </td>
@@ -174,7 +173,7 @@ const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
       {needsPagination && max < total && (
         <PopoverMenu trigger={MoreButton}>
           <div>
-            {smartSort([...tokens], t => t.name, true).map(token => (
+            {smartSort([...tokens], t => t.name).map(token => (
               <ClickableField key={token.id} {...token} onClick={() => onClick(token)} />
             ))}
           </div>

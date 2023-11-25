@@ -11,7 +11,7 @@ export const getOscarsByYear = async ({ year }: GetOscarsByYearParams) => {
       ceremony_year: year,
     },
     include: {
-      award: true,
+      award: { include: { oscars_categories: true } },
       movie: { select: { title: true } },
     },
   });

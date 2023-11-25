@@ -19,13 +19,13 @@ const shortDateRegEx = /^\d{4}-\d{2}-\d{2}$/;
 const isDateString = (str: string) => longDateRegEx.test(str) || shortDateRegEx.test(str);
 
 type SortableObject = {
-  [key: string]: string | number | undefined | null | object;
+  [key: string]: string | number | undefined | null | object | boolean;
 };
 
 export const smartSort = <TEntry extends SortableObject>(
   arr: TEntry[],
   getter: (item: TEntry) => any,
-  asc: boolean
+  order: 'asc' | 'desc' = 'asc'
 ): TEntry[] => {
   const sorted = arr.sort((a: TEntry, b: TEntry) => {
     const aValue = getter(a);
@@ -45,7 +45,7 @@ export const smartSort = <TEntry extends SortableObject>(
       return 0;
     }
   });
-  return asc ? sorted : sorted.reverse();
+  return order === 'asc' ? sorted : sorted.reverse();
 };
 
 export const sortByDate = (a: string, b: string) => Date.parse(a) - Date.parse(b);

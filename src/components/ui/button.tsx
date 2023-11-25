@@ -29,7 +29,7 @@ export const Button = ({
 }: ButtonProps) => (
   <button
     className={cn(
-      'inline-flex items-center justify-center rounded-md text-sm font-medium',
+      'inline-flex items-center justify-center rounded-md text-sm font-medium disabled:cursor-not-allowed',
       variants({ selected })[variant],
       className
     )}
