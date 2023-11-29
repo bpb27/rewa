@@ -19,11 +19,13 @@ type MovieTableProps = {
   onSortClick: (sort: SortKey) => void;
   onTokenClick: (token: Token) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
+  onMovieTitleClick: (id: number) => void;
 };
 
 export const MovieTable = ({
   mode,
   movies,
+  onMovieTitleClick,
   onOscarYearClick,
   onSortClick,
   onTokenClick,
@@ -73,8 +75,11 @@ export const MovieTable = ({
                 <td>
                   <MovieTablePoster title={m.title} poster_path={m.poster_path} />
                 </td>
-                <td className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3 font-bold text-slate-700">
-                  {m.title}
+                <td
+                  className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3 font-bold text-slate-700"
+                  onClick={() => onMovieTitleClick(m.id)}
+                >
+                  <span className="cursor-pointer hover:underline">{m.title}</span>
                 </td>
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
                 <ClickableTd tokens={m.directors} onClick={onTokenClick} />

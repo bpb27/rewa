@@ -1,10 +1,18 @@
-import { Fragment, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Modal, type ModalProps } from '~/components/ui/modal';
 import { smartSort } from '~/utils/sorting';
+import { cn } from '~/utils/style';
 import { useAPI } from '~/utils/use-api';
+
+/*
+  layout options
+  - table
+  - mini cards w/ poster - doesn't need to wrap
+  - simple compressed big award header + one line <i>movie</i> - recip
+*/
 
 type OscarYearModalProps = { movieId: number; year: number } & ModalProps;
 
@@ -13,20 +21,21 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = useAPI(`/api/oscars/year/${selectedYear}`);
+  const movieSpotlight = data.filter(a => a.movie_id === movieId);
   return (
-    <Modal {...modalProps} className="bg-yellow-50">
-      <div className="flex justify-between align-baseline" ref={containerRef}>
+    <Modal {...modalProps}>
+      <div className="mb-8 mt-4 flex items-center justify-between" ref={containerRef}>
         <Button
-          className="bg-yellow-200"
           disabled={selectedYear <= 1950}
           onClick={() => setYear(selectedYear - 1)}
           variant="icon"
         >
           <Icon.ArrowLeft />
         </Button>
-        <h2 className="text-xl font-semibold">{selectedYear} Oscars</h2>
+        <h2 className="border-b-4 border-yellow-400 text-xl font-semibold">
+          {selectedYear} Oscars
+        </h2>
         <Button
-          className="bg-yellow-200"
           disabled={selectedYear >= 2023}
           onClick={() => setYear(selectedYear + 1)}
           variant="icon"
@@ -35,23 +44,17 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
         </Button>
       </div>
       <div>
-        {data
-          .filter(a => a.movie_id === movieId)
-          .map((oscar, i, list) => (
-            <Fragment key={oscar.id}>
-              {i == 0 && (
-                <h3 className="mb-1 mt-6 text-xl font-bold underline">{oscar.movie.title}</h3>
-              )}
-              <div className="my-1 flex items-center justify-between space-x-2">
-                <span>
-                  <p className="font-bold italic">{oscar.award.name}</p>
-                  <p>{oscar.recipient}</p>
-                </span>
-                {oscar.won && <Icon.Trophy className="flex-shrink-0" />}
-              </div>
-              {i === list.length - 1 && <div className="my-4" />}
-            </Fragment>
-          ))}
+        {movieSpotlight.length > 0 && (
+          <AwardCategory
+            key={movieSpotlight[0].id}
+            name={movieSpotlight[0].movie.title.toUpperCase()}
+            items={movieSpotlight.map(a => ({
+              movie: a.award.name,
+              recipient: a.recipient,
+              won: a.won,
+            }))}
+          />
+        )}
       </div>
       <div>
         {Object.values(groupBy(data, item => item.award.id))
@@ -59,26 +62,23 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
             limitAwards ? group.every(e => e.award.oscars_categories.relevance === 'high') : true
           )
           .map(group => (
-            <div key={group[0].id} className="my-4">
-              <h3 className="text-xl font-bold underline">{group[0].award.name}</h3>
-              {smartSort(group, i => i.movie.title).map(oscar => (
-                <div key={oscar.id} className="my-1 flex items-center justify-between space-x-2">
-                  <span>
-                    <p className="font-bold italic">{oscar.movie.title}</p>
-                    {showRecipient(oscar.award.oscars_categories.name) && <p>{oscar.recipient}</p>}
-                  </span>
-                  {oscar.won && <Icon.Trophy className="flex-shrink-0" />}
-                </div>
-              ))}
-            </div>
+            <AwardCategory
+              key={group[0].id}
+              name={group[0].award.name}
+              items={smartSort(group, i => i.movie.title).map(a => ({
+                movie: a.movie.title,
+                recipient: a.recipient,
+                won: a.won,
+              }))}
+            />
           ))}
         <Button
+          className="w-full"
           variant="card"
           onClick={() => {
             setLimitAwards(l => !l);
             containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
-          className="border-yellow-400 bg-yellow-200 hover:bg-yellow-100"
         >
           Show {limitAwards ? 'more' : 'fewer'}
         </Button>
@@ -86,6 +86,30 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
     </Modal>
   );
 };
+
+type AwardCategoryProps = {
+  items: { movie: string; recipient: string; won: boolean }[];
+  key: number | string;
+  name: string;
+};
+
+const AwardCategory = ({ items, key, name }: AwardCategoryProps) => (
+  <div key={key} className="my-4">
+    <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{name}</h3>
+    {items.map(({ movie, recipient, won }) => (
+      <div
+        key={movie + recipient}
+        className={cn('my-1 flex items-center justify-between space-x-2', won && 'bg-yellow-50')}
+      >
+        <span>
+          <p className="font-bold">{movie}</p>
+          <p>{recipient}</p>
+        </span>
+        {won && <Icon.Trophy className="flex-shrink-0" />}
+      </div>
+    ))}
+  </div>
+);
 
 const showRecipient = (name: string) =>
   [

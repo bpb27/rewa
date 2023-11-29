@@ -2,11 +2,8 @@
 
 - proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
 - could use in more places
+- look into suspense for modals + sidebars + dialogs that are loading?
 
-- show in oscars column should open a modal rather than dialog
-  - show all high pri awards that year
-  - pull movie-specific ones to the top, add highlight
-  - year arrows to jump to other years
 - clicking title should open a modal with more details (tagline + description + crew + production)
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
 - year gte lte, maybe budget revenue runtime also

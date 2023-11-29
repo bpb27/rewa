@@ -1,6 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
+import { Icon } from './icons';
 
 export type ModalProps = PropsWithChildren<{
   className?: string;
@@ -20,6 +21,9 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
           )}
           onInteractOutside={() => onClose()}
         >
+          <Dialog.Close asChild onClick={onClose}>
+            <Icon.Close className="z-100 absolute right-1 top-1 cursor-pointer stroke-slate-800" />
+          </Dialog.Close>
           {children}
         </Dialog.Content>
       </Dialog.Portal>

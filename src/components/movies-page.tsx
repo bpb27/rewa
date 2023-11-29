@@ -18,6 +18,7 @@ import { useToggle } from '~/utils/use-toggle';
 import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './movie-filters-dialog';
+import { MovieSpotlightModal } from './movie-spotlight-modal';
 import { OscarYearModal } from './oscar-year-modal';
 
 export type MoviesPageMovie = ApiGetMoviesResponse['movies'][number];
@@ -30,6 +31,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const router = useRouter();
   const display = useToggle('table', 'card', null);
   const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
+  const [movieModal, setMovieModal] = useState<number | undefined>();
 
   const [state, send] = useMachine(movieTableMachine, {
     input: {
@@ -109,7 +111,8 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           movies={data.movies}
           onTokenClick={actions.toggleToken}
           onSortClick={actions.sort}
-          onOscarYearClick={params => setOscarsModal(params)}
+          onOscarYearClick={setOscarsModal}
+          onMovieTitleClick={setMovieModal}
         />
       )}
       {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
@@ -119,6 +122,13 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           {...oscarsModal}
           isOpen={!!oscarsModal}
           onClose={() => setOscarsModal(undefined)}
+        />
+      )}
+      {!!movieModal && (
+        <MovieSpotlightModal
+          {...data.movies.find(m => m.id === movieModal)!}
+          isOpen={!!movieModal}
+          onClose={() => setMovieModal(undefined)}
         />
       )}
       <Button
