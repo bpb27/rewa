@@ -110,7 +110,12 @@ export const movieTableMachine = createMachine(
           SORT: {
             actions: ({ context, event }) => {
               const sort = event.field;
-              updateUrl(context, { sort });
+              const asc = !context.queryParams.asc;
+              if (context.queryParams.sort !== sort) {
+                updateUrl(context, { sort });
+              } else {
+                updateUrl(context, { asc });
+              }
             },
           },
           TOGGLE_SEARCH_MODE: {
