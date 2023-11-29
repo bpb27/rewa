@@ -1,6 +1,7 @@
 import { type Prisma as PrismaBaseType } from '@prisma/client';
 import { isArray } from 'remeda';
 import { type QpSchema, type TokenType } from '~/data/query-params';
+import { crewJobs } from './crew-jobs';
 
 type AndOr = PrismaBaseType.moviesWhereInput['OR'] | PrismaBaseType.moviesWhereInput['AND'];
 
@@ -31,11 +32,20 @@ export const searchMap: Record<TokenType, SearchFn> = {
         lt: budget + fiveMil,
       },
     })),
+  cinematographer: cinematographers =>
+    cinematographers.map(id => ({
+      crew_on_movies: {
+        some: {
+          job: { in: crewJobs.cinematographer },
+          crew_id: id,
+        },
+      },
+    })),
   director: directors =>
     directors.map(id => ({
       crew_on_movies: {
         some: {
-          job: 'Director',
+          job: { in: crewJobs.director },
           crew_id: id,
         },
       },
@@ -93,6 +103,15 @@ export const searchMap: Record<TokenType, SearchFn> = {
         },
       },
     })),
+  producer: producers =>
+    producers.map(id => ({
+      crew_on_movies: {
+        some: {
+          job: { in: crewJobs.producer },
+          crew_id: id,
+        },
+      },
+    })),
   revenue: revenues =>
     revenues.map(revenue => ({
       // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
@@ -113,6 +132,15 @@ export const searchMap: Record<TokenType, SearchFn> = {
       streamers_on_movies: {
         some: {
           streamer_id: id,
+        },
+      },
+    })),
+  writer: writers =>
+    writers.map(id => ({
+      crew_on_movies: {
+        some: {
+          job: { in: crewJobs.writer },
+          crew_id: id,
         },
       },
     })),

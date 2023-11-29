@@ -1,9 +1,9 @@
+import { crewJobs } from '~/data/crew-jobs';
 import { Prisma } from '~/prisma';
-import { TOP_PEOPLE_MOVIE_SELECT } from './get-top-actors';
 
 const prisma = Prisma.getPrisma();
 
-type GetTopCrewParams = { job: keyof typeof WHERE_JOB; mode: 'rewa' | 'oscars' };
+type GetTopCrewParams = { job: keyof typeof crewJobs; mode: 'rewa' | 'oscars' };
 export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
 
 const WHERE_JOB = {
@@ -33,7 +33,7 @@ export const getTopCrew = async ({ job, mode }: GetTopCrewParams) => {
       },
     },
     where: {
-      ...WHERE_JOB[job],
+      OR: crewJobs[job].map(item => ({ job: item })),
       AND: {
         movies: {
           ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),

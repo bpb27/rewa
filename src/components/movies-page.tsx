@@ -129,6 +129,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           {...data.movies.find(m => m.id === movieModal)!}
           isOpen={!!movieModal}
           onClose={() => setMovieModal(undefined)}
+          onTokenClick={actions.toggleToken}
         />
       )}
       <Button

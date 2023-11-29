@@ -36,6 +36,9 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'year') return ids.map(id => tokenizeYear(id.toString()));
       if (key === 'actor') return prisma.actors.findMany(findParams).then(callback);
       if (key === 'director') return prisma.crew.findMany(findParams).then(callback);
+      if (key === 'producer') return prisma.crew.findMany(findParams).then(callback);
+      if (key === 'writer') return prisma.crew.findMany(findParams).then(callback);
+      if (key === 'cinematographer') return prisma.crew.findMany(findParams).then(callback);
       if (key === 'genre') return prisma.genres.findMany(findParams).then(callback);
       if (key === 'host') return prisma.hosts.findMany(findParams).then(callback);
       if (key === 'keyword') return prisma.keywords.findMany(findParams).then(callback);

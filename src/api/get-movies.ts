@@ -1,8 +1,10 @@
 import { Prisma as PrismaBaseType } from '@prisma/client';
 import { pick, uniqBy } from 'remeda';
+import { crewJobs } from '~/data/crew-jobs';
 import { createFilters, getSearches } from '~/data/movie-search-conditions';
 import { QpSchema, SortKey } from '~/data/query-params';
 import {
+  Token,
   tokenize,
   tokenizeBudget,
   tokenizeRevenue,
@@ -98,7 +100,11 @@ export const getMovies = async (params: GetMoviesParams) => {
             select: { actors: selectIdAndName },
           },
           crew_on_movies: {
-            where: { job: 'Director' },
+            where: {
+              job: {
+                in: Object.values(crewJobs).flat(),
+              },
+            },
             select: {
               job: true,
               crew: selectIdAndName,
@@ -158,6 +164,17 @@ export const getMovies = async (params: GetMoviesParams) => {
         a => a.id
       ).slice(0, 3),
       budget: tokenizeBudget(movie.budget),
+      crew: movie.crew_on_movies
+        .filter(jt => jt.crew)
+        .map(item => {
+          if (crewJobs.director.includes(item.job)) return tokenize('director', item.crew);
+          if (crewJobs.producer.includes(item.job)) return tokenize('producer', item.crew);
+          if (crewJobs.cinematographer.includes(item.job))
+            return tokenize('cinematographer', item.crew);
+          if (crewJobs.writer.includes(item.job)) return tokenize('writer', item.crew);
+        })
+        .filter(item => item)
+        .map(item => item as Token),
       directors: movie.crew_on_movies
         .filter(jt => jt.job === 'Director')
         .map(jt => jt.crew!)

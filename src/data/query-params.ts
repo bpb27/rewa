@@ -35,6 +35,7 @@ export const qpSchema = z.object({
   actor: integerList.optional().default(''),
   asc: boolean.optional().default('false'),
   budget: integerList.optional().default(''),
+  cinematographer: integerList.optional().default(''),
   director: integerList.optional().default(''),
   genre: integerList.optional().default(''),
   host: integerList.optional().default(''),
@@ -44,6 +45,7 @@ export const qpSchema = z.object({
   oscarsCategoriesNom: integerList.optional().default(''),
   oscarsCategoriesWon: integerList.optional().default(''),
   page: integer.optional().default(0),
+  producer: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
   runtime: integerList.optional().default(''),
   searchMode: z.enum(['and', 'or']).optional().default('and'),
@@ -64,6 +66,7 @@ export const qpSchema = z.object({
     .optional()
     .default('title'),
   streamer: integerList.optional().default(''),
+  writer: integerList.optional().default(''),
   year: integerList.optional().default(''),
 });
 
@@ -73,6 +76,7 @@ export const defaultQps = qpSchema.parse({});
 const tokenSchema = qpSchema.pick({
   actor: true,
   budget: true,
+  cinematographer: true,
   director: true,
   genre: true,
   host: true,
@@ -80,9 +84,11 @@ const tokenSchema = qpSchema.pick({
   movie: true,
   oscarsCategoriesNom: true,
   oscarsCategoriesWon: true,
+  producer: true,
   revenue: true,
   runtime: true,
   streamer: true,
+  writer: true,
   year: true,
 });
 
