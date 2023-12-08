@@ -1,4 +1,5 @@
 import { SortKey } from '~/data/query-params';
+import { Token } from '~/data/tokens';
 
 export const sortOptions = [
   { value: 'title', label: 'Title' },
@@ -52,3 +53,8 @@ export const sortByDate = (a: string, b: string) => Date.parse(a) - Date.parse(b
 
 export const withinYearRange = (one: string | number, two: string | number): boolean =>
   Math.abs(Number(one.toString().slice(0, 4)) - Number(two.toString().slice(0, 4))) <= 5;
+
+const crewOrder = ['director', 'writer', 'cinematographer', 'producer'];
+export const sortCrew = (a: Token, b: Token) => {
+  return crewOrder.indexOf(a.type) - crewOrder.indexOf(b.type);
+};

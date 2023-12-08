@@ -13,6 +13,7 @@ import {
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
 import { getYear } from '~/utils/format';
+import { sortCrew } from '~/utils/sorting';
 
 // NB: searchMode AND === all conditions present, searchMode OR === any conditions present
 // NB: using a view (movies_with_computed_fields) to sort across tables (e.g. episode order) + custom fields (e.g. profit percentage)
@@ -166,15 +167,20 @@ export const getMovies = async (params: GetMoviesParams) => {
       budget: tokenizeBudget(movie.budget),
       crew: movie.crew_on_movies
         .filter(jt => jt.crew)
-        .map(item => {
-          if (crewJobs.director.includes(item.job)) return tokenize('director', item.crew);
-          if (crewJobs.producer.includes(item.job)) return tokenize('producer', item.crew);
-          if (crewJobs.cinematographer.includes(item.job))
-            return tokenize('cinematographer', item.crew);
-          if (crewJobs.writer.includes(item.job)) return tokenize('writer', item.crew);
+        .map(({ crew, job }) => {
+          if (crewJobs.director.includes(job)) {
+            return tokenize('director', crew);
+          } else if (crewJobs.producer.includes(job)) {
+            return tokenize('producer', crew);
+          } else if (crewJobs.cinematographer.includes(job)) {
+            return tokenize('cinematographer', crew);
+          } else if (crewJobs.writer.includes(job)) {
+            return tokenize('writer', crew);
+          }
         })
         .filter(item => item)
-        .map(item => item as Token),
+        .map(item => item as Token)
+        .sort(sortCrew),
       directors: movie.crew_on_movies
         .filter(jt => jt.job === 'Director')
         .map(jt => jt.crew!)

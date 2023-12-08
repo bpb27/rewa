@@ -1,4 +1,4 @@
-import { Fragment, type PropsWithChildren } from 'react';
+import { Fragment, ReactNode, type PropsWithChildren } from 'react';
 import { noop } from 'remeda';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
@@ -6,6 +6,7 @@ import { Icon } from '~/components/ui/icons';
 import { QpSchema, type SortKey } from '~/data/query-params';
 import { streamerShortName } from '~/data/streamers';
 import { type Token } from '~/data/tokens';
+import { capitalize } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { MovieTablePoster } from './images';
@@ -82,7 +83,18 @@ export const MovieTable = ({
                   <span className="cursor-pointer hover:underline">{m.title}</span>
                 </td>
                 <ClickableTd tokens={[m.year]} onClick={onTokenClick} />
-                <ClickableTd tokens={m.directors} onClick={onTokenClick} />
+                <ClickableTd
+                  tokens={m.crew}
+                  onClick={onTokenClick}
+                  max={1}
+                  showMoreText={() => 'Show crew'}
+                  sort={false}
+                  popoverItemText={({ name, type }) => (
+                    <span>
+                      <b>{capitalize(type)}</b>: {name}
+                    </span>
+                  )}
+                />
                 <ClickableTd tokens={m.actors} onClick={onTokenClick} />
                 <td>
                   <div className="flex flex-col">
@@ -90,6 +102,7 @@ export const MovieTable = ({
                     <Text>{m.oscars.wins} wins</Text>
                     {m.oscars.noms > 0 && (
                       <Text
+                        secondary
                         onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
                       >
                         Show
@@ -97,7 +110,7 @@ export const MovieTable = ({
                     )}
                   </div>
                 </td>
-                {showHosts && <ClickableTd tokens={m.hosts} onClick={onTokenClick} />}
+                {showHosts && <ClickableTd tokens={m.hosts} onClick={onTokenClick} max={3} />}
                 <ClickableTd tokens={[m.budget]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.revenue]} onClick={onTokenClick} />
                 <ClickableTd tokens={[m.runtime]} onClick={onTokenClick} />
@@ -161,25 +174,49 @@ const TableHeader = ({ className, children, onClick, show }: TableHeaderProps) =
 type ClickableTdProps = {
   max?: number;
   onClick: (v: Token) => void;
+  popoverItemText?: (token: Token) => ReactNode;
+  showMoreText?: (remaining: number) => ReactNode;
+  sort?: boolean;
   tokens: Token[];
 };
 
-const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
+const ClickableTd = ({
+  max = 4,
+  onClick,
+  popoverItemText = token => token.name,
+  showMoreText = remaining => `${remaining} more`,
+  sort = true,
+  tokens,
+}: ClickableTdProps) => {
   const total = tokens.length;
   const needsPagination = total > max;
-  const MoreButton = (
-    <div className="cursor-pointer px-1 hover:underline">Show {total - max} more</div>
-  );
+  const remaining = total - max;
   return (
     <td>
       {tokens.slice(0, max).map(token => (
-        <ClickableField key={token.id} {...token} onClick={() => onClick(token)} />
+        <ClickableField
+          key={token.id}
+          onClick={() => onClick(token)}
+          text={() => token.name}
+          {...token}
+        />
       ))}
       {needsPagination && max < total && (
-        <PopoverMenu trigger={MoreButton}>
+        <PopoverMenu
+          trigger={
+            <div className="cursor-pointer px-1 text-slate-500 hover:underline">
+              {showMoreText(remaining)}
+            </div>
+          }
+        >
           <div>
-            {smartSort([...tokens], t => t.name).map(token => (
-              <ClickableField key={token.id} {...token} onClick={() => onClick(token)} />
+            {(sort ? smartSort([...tokens], t => t.name) : tokens).map(token => (
+              <ClickableField
+                key={token.id}
+                onClick={() => onClick(token)}
+                text={popoverItemText}
+                {...token}
+              />
             ))}
           </div>
         </PopoverMenu>
@@ -189,17 +226,16 @@ const ClickableTd = ({ max = 4, onClick, tokens }: ClickableTdProps) => {
 };
 
 type ClickableFieldProps = {
-  id: number;
-  name: string;
   onClick: () => void;
-};
+  text: (token: Token) => ReactNode;
+} & Token;
 
-const ClickableField = ({ id, name, onClick }: ClickableFieldProps) => (
+const ClickableField = ({ onClick, text, ...token }: ClickableFieldProps) => (
   <div
-    className="max-w-[200px] cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 hover:underline"
-    key={id}
+    className="max-w-[400px] cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 hover:underline"
+    key={token.id}
     onClick={onClick}
   >
-    {name}
+    {text(token)}
   </div>
 );
