@@ -41,7 +41,7 @@ export const qpSchema = z.object({
   host: integerList.optional().default(''),
   keyword: integerList.optional().default(''),
   movie: integerList.optional().default(''),
-  movieMode: z.enum(['rewa', 'oscar']).optional().default('rewa'),
+  movieMode: z.enum(['rewa', 'oscar', 'any']).optional().default('any'),
   oscarsCategoriesNom: integerList.optional().default(''),
   oscarsCategoriesWon: integerList.optional().default(''),
   page: integer.optional().default(0),

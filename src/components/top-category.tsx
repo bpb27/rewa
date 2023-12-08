@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { type GetTopActorsResponse } from '~/api/get-top-actors';
 import { type GetTopCrewResponse } from '~/api/get-top-crew';
 import { ActorCardSidebar } from '~/components/actor-card-sidebar';
