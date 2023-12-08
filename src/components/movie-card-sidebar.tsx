@@ -1,9 +1,9 @@
-import { type PropsWithChildren, useState } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Icon, type IconKey } from '~/components/ui/icons';
 import { Sidebar } from '~/components/ui/sidebar';
-import { useAPI } from '~/utils/use-api';
 import { formatDate } from '~/utils/format';
+import { useAPI } from '~/utils/use-api';
 
 type MovieCardSidebar = {
   actorId?: number;
@@ -25,7 +25,11 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
           className="flex cursor-pointer items-center text-sm text-slate-500 hover:underline"
           onClick={() => setShowDesc(!showDesc)}
         >
-          {movie.tagline}
+          {movie.tagline || (
+            <span className="flex items-center whitespace-nowrap">
+              Movie overview <Icon.CaretDown />
+            </span>
+          )}
         </p>
         {showDesc && <p className="mt-2 text-left">{movie.overview}</p>}
         {movie.actor && (
