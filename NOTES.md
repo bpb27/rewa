@@ -4,11 +4,11 @@
 - could use in more places
 - look into suspense for modals + sidebars + dialogs that are loading?
 
-- clicking title should open a modal with more details (tagline + description + crew + production)
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
 - year gte lte, maybe budget revenue runtime also
 - maybe remove the movie card view and always show table
 - title search should replace rather than add
+- actor hover show pic in popover (after delay though or it will be annoying)
 
 # Data probs
 
