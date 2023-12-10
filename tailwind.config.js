@@ -7,6 +7,7 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
+  safelist: [{ pattern: /p(?:[lrtbyx])?-(?:[1-8])/ }, { pattern: /m(?:[lrtbyx])?-(?:[1-8])/ }],
   theme: {
     container: {
       center: true,

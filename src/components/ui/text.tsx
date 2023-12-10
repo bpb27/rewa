@@ -19,13 +19,8 @@ export const Text = ({
   children,
   noWrap = true,
   secondary,
-  ...rest
 }: TextProps) => {
   const TextIcon = icon && icon in Icon ? Icon[icon] : null;
-  //   const textProps = {
-  //     ...(onClick ? { onClick } : undefined),
-  //     ...rest,
-  //   };
   return (
     <span
       className={cn(
@@ -36,7 +31,6 @@ export const Text = ({
         secondary && 'text-slate-500'
       )}
       onClick={onClick}
-      //   {...textProps}
     >
       {TextIcon && <TextIcon />}
       {children}
