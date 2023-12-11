@@ -146,10 +146,7 @@ export const movieTableMachine = createMachine(
         on: {
           '*': {
             target: 'idle',
-            actions: [
-              raise(({ event }) => event),
-              ({ event }) => console.log('cancelling fetch and forwarding', event),
-            ],
+            actions: raise(({ event }) => event),
           },
         },
         invoke: {
