@@ -4,12 +4,12 @@ import { cn } from '~/utils/style';
 import { Icon } from './icons';
 
 export type PopoverMenuProps = PropsWithChildren<{
-  trigger: JSX.Element;
+  content: JSX.Element;
 }>;
 
-export const PopoverMenu = ({ children, trigger }: PopoverMenuProps) => (
+export const PopoverMenu = ({ children, content }: PopoverMenuProps) => (
   <Popover.Root>
-    <Popover.Trigger asChild>{trigger}</Popover.Trigger>
+    <Popover.Trigger>{children}</Popover.Trigger>
     <Popover.Portal>
       <Popover.Content
         className={cn(
@@ -18,7 +18,7 @@ export const PopoverMenu = ({ children, trigger }: PopoverMenuProps) => (
         )}
         sideOffset={5}
       >
-        {children}
+        {content}
         <Popover.Close
           className="absolute right-0 top-0 inline-flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-full outline-none"
           aria-label="Close"

@@ -7,7 +7,7 @@ import { titleCase } from '~/utils/format';
 import { cn } from '~/utils/style';
 import { useAPI } from '~/utils/use-api';
 import { useToggle } from '~/utils/use-toggle';
-import { Checkbox } from './ui/checkbox';
+import { Checkbox } from '../ui/checkbox';
 
 // TODO: all real cats checkbox
 // TODO: year selection

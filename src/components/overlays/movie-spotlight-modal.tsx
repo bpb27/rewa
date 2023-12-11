@@ -1,6 +1,6 @@
 import { Modal, type ModalProps } from '~/components/ui/modal';
-import { MovieCardPoster, TheaterBackground } from './images';
-import { MoviesPageMovie } from './movies-page';
+import { MovieCardPoster, TheaterBackground } from '../images';
+import { MoviesPageMovie } from '../movies-page';
 
 type MovieSpotlightModal = MoviesPageMovie & ModalProps;
 

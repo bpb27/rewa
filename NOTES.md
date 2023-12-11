@@ -6,9 +6,9 @@
 
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
 - year gte lte, maybe budget revenue runtime also
-- maybe remove the movie card view and always show table
 - title search should replace rather than add
-- actor hover show pic in popover (after delay though or it will be annoying)
+- title in table has extra padding that overlaps table border
+- tooltips and popovers should be centered aligned to content
 
 # Data probs
 

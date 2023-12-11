@@ -15,6 +15,10 @@ export const sortOptions = [
   { value: 'ebert', label: 'Ebert rating' },
 ] satisfies { value: SortKey; label: string }[];
 
+export const oscarSortOptions = sortOptions.filter(
+  option => !['episodeNumber', 'ebert'].includes(option.value)
+);
+
 const longDateRegEx = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/;
 const shortDateRegEx = /^\d{4}-\d{2}-\d{2}$/;
 const isDateString = (str: string) => longDateRegEx.test(str) || shortDateRegEx.test(str);

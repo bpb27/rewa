@@ -1,6 +1,6 @@
+import { Token } from '~/data/tokens';
 import { Button } from './ui/button';
 import { Icon } from './ui/icons';
-import { Token } from '~/data/tokens';
 
 type TokenBarProps = {
   clear: () => void;
@@ -14,7 +14,7 @@ export const TokenBar = ({ clear, mode, tokens, toggleSearchMode, toggleToken }:
   return (
     <>
       {tokens.length > 0 && (
-        <Button onClick={() => clear()} variant="token">
+        <Button onClick={clear} variant="token">
           <Icon.Close className="mr-2" />
           Clear ({tokens.length})
         </Button>

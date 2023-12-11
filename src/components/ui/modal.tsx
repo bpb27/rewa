@@ -21,8 +21,11 @@ export const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
           )}
           onInteractOutside={() => onClose()}
         >
-          <Dialog.Close asChild onClick={onClose}>
-            <Icon.Close className="z-100 absolute right-1 top-1 cursor-pointer stroke-slate-800" />
+          <Dialog.Close
+            onClick={onClose}
+            className="z-100 absolute right-1 top-1 cursor-pointer stroke-slate-800"
+          >
+            <Icon.Close />
           </Dialog.Close>
           {children}
         </Dialog.Content>

@@ -2,24 +2,22 @@ import { useMachine } from '@xstate/react';
 import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import Layout from '~/components/layout';
-import { MovieCards } from '~/components/movie-card';
-import { MovieTable } from '~/components/movie-table';
+import { MoviesTable } from '~/components/movies-table';
 import { SearchBar } from '~/components/search-bar';
 import { TokenBar } from '~/components/token-bar';
-import { type Boxes } from '~/components/ui/box';
+import { Crate } from '~/components/ui/box';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
+import { Text } from '~/components/ui/text';
 import { movieTableActions, movieTableData, movieTableMachine } from '~/data/movie-data-machine';
 import { type ApiGetMoviesResponse } from '~/pages/api/movies';
-import { sortOptions } from '~/utils/sorting';
-import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
-import { useToggle } from '~/utils/use-toggle';
+import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
-import { MovieFiltersDialog } from './movie-filters-dialog';
-import { MovieSpotlightModal } from './movie-spotlight-modal';
-import { OscarYearModal } from './oscar-year-modal';
+import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
+import { MovieSpotlightModal } from './overlays/movie-spotlight-modal';
+import { OscarYearModal } from './overlays/oscar-year-modal';
 
 export type MoviesPageMovie = ApiGetMoviesResponse['movies'][number];
 
@@ -29,9 +27,6 @@ type MoviesPageProps = {
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const router = useRouter();
-  const display = useToggle('table', 'card', null);
-  const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
-  const [movieModal, setMovieModal] = useState<number | undefined>();
 
   const [state, send] = useMachine(movieTableMachine, {
     input: {
@@ -43,80 +38,50 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
 
   const data = useMemo(() => movieTableData(state), [state]);
   const actions = useMemo(() => movieTableActions(send), [send]);
-
+  const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
+  const [movieModal, setMovieModal] = useState<number | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
-
   useUrlChange(actions.onUrlUpdate);
-
-  useScreenSizeOnMount({
-    onDesktop: display.setTable,
-    onMobile: display.setCard,
-  });
 
   return (
     <Layout title="All movies">
-      <Box.Filters>
+      <Crate column p={2} mb={1} gap={3}>
         <SearchBar filter={data.movieMode} onSelect={actions.toggleToken} />
-        {data.hasTokens && (
-          <Box.Tokens>
-            <TokenBar
-              clear={actions.clearTokens}
-              mode={data.searchMode}
-              toggleSearchMode={actions.toggleSearchMode}
-              toggleToken={actions.toggleToken}
-              tokens={data.tokens}
-            />
-          </Box.Tokens>
-        )}
-        <Box.FilterButtons>
-          <span className="flex items-stretch">
-            <h2 className="text-xl font-semibold tracking-wide">{data.total}</h2>
-            <Icon.Movie className="ml-1" />
-          </span>
-          <span className="flex items-center">
+        <Crate gap={2} overflowScroll hide={!data.hasTokens}>
+          <TokenBar
+            clear={actions.clearTokens}
+            mode={data.searchMode}
+            toggleSearchMode={actions.toggleSearchMode}
+            toggleToken={actions.toggleToken}
+            tokens={data.tokens}
+          />
+        </Crate>
+        <Crate alignCenter justifyCenter gap={3}>
+          <Text bold icon="Movie" iconOrientation="right" size="lg">
+            {data.total}
+          </Text>
+          <Crate alignCenter gap={1}>
             <Select
               onSelect={actions.sort}
-              options={sortOptions.filter(o => {
-                if (data.movieMode === 'oscar' && ['episodeNumber', 'ebert'].includes(o.value))
-                  return false;
-                return true;
-              })}
+              options={data.movieMode === 'oscar' ? oscarSortOptions : sortOptions}
               value={data.sort}
             />
-            <Button className="ml-1" onClick={actions.toggleSortOrder} variant="icon">
+            <Button onClick={actions.toggleSortOrder} variant="icon">
               {data.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>
-          </span>
-          <span className="hidden md:flex">
-            <Button onClick={display.setTable} selected={display.isTable} variant="icon">
-              <Icon.Table />
-            </Button>
-            <Button onClick={display.setCard} selected={display.isCard} variant="icon">
-              <Icon.Card />
-            </Button>
-          </span>
-          <span className="flex md:hidden">
-            <Button onClick={display.toggle} variant="icon">
-              {display.isTable ? <Icon.Table /> : <Icon.Card />}
-            </Button>
-          </span>
-          <span className="flex">
-            <MovieFiltersDialog {...data} toggleToken={actions.toggleToken} />
-          </span>
-        </Box.FilterButtons>
-      </Box.Filters>
-      {display.isTable && (
-        <MovieTable
-          mode={data.movieMode}
-          movies={data.movies}
-          onTokenClick={actions.toggleToken}
-          onSortClick={actions.sort}
-          onOscarYearClick={setOscarsModal}
-          onMovieTitleClick={setMovieModal}
-        />
-      )}
-      {display.isCard && <MovieCards movies={data.movies} onTokenClick={actions.toggleToken} />}
-      {display.isDefined && data.showVizSensor && <div ref={loadMoreRef} />}
+          </Crate>
+          <MovieFiltersDialog {...data} toggleToken={actions.toggleToken} />
+        </Crate>
+      </Crate>
+      <MoviesTable
+        mode={data.movieMode}
+        movies={data.movies}
+        onTokenClick={actions.toggleToken}
+        onSortClick={actions.sort}
+        onOscarYearClick={setOscarsModal}
+        onMovieTitleClick={setMovieModal}
+      />
+      {data.showVizSensor && <div ref={loadMoreRef} />}
       {!!oscarsModal && (
         <OscarYearModal
           {...oscarsModal}
@@ -129,7 +94,6 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           {...data.movies.find(m => m.id === movieModal)!}
           isOpen={!!movieModal}
           onClose={() => setMovieModal(undefined)}
-          onTokenClick={actions.toggleToken}
         />
       )}
       <Button
@@ -142,11 +106,3 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
     </Layout>
   );
 };
-
-const Box = {
-  Filters: ({ children }) => <div className="mb-1 mt-3 flex flex-col py-2">{children}</div>,
-  FilterButtons: ({ children }) => (
-    <div className="mt-3 flex items-center justify-center gap-x-1 md:gap-x-3">{children}</div>
-  ),
-  Tokens: ({ children }) => <div className="mt-2 flex space-x-2 overflow-scroll">{children}</div>,
-} satisfies Boxes;

@@ -98,7 +98,7 @@ export const getMovies = async (params: GetMoviesParams) => {
           tagline: true,
           actors_on_movies: {
             orderBy: { credit_order: 'asc' },
-            select: { actors: selectIdAndName },
+            select: { actors: { select: { id: true, name: true, profile_path: true } } },
           },
           crew_on_movies: {
             where: {
@@ -161,7 +161,7 @@ export const getMovies = async (params: GetMoviesParams) => {
         movie.actors_on_movies
           .filter(jt => jt.actors)
           .map(jt => jt.actors!)
-          .map(item => tokenize('actor', item)),
+          .map(item => ({ ...tokenize('actor', item), profile_path: item.profile_path })),
         a => a.id
       ).slice(0, 3),
       budget: tokenizeBudget(movie.budget),

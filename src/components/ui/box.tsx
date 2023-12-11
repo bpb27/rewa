@@ -17,37 +17,35 @@ type Padding = 'p' | `p${SpaceDirection}`;
 type Margin = 'm' | `m${SpaceDirection}`;
 type CrateProps = PropsWithChildren<{
   column?: boolean;
-  centered?: boolean;
+  justifyCenter?: boolean;
+  alignCenter?: boolean;
+  hide?: boolean;
+  overflowScroll?: boolean;
+  gap?: NumericalSize;
 }> &
   Partial<Record<Padding, NumericalSize>> &
   Partial<Record<Margin, NumericalSize>>;
 
-export const Crate = ({ column, centered, children, ...direct }: CrateProps) => (
+export const Crate = ({
+  column,
+  justifyCenter,
+  alignCenter,
+  children,
+  overflowScroll,
+  hide,
+  ...direct
+}: CrateProps) => (
   <div
     className={cn(
       'flex',
       column && 'flex-col',
-      centered && column && 'items-center',
-      centered && !column && 'justify-center',
-      keys(direct).reduce((acc, key) => acc + ` ${key}-${direct[key]}`, '')
+      alignCenter && 'items-center',
+      justifyCenter && 'justify-center',
+      overflowScroll && 'overflow-scroll',
+      keys(direct).reduce((acc, key) => acc + ` ${key}-${direct[key]}`, ''),
+      hide && 'hidden'
     )}
   >
     {children}
   </div>
 );
-
-export const FakeThingForTailwind = () => {
-  return (
-    <div
-      className="
-p-1 p-2 p-3 p-4
-px-1 px-2 px-3 px-4
-py-1 py-2 py-3 py-4
-pb-1 pb-2 pb-3 pb-4
-pl-1 pl-2 pl-3 pl-4
-pr-1 pr-2 pr-3 pr-4
-pt-1 pt-2 pt-3 pt-4
-  "
-    ></div>
-  );
-};
