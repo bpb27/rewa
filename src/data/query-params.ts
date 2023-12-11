@@ -35,6 +35,8 @@ export const qpSchema = z.object({
   actor: integerList.optional().default(''),
   asc: boolean.optional().default('false'),
   budget: integerList.optional().default(''),
+  budgetGte: integerList.optional().default(''),
+  budgetLte: integerList.optional().default(''),
   cinematographer: integerList.optional().default(''),
   director: integerList.optional().default(''),
   genre: integerList.optional().default(''),
@@ -47,7 +49,11 @@ export const qpSchema = z.object({
   page: integer.optional().default(0),
   producer: integerList.optional().default(''),
   revenue: integerList.optional().default(''),
+  revenueGte: integerList.optional().default(''),
+  revenueLte: integerList.optional().default(''),
   runtime: integerList.optional().default(''),
+  runtimeGte: integerList.optional().default(''),
+  runtimeLte: integerList.optional().default(''),
   searchMode: z.enum(['and', 'or']).optional().default('and'),
   sort: z
     .enum([
@@ -68,14 +74,22 @@ export const qpSchema = z.object({
   streamer: integerList.optional().default(''),
   writer: integerList.optional().default(''),
   year: integerList.optional().default(''),
+  yearGte: integerList.optional().default(''),
+  yearLte: integerList.optional().default(''),
 });
 
 export const defaultQps = qpSchema.parse({});
 
-// adding a new token? make sure to update api/get-tokens.ts so they'll display
+/*
+  adding a new token?
+  - update data/movie-search-conditions.ts with the proper prisma logic
+  - update api/get-tokens.ts so they'll display
+*/
 const tokenSchema = qpSchema.pick({
   actor: true,
   budget: true,
+  budgetGte: true,
+  budgetLte: true,
   cinematographer: true,
   director: true,
   genre: true,
@@ -86,10 +100,16 @@ const tokenSchema = qpSchema.pick({
   oscarsCategoriesWon: true,
   producer: true,
   revenue: true,
+  revenueGte: true,
+  revenueLte: true,
   runtime: true,
+  runtimeGte: true,
+  runtimeLte: true,
   streamer: true,
   writer: true,
   year: true,
+  yearGte: true,
+  yearLte: true,
 });
 
 export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];

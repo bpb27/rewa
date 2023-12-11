@@ -15,6 +15,18 @@ export const tokenizeBudget = (budget: number): Token => ({
   type: 'budget',
 });
 
+export const tokenizeBudgetGte = (budget: number): Token => ({
+  id: budget,
+  name: `> ${moneyShort(budget)}`,
+  type: 'budget',
+});
+
+export const tokenizeBudgetLte = (budget: number): Token => ({
+  id: budget,
+  name: `< ${moneyShort(budget)}`,
+  type: 'budget',
+});
+
 export const tokenizeOscarsCategoriesNom = (id: number, name: string): Token => ({
   id,
   name: `Oscar Nom: ${titleCase(name)}`,
@@ -33,9 +45,33 @@ export const tokenizeRevenue = (revenue: number): Token => ({
   type: 'revenue',
 });
 
+export const tokenizeRevenueGte = (revenue: number): Token => ({
+  id: revenue * 1000,
+  name: moneyShort(revenue * 1000),
+  type: 'revenue',
+});
+
+export const tokenizeRevenueLte = (revenue: number): Token => ({
+  id: revenue * 1000,
+  name: moneyShort(revenue * 1000),
+  type: 'revenue',
+});
+
 export const tokenizeRuntime = (runtime: number): Token => ({
   id: runtime,
   name: `${runtime} mins`,
+  type: 'runtime',
+});
+
+export const tokenizeRuntimeGte = (runtime: number): Token => ({
+  id: runtime,
+  name: `> ${runtime} mins`,
+  type: 'runtime',
+});
+
+export const tokenizeRuntimeLte = (runtime: number): Token => ({
+  id: runtime,
+  name: `< ${runtime} mins`,
   type: 'runtime',
 });
 
@@ -43,4 +79,16 @@ export const tokenizeYear = (date: string): Token => ({
   id: Number(getYear(date)),
   name: getYear(date),
   type: 'year',
+});
+
+export const tokenizeYearGte = (date: string): Token => ({
+  id: Number(getYear(date)),
+  name: `> ${getYear(date)}`,
+  type: 'yearGte',
+});
+
+export const tokenizeYearLte = (date: string): Token => ({
+  id: Number(getYear(date)),
+  name: `< ${getYear(date)}`,
+  type: 'yearLte',
 });

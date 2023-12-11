@@ -1,11 +1,9 @@
 # Latest
 
-- proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
-- could use in more places
+- GTE LTE year, budget, revenue, runtime in filter menu
+- more crate and text
 - look into suspense for modals + sidebars + dialogs that are loading?
-
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
-- year gte lte, maybe budget revenue runtime also
 - title search should replace rather than add
 - title in table has extra padding that overlaps table border
 - tooltips and popovers should be centered aligned to content
@@ -17,8 +15,7 @@
 
 # TODO
 
-- budget, revenue, runtime range?
-- lots of oscar movie cards dont have taglines but do have overviews - need a way to access it
+- proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
 - oscar streamers strategy
   - 3.9k movies
   - filter out movies w/ bullshit awards (doc short, animated short, e.g.)
@@ -26,7 +23,6 @@
   - accessible button name
   - select label
   - make sure table is navigable
-  - lots of clickable things - probably need to add role button + aria label
 - TS navigation links
 - basic smoke test
 - top appearance since year

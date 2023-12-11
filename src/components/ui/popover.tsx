@@ -20,7 +20,7 @@ export const PopoverMenu = ({ children, content }: PopoverMenuProps) => (
       >
         {content}
         <Popover.Close
-          className="absolute right-0 top-0 inline-flex h-[25px] w-[25px] cursor-pointer items-center justify-center rounded-full outline-none"
+          className="absolute right-0 top-0 inline-flex h-[25px] w-[25px] cursor-pointer items-center justify-center outline-none"
           aria-label="Close"
         >
           <Icon.Close />

@@ -32,6 +32,18 @@ export const searchMap: Record<TokenType, SearchFn> = {
         lt: budget + fiveMil,
       },
     })),
+  budgetGte: budgets =>
+    budgets.map(budget => ({
+      budget: {
+        gte: budget,
+      },
+    })),
+  budgetLte: budgets =>
+    budgets.map(budget => ({
+      budget: {
+        lte: budget,
+      },
+    })),
   cinematographer: cinematographers =>
     cinematographers.map(id => ({
       crew_on_movies: {
@@ -120,11 +132,37 @@ export const searchMap: Record<TokenType, SearchFn> = {
         lt: revenue / 1000 + fiveMil / 1000,
       },
     })),
+  revenueGte: revenues =>
+    revenues.map(revenue => ({
+      // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
+      revenue: {
+        gte: revenue / 1000,
+      },
+    })),
+  revenueLte: revenues =>
+    revenues.map(revenue => ({
+      // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
+      revenue: {
+        lte: revenue / 1000,
+      },
+    })),
   runtime: runtimes =>
     runtimes.map(runtime => ({
       runtime: {
         gt: runtime - 5,
         lt: runtime + 5,
+      },
+    })),
+  runtimeGte: runtimes =>
+    runtimes.map(runtime => ({
+      runtime: {
+        gte: runtime,
+      },
+    })),
+  runtimeLte: runtimes =>
+    runtimes.map(runtime => ({
+      runtime: {
+        lte: runtime,
       },
     })),
   streamer: streamers =>
@@ -148,6 +186,18 @@ export const searchMap: Record<TokenType, SearchFn> = {
     years.map(year => ({
       release_date: {
         startsWith: year.toString(),
+      },
+    })),
+  yearGte: years =>
+    years.map(year => ({
+      release_date: {
+        gte: year.toString(),
+      },
+    })),
+  yearLte: years =>
+    years.map(year => ({
+      release_date: {
+        lte: year.toString(),
       },
     })),
 };

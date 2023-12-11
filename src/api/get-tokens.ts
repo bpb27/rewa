@@ -3,11 +3,19 @@ import { QpSchema, tokenKeys } from '~/data/query-params';
 import {
   tokenize,
   tokenizeBudget,
+  tokenizeBudgetGte,
+  tokenizeBudgetLte,
   tokenizeOscarsCategoriesNom,
   tokenizeOscarsCategoriesWon,
   tokenizeRevenue,
+  tokenizeRevenueGte,
+  tokenizeRevenueLte,
   tokenizeRuntime,
+  tokenizeRuntimeGte,
+  tokenizeRuntimeLte,
   tokenizeYear,
+  tokenizeYearGte,
+  tokenizeYearLte,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
 
@@ -31,9 +39,17 @@ export const getTokens = async (params: QpSchema) => {
       ) => results.map(item => tokenize(key, item));
 
       if (key === 'budget') return ids.map(tokenizeBudget);
+      if (key === 'budgetGte') return ids.map(tokenizeBudgetGte);
+      if (key === 'budgetLte') return ids.map(tokenizeBudgetLte);
       if (key === 'revenue') return ids.map(tokenizeRevenue);
+      if (key === 'revenueGte') return ids.map(tokenizeRevenueGte);
+      if (key === 'revenueLte') return ids.map(tokenizeRevenueLte);
       if (key === 'runtime') return ids.map(tokenizeRuntime);
+      if (key === 'runtimeGte') return ids.map(tokenizeRuntimeGte);
+      if (key === 'runtimeLte') return ids.map(tokenizeRuntimeLte);
       if (key === 'year') return ids.map(id => tokenizeYear(id.toString()));
+      if (key === 'yearGte') return ids.map(id => tokenizeYearGte(id.toString()));
+      if (key === 'yearLte') return ids.map(id => tokenizeYearLte(id.toString()));
       if (key === 'actor') return prisma.actors.findMany(findParams).then(callback);
       if (key === 'director') return prisma.crew.findMany(findParams).then(callback);
       if (key === 'producer') return prisma.crew.findMany(findParams).then(callback);
