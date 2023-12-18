@@ -45,6 +45,7 @@ type Event =
   | { type: 'TOGGLE_SORT_ORDER' }
   | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
   | { type: 'REPLACE_TOKEN'; name: TokenType; value: number }
+  | { type: 'REMOVE_TOKEN'; name: TokenType }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
@@ -113,6 +114,12 @@ export const movieTableMachine = createMachine(
             actions: ({ context, event }) => {
               const { name, value } = event;
               updateUrl(context, { [name]: [value] });
+            },
+          },
+          REMOVE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name } = event;
+              updateUrl(context, { [name]: [] });
             },
           },
           SORT: {
@@ -216,6 +223,9 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   },
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
+  },
+  removeToken: (tokenType: Token['type']) => {
+    send({ type: 'REMOVE_TOKEN', name: tokenType });
   },
   replaceToken: (token: Omit<Token, 'name'>) => {
     send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });

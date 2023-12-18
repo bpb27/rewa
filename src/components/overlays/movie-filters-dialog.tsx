@@ -17,6 +17,7 @@ type MovieFiltersDialogProps = {
   ranges: InitialState;
   oscarsCategoriesNom: number[];
   oscarsCategoriesWon: number[];
+  removeToken: (tokenType: Token['type']) => void;
   replaceToken: (token: Omit<Token, 'name'>) => void;
   toggleToken: (token: Omit<Token, 'name'>) => void;
 };
@@ -48,14 +49,16 @@ export const MovieFiltersDialog = ({
   ranges,
   oscarsCategoriesNom,
   oscarsCategoriesWon,
+  removeToken,
   replaceToken,
   toggleToken,
 }: MovieFiltersDialogProps) => {
+  const dialog = useToggle('closed', 'open');
+  const [state, send] = useReducer(reducer, initialState);
   const [filterCategories, setFilterCategories] = useState(true);
   const [container, setContainer] = useState<HTMLSpanElement | null>(null);
-  const dialog = useToggle('closed', 'open');
+
   const { data } = useAPI('/api/oscars/categories');
-  const [state, send] = useReducer(reducer, initialState);
   const categories = (data || []).filter(c => (filterCategories ? c.relevance === 'high' : true));
 
   const handleChange = useCallback(
@@ -67,12 +70,14 @@ export const MovieFiltersDialog = ({
 
   const handleDebounce = useCallback(
     ({ name, value }: EventParams) => {
-      if (name.includes('year') && !isYear(value)) return;
-      if (value == '') return; // TODO: clear?
-      const id = Number(value); // TODO: revenue is off
-      replaceToken({ type: name, id });
+      if (value == '') {
+        removeToken(name);
+      } else {
+        if (name.includes('year') && !isYear(value)) return;
+        replaceToken({ type: name, id: Number(value) });
+      }
     },
-    [replaceToken]
+    [removeToken, replaceToken]
   );
 
   useEffect(() => {
@@ -101,7 +106,7 @@ export const MovieFiltersDialog = ({
         }}
         className="rounded-md border-2 border-slate-500 bg-white p-4 shadow-xl"
       >
-        <Crate column gap={3}>
+        <Crate column gap={2}>
           <Crate column>
             <label className="font-semibold">Year</label>
             <Crate gap={2} alignCenter>
@@ -134,31 +139,33 @@ export const MovieFiltersDialog = ({
               <Input name="runtimeLte" value={state.runtimeLte} {...rangeProps} />
             </Crate>
           </Crate>
+          <Crate column>
+            <label className="font-semibold">Nominated/Won Oscars</label>
+            {categories.map(({ id, name }) => (
+              <Crate key={id} my={1}>
+                <Checkbox
+                  checked={oscarsCategoriesNom.includes(id)}
+                  id={id}
+                  label=""
+                  onCheck={() => toggleToken({ type: 'oscarsCategoriesNom', id })}
+                />
+                <Checkbox
+                  checked={oscarsCategoriesWon.includes(id)}
+                  id={id}
+                  label={titleCase(name)}
+                  onCheck={() => toggleToken({ type: 'oscarsCategoriesWon', id })}
+                />
+              </Crate>
+            ))}
+            <Button
+              variant="card"
+              onClick={() => setFilterCategories(!filterCategories)}
+              className="mt-2"
+            >
+              {filterCategories ? 'More' : 'Fewer'} categories...
+            </Button>
+          </Crate>
         </Crate>
-        <label className="font-semibold">Nominated/Won Oscars</label>
-        {categories.map(({ id, name }) => (
-          <span key={id} className="my-1 flex">
-            <Checkbox
-              checked={oscarsCategoriesNom.includes(id)}
-              id={id}
-              label=""
-              onCheck={() => toggleToken({ type: 'oscarsCategoriesNom', id })}
-            />
-            <Checkbox
-              checked={oscarsCategoriesWon.includes(id)}
-              id={id}
-              label={titleCase(name)}
-              onCheck={() => toggleToken({ type: 'oscarsCategoriesWon', id })}
-            />
-          </span>
-        ))}
-        <Button
-          variant="card"
-          onClick={() => setFilterCategories(!filterCategories)}
-          className="mt-2"
-        >
-          {filterCategories ? 'More' : 'Fewer'} categories...
-        </Button>
       </DialogOverlay>
     </span>
   );

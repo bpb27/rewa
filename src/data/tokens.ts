@@ -3,7 +3,6 @@ import { getYear, moneyShort, titleCase } from '~/utils/format';
 
 export type Token = { type: TokenType; id: number; name: string };
 
-// TODO: this should be able to handle all cases - use switch for special key handling
 export const tokenize = (
   tokenType: TokenType,
   item: { id: number; name: string } | { id: number; title: string }
@@ -18,13 +17,13 @@ export const tokenizeBudget = (budget: number): Token => ({
 export const tokenizeBudgetGte = (budget: number): Token => ({
   id: budget,
   name: `> ${moneyShort(budget)} budget`,
-  type: 'budget',
+  type: 'budgetGte',
 });
 
 export const tokenizeBudgetLte = (budget: number): Token => ({
   id: budget,
   name: `< ${moneyShort(budget)} budget`,
-  type: 'budget',
+  type: 'budgetLte',
 });
 
 export const tokenizeOscarsCategoriesNom = (id: number, name: string): Token => ({
@@ -48,13 +47,13 @@ export const tokenizeRevenue = (revenue: number): Token => ({
 export const tokenizeRevenueGte = (revenue: number): Token => ({
   id: revenue * 1000,
   name: `> ${moneyShort(revenue * 1000)} Box Office`,
-  type: 'revenue',
+  type: 'revenueGte',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
   id: revenue * 1000,
   name: `< ${moneyShort(revenue * 1000)} Box Office`,
-  type: 'revenue',
+  type: 'revenueLte',
 });
 
 export const tokenizeRuntime = (runtime: number): Token => ({
@@ -66,13 +65,13 @@ export const tokenizeRuntime = (runtime: number): Token => ({
 export const tokenizeRuntimeGte = (runtime: number): Token => ({
   id: runtime,
   name: `> ${runtime} mins`,
-  type: 'runtime',
+  type: 'runtimeGte',
 });
 
 export const tokenizeRuntimeLte = (runtime: number): Token => ({
   id: runtime,
   name: `< ${runtime} mins`,
-  type: 'runtime',
+  type: 'runtimeLte',
 });
 
 export const tokenizeYear = (date: string): Token => ({
