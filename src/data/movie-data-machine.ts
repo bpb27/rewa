@@ -14,6 +14,7 @@ import { Token } from './tokens';
 const fetchMovies = fromPromise<ApiGetMoviesResponse, string>(async ({ input }) => {
   const response = await fetch(`/api/movies?${urlToQueryString(input)}`);
   const data: ApiGetMoviesResponse = await response.json();
+  if (!response.ok) throw new Error('Shit');
   return data;
 });
 
@@ -43,6 +44,8 @@ type Event =
   | { type: 'TOGGLE_SEARCH_MODE' }
   | { type: 'TOGGLE_SORT_ORDER' }
   | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
+  | { type: 'REPLACE_TOKEN'; name: TokenType; value: number }
+  | { type: 'REMOVE_TOKEN'; name: TokenType }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
@@ -105,6 +108,18 @@ export const movieTableMachine = createMachine(
             actions: ({ context }) => {
               const page = context.data.page + 1;
               updateUrl(context, { page });
+            },
+          },
+          REPLACE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name, value } = event;
+              updateUrl(context, { [name]: [value] });
+            },
+          },
+          REMOVE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name } = event;
+              updateUrl(context, { [name]: [] });
             },
           },
           SORT: {
@@ -185,6 +200,16 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
     sort: queryParams.sort,
     tokens: data.tokens,
     total: data.total,
+    ranges: {
+      budgetGte: queryParams.budgetGte[0]?.toString() || '',
+      budgetLte: queryParams.budgetLte[0]?.toString() || '',
+      revenueGte: queryParams.revenueGte[0]?.toString() || '',
+      revenueLte: queryParams.revenueLte[0]?.toString() || '',
+      runtimeGte: queryParams.runtimeGte[0]?.toString() || '',
+      runtimeLte: queryParams.runtimeLte[0]?.toString() || '',
+      yearGte: queryParams.yearGte[0]?.toString() || '',
+      yearLte: queryParams.yearLte[0]?.toString() || '',
+    },
   };
 };
 
@@ -198,6 +223,12 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   },
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
+  },
+  removeToken: (tokenType: Token['type']) => {
+    send({ type: 'REMOVE_TOKEN', name: tokenType });
+  },
+  replaceToken: (token: Omit<Token, 'name'>) => {
+    send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
   },
   sort: (field: QpSchema['sort']) => {
     send({ type: 'SORT', field });

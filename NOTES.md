@@ -1,9 +1,9 @@
 # Latest
 
-- GTE LTE year, budget, revenue, runtime in filter menu
 - more crate and text
 - look into suspense for modals + sidebars + dialogs that are loading?
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
+- figure out image console warning
 - title search should replace rather than add
 - title in table has extra padding that overlaps table border
 - tooltips and popovers should be centered aligned to content
