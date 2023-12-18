@@ -4,6 +4,8 @@ import { Icon } from './icons';
 
 type TextProps = PropsWithChildren<{
   bold?: boolean;
+  className?: string;
+  ellipsis?: boolean;
   hide?: boolean;
   icon?: keyof typeof Icon;
   iconOrientation?: 'left' | 'right';
@@ -16,13 +18,15 @@ type TextProps = PropsWithChildren<{
 }>;
 
 export const Text = ({
-  onClick,
   bold,
+  children,
+  className,
+  ellipsis,
   hide,
   icon,
   iconOrientation = 'left',
-  children,
   noWrap = true,
+  onClick,
   secondary,
   size,
   tag,
@@ -40,8 +44,10 @@ export const Text = ({
         textAlign === 'left' && 'text-left',
         textAlign === 'center' && 'text-center',
         size === 'lg' && 'text-xl',
-        size === 'xl' && 'text-3xl',
-        icon && 'items-center'
+        size === 'xl' && 'text-2xl',
+        icon && 'items-center',
+        ellipsis && 'overflow-ellipsis',
+        className
       )}
       {...(tag !== 'button' && onClick ? { onClick } : undefined)}
     >
