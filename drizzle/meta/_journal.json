@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1702880325181,
+      "tag": "0000_overrated_thundra",
+      "breakpoints": true
+    }
+  ]
+}
