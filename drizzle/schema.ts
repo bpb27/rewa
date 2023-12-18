@@ -188,20 +188,70 @@ export const streamersOnMovies = sqliteTable('streamers_on_movies', {
 });
 
 export const moviesRelations = relations(movies, ({ many }) => ({
+  actors: many(actorsOnMovies),
+  crew: many(crewOnMovies),
   genres: many(genresOnMovies),
-}));
-
-export const genresRelations = relations(genres, ({ many }) => ({
-  movies: many(genresOnMovies),
+  keywords: many(keywordsOnMovies),
+  productionCompanies: many(productionCompaniesOnMovies),
+  streamers: many(streamersOnMovies),
+  oscarsNominations: many(oscarsNominations),
+  episodes: many(episodes),
 }));
 
 export const genresOnMoviesRelations = relations(genresOnMovies, ({ one }) => ({
+  movie: one(movies, { fields: [genresOnMovies.movieId], references: [movies.id] }),
+  genre: one(genres, { fields: [genresOnMovies.genreId], references: [genres.id] }),
+}));
+
+export const actorsOnMoviesRelations = relations(actorsOnMovies, ({ one }) => ({
+  movie: one(movies, { fields: [actorsOnMovies.movieId], references: [movies.id] }),
+  actor: one(actors, { fields: [actorsOnMovies.actorId], references: [actors.id] }),
+}));
+
+export const crewOnMoviesRelations = relations(crewOnMovies, ({ one }) => ({
+  movie: one(movies, { fields: [crewOnMovies.movieId], references: [movies.id] }),
+  crew: one(crew, { fields: [crewOnMovies.crewId], references: [crew.id] }),
+}));
+
+export const keywordsOnMoviesRelations = relations(keywordsOnMovies, ({ one }) => ({
+  movie: one(movies, { fields: [keywordsOnMovies.movieId], references: [movies.id] }),
+  keyword: one(keywords, { fields: [keywordsOnMovies.keywordId], references: [keywords.id] }),
+}));
+
+export const streamersOnMoviesRelations = relations(streamersOnMovies, ({ one }) => ({
+  movie: one(movies, { fields: [streamersOnMovies.movieId], references: [movies.id] }),
+  streamer: one(streamers, { fields: [streamersOnMovies.streamerId], references: [streamers.id] }),
+}));
+
+export const productionCompaniesOnMoviesRelations = relations(
+  productionCompaniesOnMovies,
+  ({ one }) => ({
+    movie: one(movies, { fields: [productionCompaniesOnMovies.movieId], references: [movies.id] }),
+    productionCompanies: one(productionCompanies, {
+      fields: [productionCompaniesOnMovies.productionCompanyId],
+      references: [productionCompanies.id],
+    }),
+  })
+);
+
+export const oscarsNominationsRelations = relations(oscarsNominations, ({ one }) => ({
+  award: one(oscarsAwards, {
+    fields: [oscarsNominations.awardId],
+    references: [oscarsAwards.id],
+  }),
   movie: one(movies, {
-    fields: [genresOnMovies.movieId],
+    fields: [oscarsNominations.movieId],
     references: [movies.id],
   }),
-  genre: one(genres, {
-    fields: [genresOnMovies.genreId],
-    references: [genres.id],
+}));
+
+export const oscarsAwardsRelations = relations(oscarsAwards, ({ one }) => ({
+  category: one(oscarsCategories, {
+    fields: [oscarsAwards.categoryId],
+    references: [oscarsCategories.id],
   }),
+}));
+
+export const episodeRelations = relations(episodes, ({ one }) => ({
+  movie: one(movies, { fields: [episodes.movieId], references: [movies.id] }),
 }));
