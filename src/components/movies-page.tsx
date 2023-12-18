@@ -70,7 +70,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
               {data.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>
           </Crate>
-          <MovieFiltersDialog {...data} toggleToken={actions.toggleToken} />
+          <MovieFiltersDialog {...data} {...actions} />
         </Crate>
       </Crate>
       <MoviesTable

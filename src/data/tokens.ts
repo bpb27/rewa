@@ -17,13 +17,13 @@ export const tokenizeBudget = (budget: number): Token => ({
 
 export const tokenizeBudgetGte = (budget: number): Token => ({
   id: budget,
-  name: `> ${moneyShort(budget)}`,
+  name: `> ${moneyShort(budget)} budget`,
   type: 'budget',
 });
 
 export const tokenizeBudgetLte = (budget: number): Token => ({
   id: budget,
-  name: `< ${moneyShort(budget)}`,
+  name: `< ${moneyShort(budget)} budget`,
   type: 'budget',
 });
 
@@ -47,13 +47,13 @@ export const tokenizeRevenue = (revenue: number): Token => ({
 
 export const tokenizeRevenueGte = (revenue: number): Token => ({
   id: revenue * 1000,
-  name: moneyShort(revenue * 1000),
+  name: `> ${moneyShort(revenue * 1000)} Box Office`,
   type: 'revenue',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
   id: revenue * 1000,
-  name: moneyShort(revenue * 1000),
+  name: `< ${moneyShort(revenue * 1000)} Box Office`,
   type: 'revenue',
 });
 
