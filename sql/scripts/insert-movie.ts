@@ -24,13 +24,13 @@ const run = async (params: {
 
 const newEps = [
   {
-    tmdb_id: 9944,
-    title: 'The Pelican Brief',
-    episode_order: 324,
+    tmdb_id: 5825,
+    title: "National Lampoon's Christmas Vacation",
+    episode_order: 325,
     date: 'Dec 2023',
-    spotify_url: 'https://open.spotify.com/episode/6Bq0AFIKEgmfGRtLLWFJwn?si=7981ee3e95034232',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Amanda Dobbins'],
-    ebert: { rating: 3, path: '/reviews/the-pelican-brief-1993' },
+    spotify_url: 'https://open.spotify.com/episode/3i034ysNAntAE0PsiRF6OB?si=885ee1a6c658498d',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Van Lathan'],
+    ebert: { rating: 2, path: '/reviews/national-lampoons-christmas-vacation-1989' },
   },
 ];
 
