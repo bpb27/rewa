@@ -1,12 +1,11 @@
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
-import { type GetTopActorsResponse } from '~/api/get-top-actors';
-import { type GetTopCrewResponse } from '~/api/get-top-crew';
 import { tmdbImage } from '~/components/images';
 import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
 import { type Boxes } from '~/components/ui/box';
+import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
 import { cn } from '~/utils/style';
@@ -14,7 +13,7 @@ import { cn } from '~/utils/style';
 type TopCategoryProps = {
   category: 'actor' | 'director' | 'writer' | 'cinematographer' | 'producer';
   mode: 'rewa' | 'oscars';
-  people: GetTopActorsResponse | GetTopCrewResponse;
+  people: ApiResponses['getTopActors'] | ApiResponses['getTopCrew'];
 };
 
 const tabTitles = {

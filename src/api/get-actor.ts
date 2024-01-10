@@ -7,9 +7,6 @@ import { smartSort } from '~/utils/sorting';
 
 const prisma = Prisma.getPrisma();
 
-export type GetActorParams = z.infer<typeof getActorParams>;
-export type GetActorResponse = Awaited<ReturnType<typeof getActor>>;
-
 export const getActorParams = z.object({
   id: z.number(),
   filter: qpSchema.shape.movieMode,
@@ -19,7 +16,7 @@ const MOVIE_SELECT = { select: { title: true, release_date: true, id: true } };
 const episodeWhere = { movies: { episodes: { some: {} } } };
 const oscarWhere = { movies: { oscars_nominations: { some: {} } } };
 
-export const getActor = async ({ id, filter }: GetActorParams) => {
+export const getActor = async ({ id, filter }: z.infer<typeof getActorParams>) => {
   const actorResponse = await prisma.actors.findFirstOrThrow({
     where: { id },
     include: {

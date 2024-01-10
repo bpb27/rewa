@@ -21,8 +21,6 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-export type GetTokensResponse = Awaited<ReturnType<typeof getTokens>>;
-
 export const getTokens = async (params: QpSchema) => {
   const response = await Promise.all(
     tokenKeys.map(key => {

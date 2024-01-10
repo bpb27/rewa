@@ -5,16 +5,12 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-export type SearchTokensParams = z.infer<typeof searchTokensParams>;
-
 export const searchTokensParams = z.object({
   filter: z.enum(['rewa', 'oscar', 'any']),
   search: z.string(),
 });
 
-export type SearchTokensResponse = Awaited<ReturnType<typeof searchTokens>>;
-
-export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
+export const searchTokens = async ({ filter, search }: z.infer<typeof searchTokensParams>) => {
   const filterField = filter === 'rewa' ? ('episodes' as const) : ('oscars_nominations' as const);
 
   const movies = await prisma.movies.findMany({

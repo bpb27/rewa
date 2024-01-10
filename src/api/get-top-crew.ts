@@ -4,9 +4,6 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-type GetTopCrewParams = { job: keyof typeof crewJobs; mode: 'rewa' | 'oscars' };
-export type GetTopCrewResponse = Awaited<ReturnType<typeof getTopCrew>>;
-
 export const getTopCrewParams = z.object({
   mode: z.enum(['rewa', 'oscars']),
   job: z.enum(['director', 'producer', 'cinematographer', 'writer']),
@@ -27,7 +24,7 @@ const WHERE_JOB = {
   },
 };
 
-export const getTopCrew = async ({ job, mode }: GetTopCrewParams) => {
+export const getTopCrew = async ({ job, mode }: z.infer<typeof getTopCrewParams>) => {
   const top = await prisma.crew_on_movies.groupBy({
     by: ['crew_id'],
     _count: {

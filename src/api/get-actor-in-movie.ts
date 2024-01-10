@@ -3,8 +3,6 @@ import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-export type GetActorInMovieResponse = Awaited<ReturnType<typeof getActorInMovie>>;
-
 export const getActorInMovieParams = z.object({
   actorId: z.number(),
   movieId: z.number(),
