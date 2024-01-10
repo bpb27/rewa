@@ -28,9 +28,11 @@ export const assembleUrl = (
 };
 
 export type QpSchema = z.infer<typeof qpSchema>;
+export type QpParsed = z.infer<typeof parsedQpSchema>;
 export type TokenType = keyof z.infer<typeof tokenSchema>;
 export type SortKey = QpSchema['sort'];
 
+// transforms query param string values into proper types
 export const qpSchema = z.object({
   actor: integerList.optional().default(''),
   asc: boolean.optional().default('false'),
@@ -78,7 +80,41 @@ export const qpSchema = z.object({
   yearLte: integerList.optional().default(''),
 });
 
-export const defaultQps = qpSchema.parse({});
+const idList = z.array(z.number());
+
+export const parsedQpSchema = z.object({
+  actor: idList,
+  asc: z.boolean(),
+  budget: idList,
+  budgetGte: idList,
+  budgetLte: idList,
+  cinematographer: idList,
+  director: idList,
+  genre: idList,
+  host: idList,
+  keyword: idList,
+  movie: idList,
+  movieMode: qpSchema.shape.movieMode,
+  oscarsCategoriesNom: idList,
+  oscarsCategoriesWon: idList,
+  page: z.number(),
+  producer: idList,
+  revenue: idList,
+  revenueGte: idList,
+  revenueLte: idList,
+  runtime: idList,
+  runtimeGte: idList,
+  runtimeLte: idList,
+  searchMode: qpSchema.shape.searchMode,
+  sort: qpSchema.shape.sort,
+  streamer: idList,
+  writer: idList,
+  year: idList,
+  yearGte: idList,
+  yearLte: idList,
+});
+
+export const defaultQps: QpParsed = qpSchema.parse({});
 
 /*
   adding a new token?

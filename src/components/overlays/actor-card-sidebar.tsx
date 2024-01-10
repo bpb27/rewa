@@ -1,8 +1,9 @@
-import { useRouter } from 'next/router';
 import { Sidebar } from '~/components/ui/sidebar';
-import { type ApiGetActorResponse } from '~/pages/api/actors/[id]';
-import { getYear } from '~/utils/format';
-import { useAPI } from '~/utils/use-api';
+import { trpc } from '~/trpc/client';
+import { bookends } from '~/utils/object';
+import { useMovieMode } from '~/utils/use-movie-mode';
+import { Crate } from '../ui/box';
+import { Text } from '../ui/text';
 
 type ActorCardSidebar = {
   actorId: number;
@@ -11,83 +12,52 @@ type ActorCardSidebar = {
 };
 
 export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardSidebar) => {
-  const router = useRouter();
-  const filter = router.asPath.includes('rewa') ? ('episode' as const) : ('oscar' as const); // TODO: make a hook that does this
-  const { data: actor } = useAPI(`/api/actors/${actorId}`, { filter });
+  const filter = useMovieMode();
+  const { data: actor } = trpc.getActor.useQuery({ filter, id: actorId });
 
   if (!actor) return null;
-  const firstMovieYear = getYear(actor.movies[0].release_date);
-  const lastMovieYear = getYear(actor.movies[actor.movies.length - 1].release_date);
+  const [firstYear, lastYear] = bookends(actor.movies).map(m => m.year);
+  const handleClick = (params: { movieId: number }) => () => onSelectMovie(params.movieId);
 
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
       <Sidebar.HeaderAndPoster
         header={actor.name}
-        poster_path={actor.profile_path!}
+        poster_path={actor.profilePath!}
         title={actor.name}
       />
-      <Sidebar.Content>
+      <Crate column gap={2} mb={6}>
         <Sidebar.StarBar>
-          <span className="flex flex-col">
-            Movie Run: {firstMovieYear} to {lastMovieYear}
-          </span>
+          <Text size="lg" bold>
+            Movie Run: {firstYear} to {lastYear}
+          </Text>
         </Sidebar.StarBar>
-        {actor.movies.map((movie, i, list) => (
-          <ActorCredit
-            movie={movie}
-            isLast={i === list.length - 1}
-            onSelectMovie={onSelectMovie}
-            key={movie.character + movie.title + movie.movieId}
-          />
+        {actor.movies.map(movie => (
+          <Crate key={movie.character + movie.movieId}>
+            <Text {...listItem}>
+              {movie.character} in <Movie {...movie} onClick={handleClick(movie)} />
+            </Text>
+          </Crate>
         ))}
-        {actor.crewMovies.length > 0 && (
-          <div className="my-3">
-            <Sidebar.StarBar>
-              <span>Bonus</span>
-            </Sidebar.StarBar>
-          </div>
-        )}
-        {actor.crewMovies.map((movie, i, list) => (
-          <CrewCredit movie={movie} key={movie.job + movie.title} isLast={i === list.length - 1} />
+        {actor.crewMovies.length > 0 && <Sidebar.Separator />}
+        {actor.crewMovies.map(movie => (
+          <Crate key={movie.job + movie.movieId}>
+            <Text {...listItem}>
+              {movie.job} on <Movie {...movie} onClick={handleClick(movie)} />
+            </Text>
+          </Crate>
         ))}
-      </Sidebar.Content>
+      </Crate>
     </Sidebar>
   );
 };
 
-type ActorCreditProps = {
-  isLast: boolean;
-  movie: ApiGetActorResponse['movies'][number];
-  onSelectMovie: (id: number) => void;
-};
+const listItem = { noWrap: false, flex: false };
 
-const ActorCredit = ({ isLast, movie, onSelectMovie }: ActorCreditProps) => (
-  <div className="w-full">
-    <p>
-      {movie.character} in{' '}
-      <span
-        className="cursor-pointer font-bold hover:underline"
-        onClick={() => onSelectMovie(movie.movieId)}
-      >
-        {movie.title}
-      </span>{' '}
-      ({getYear(movie.release_date)})
-    </p>
-    {!isLast && <Sidebar.Separator />}
-  </div>
-);
-
-type CrewCreditProps = {
-  movie: ApiGetActorResponse['crewMovies'][number];
-  isLast: boolean;
-};
-
-const CrewCredit = ({ isLast, movie }: CrewCreditProps) => (
-  <div className="w-full text-slate-500">
-    <p key={movie.job + movie.title + movie.movieId}>
-      {movie.job} on <span className="font-bold">{movie.title}</span>
-    </p>
-    {!isLast && <Sidebar.Separator />}
-  </div>
+type MovieProps = { title: string; year: string; onClick: () => void };
+const Movie = ({ title, onClick, year }: MovieProps) => (
+  <Text {...listItem} bold onClick={onClick}>
+    {title} ({year})
+  </Text>
 );

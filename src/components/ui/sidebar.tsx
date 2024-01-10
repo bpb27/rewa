@@ -10,7 +10,11 @@ export const Sidebar = ({ children }: PropsWithChildren<{}>) => (
 );
 
 const CloseButton = ({ onClose }: { onClose: () => void }) => (
-  <Button variant="card" onClick={onClose} className="block w-full bg-red-400 hover:bg-red-300">
+  <Button
+    variant="card"
+    onClick={onClose}
+    className="block w-full bg-red-300 text-red-50 hover:bg-red-400 hover:text-red-50"
+  >
     Close
   </Button>
 );

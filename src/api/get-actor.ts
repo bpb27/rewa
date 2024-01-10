@@ -1,22 +1,28 @@
+import { uniqBy } from 'remeda';
+import { z } from 'zod';
+import { qpSchema } from '~/data/query-params';
 import { Prisma } from '~/prisma';
+import { getYear } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 
 const prisma = Prisma.getPrisma();
 
-type GetActorParams = { id: number; filter?: 'oscar' | 'episode' };
-export type GetActorResponse = Awaited<ReturnType<typeof getActor>>;
+export const getActorParams = z.object({
+  id: z.number(),
+  filter: qpSchema.shape.movieMode,
+});
 
 const MOVIE_SELECT = { select: { title: true, release_date: true, id: true } };
 const episodeWhere = { movies: { episodes: { some: {} } } };
 const oscarWhere = { movies: { oscars_nominations: { some: {} } } };
 
-export const getActor = async ({ id, filter }: GetActorParams) => {
+export const getActor = async ({ id, filter }: z.infer<typeof getActorParams>) => {
   const actorResponse = await prisma.actors.findFirstOrThrow({
     where: { id },
     include: {
       actors_on_movies: {
         where: {
-          ...(filter === 'episode' ? episodeWhere : undefined),
+          ...(filter === 'rewa' ? episodeWhere : undefined),
           ...(filter === 'oscar' ? oscarWhere : undefined),
         },
         include: {
@@ -31,7 +37,7 @@ export const getActor = async ({ id, filter }: GetActorParams) => {
     select: {
       crew_on_movies: {
         where: {
-          ...(filter === 'episode' ? episodeWhere : undefined),
+          ...(filter === 'rewa' ? episodeWhere : undefined),
           ...(filter === 'oscar' ? oscarWhere : undefined),
         },
         include: { movies: { ...MOVIE_SELECT } },
@@ -42,24 +48,33 @@ export const getActor = async ({ id, filter }: GetActorParams) => {
   return {
     id,
     name: actorResponse.name,
-    profile_path: actorResponse.profile_path,
-    movies: smartSort(
-      actorResponse.actors_on_movies.map(role => ({
-        character: role.character,
-        movieId: role.movie_id!,
-        release_date: role.movies?.release_date!,
-        title: role.movies?.title!,
-      })),
-      movie => movie.release_date
+    profilePath: actorResponse.profile_path,
+    movies: uniqBy(
+      smartSort(
+        actorResponse.actors_on_movies
+          .filter(om => om.movies)
+          .map(role => ({
+            character: role.character,
+            movieId: role.movie_id,
+            releaseDate: role.movies.release_date,
+            title: role.movies.title,
+            year: getYear(role.movies.release_date),
+          })),
+        movie => movie.releaseDate
+      ),
+      m => m.movieId
     ),
     crewMovies: smartSort(
-      (crewResponse?.crew_on_movies || []).map(crew => ({
-        job: crew.job,
-        release_date: crew.movies?.release_date!,
-        title: crew.movies?.title!,
-        movieId: crew.movies?.id!,
-      })),
-      movie => movie.release_date
+      (crewResponse?.crew_on_movies || [])
+        .filter(om => om.movies)
+        .map(crew => ({
+          job: crew.job,
+          movieId: crew.movies.id,
+          releaseDate: crew.movies.release_date,
+          title: crew.movies.title,
+          year: getYear(crew.movies.release_date),
+        })),
+      movie => movie.releaseDate
     ),
   };
 };
