@@ -1,9 +1,10 @@
-import { useState, type PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
-import { Icon, type IconKey } from '~/components/ui/icons';
 import { Sidebar } from '~/components/ui/sidebar';
+import { trpc } from '~/trpc/client';
 import { formatDate } from '~/utils/format';
-import { useAPI } from '~/utils/use-api';
+import { useMovieMode } from '~/utils/use-movie-mode';
+import { Crate } from '../ui/box';
+import { Text } from '../ui/text';
 
 type MovieCardSidebar = {
   actorId?: number;
@@ -12,93 +13,80 @@ type MovieCardSidebar = {
 };
 
 export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
-  const [showDesc, setShowDesc] = useState(false);
-  const { data: movie } = useAPI(`/api/movies/${movieId}`, { actorId });
+  const movieMode = useMovieMode();
+  const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
+  const { data: actor } = trpc.getActor.useQuery({ id: actorId! }, { enabled: !!actorId });
+  const role = actor?.movies.find(m => m.movieId === movieId)?.character;
 
   if (!movie) return null;
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
       <Sidebar.HeaderAndPoster {...movie} header={movie.title} />
-      <div className="mt-2 flex flex-col items-center">
-        <p
-          className="flex cursor-pointer items-center text-sm text-slate-500 hover:underline"
-          onClick={() => setShowDesc(!showDesc)}
-        >
-          {movie.tagline || (
-            <span className="flex items-center whitespace-nowrap">
-              Movie overview <Icon.CaretDown />
-            </span>
-          )}
-        </p>
-        {showDesc && <p className="mt-2 text-left">{movie.overview}</p>}
-        {movie.actor && (
+      <Crate mb={5} mt={1} gap={1} column alignCenter>
+        {movie.tagline && (
+          <Text secondary noWrap={false}>
+            {movie.tagline}
+          </Text>
+        )}
+        {role && (
           <Sidebar.StarBar>
-            <span>{movie.actor.character}</span>
+            <Text bold>{role}</Text>
           </Sidebar.StarBar>
         )}
-      </div>
-      <div>
-        <Sidebar.Separator />
-        {movie.episode && (
+        <Text noWrap={false}>{movie.overview}</Text>
+      </Crate>
+      <Crate mb={5} column>
+        {movieMode === 'rewa' && movie.episode && (
           <>
             {movie.hosts.map(({ id, name }) => (
-              <IconField icon="Mic" key={id}>
+              <Text icon="Mic" key={id}>
                 {name}
-              </IconField>
+              </Text>
             ))}
             <Sidebar.Separator />
           </>
         )}
         {movie.directors.map(({ id, name }) => (
-          <IconField icon="Video" key={id}>
+          <Text icon="Video" key={id}>
             {name}
-          </IconField>
+          </Text>
         ))}
         {movie.actors.map(({ id, name }) => (
-          <IconField icon="Star" key={id}>
+          <Text icon="Star" key={id}>
             {name}
-          </IconField>
+          </Text>
         ))}
         {movie.streamers.length > 0 && (
           <>
             <Sidebar.Separator />
             {movie.streamers.map(({ id, name }) => (
-              <IconField icon="Tv" key={id}>
+              <Text icon="Tv" key={id}>
                 {name}
-              </IconField>
+              </Text>
             ))}
           </>
         )}
         <Sidebar.Separator />
-        <IconField icon="Calendar">{formatDate(movie.release_date)}</IconField>
-        <IconField icon="Clock">{movie.runtime.name}</IconField>
-        <IconField icon="Dollar">
+        <Text icon="Calendar">{formatDate(movie.release_date)}</Text>
+        <Text icon="Clock">{movie.runtime.name}</Text>
+        <Text icon="Dollar">
           {movie.budget.name} / {movie.revenue.name}
-        </IconField>
+        </Text>
         <Sidebar.Separator />
-        <IconField icon="Link">
+        <Text icon="Link">
           <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
             IMDB
           </ImdbLink>
-        </IconField>
+        </Text>
         {movie.episode && (
-          <IconField icon="Link">
+          <Text icon="Link">
             <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
               Spotify
             </SpotifyLink>
-          </IconField>
+          </Text>
         )}
-      </div>
+      </Crate>
     </Sidebar>
-  );
-};
-
-const IconField = ({ children, icon }: PropsWithChildren<{ icon: IconKey }>) => {
-  const IconComponent = Icon[icon];
-  return (
-    <p className="my-1 flex items-center">
-      <IconComponent className="mr-2" /> {children}
-    </p>
   );
 };

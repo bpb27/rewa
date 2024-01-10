@@ -3,10 +3,10 @@ import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
 import { Token } from '~/data/tokens';
+import { trpc } from '~/trpc/client';
 import { titleCase } from '~/utils/format';
 import { keys } from '~/utils/object';
 import { cn } from '~/utils/style';
-import { useAPI } from '~/utils/use-api';
 import { useToggle } from '~/utils/use-toggle';
 import { isYear } from '~/utils/validate';
 import { Crate } from '../ui/box';
@@ -58,7 +58,7 @@ export const MovieFiltersDialog = ({
   const [filterCategories, setFilterCategories] = useState(true);
   const [container, setContainer] = useState<HTMLSpanElement | null>(null);
 
-  const { data } = useAPI('/api/oscars/categories');
+  const { data } = trpc.getOscarCategories.useQuery();
   const categories = (data || []).filter(c => (filterCategories ? c.relevance === 'high' : true));
 
   const handleChange = useCallback(

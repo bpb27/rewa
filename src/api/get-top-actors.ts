@@ -1,10 +1,15 @@
 import { uniqBy } from 'remeda';
+import { z } from 'zod';
 import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
 type GetTopActorsParams = { mode: 'rewa' | 'oscars' };
 export type GetTopActorsResponse = Awaited<ReturnType<typeof getTopActors>>;
+
+export const getTopActorsParams = z.object({
+  mode: z.enum(['rewa', 'oscars']),
+});
 
 export const TOP_PEOPLE_MOVIE_SELECT = {
   select: {

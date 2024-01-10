@@ -1,7 +1,10 @@
 import { StateFrom, assign, createMachine, fromPromise, raise } from 'xstate';
-import { ApiGetMoviesResponse } from '~/pages/api/movies';
+import { trpcVanilla } from '~/trpc/client';
+import { ApiResponses } from '~/trpc/router';
 import {
+  QpParsed,
   QpSchema,
+  SortKey,
   TokenType,
   assembleUrl,
   qpSchema,
@@ -11,11 +14,14 @@ import {
 } from './query-params';
 import { Token } from './tokens';
 
-const fetchMovies = fromPromise<ApiGetMoviesResponse, string>(async ({ input }) => {
-  const response = await fetch(`/api/movies?${urlToQueryString(input)}`);
-  const data: ApiGetMoviesResponse = await response.json();
-  if (!response.ok) throw new Error('Shit');
-  return data;
+export type FetchMoviesResponse = ApiResponses['getMovies'];
+
+const fetchMovies = fromPromise<FetchMoviesResponse, QpParsed>(async ({ input }) => {
+  const [movies, tokens] = await Promise.all([
+    trpcVanilla.getMovies.query(input),
+    trpcVanilla.getTokens.query(input),
+  ]);
+  return { ...movies, ...tokens };
 });
 
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
@@ -30,10 +36,10 @@ const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
 type Actor = { src: 'fetchMovies'; logic: typeof fetchMovies };
 
 type Context = {
-  data: ApiGetMoviesResponse;
-  preloaded: { data: ApiGetMoviesResponse; url: string };
+  data: FetchMoviesResponse;
+  preloaded: { data: FetchMoviesResponse; url: string };
   push: (url: string) => void;
-  queryParams: QpSchema;
+  queryParams: QpParsed;
   url: string;
 };
 
@@ -166,11 +172,12 @@ export const movieTableMachine = createMachine(
         },
         invoke: {
           src: 'fetchMovies',
-          input: ({ context }) => context.url,
+          input: ({ context }) => context.queryParams,
           onDone: {
             target: 'idle',
             actions: assign(({ context, event }) => {
-              const data = { ...event.output };
+              // TODO: xstate isn't picking up on output type for some reason
+              const data: FetchMoviesResponse = { ...event.output };
               if (data.page > 0) data.movies = [...context.data.movies, ...data.movies];
               return { data };
             }),
@@ -230,7 +237,7 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   replaceToken: (token: Omit<Token, 'name'>) => {
     send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
   },
-  sort: (field: QpSchema['sort']) => {
+  sort: (field: SortKey) => {
     send({ type: 'SORT', field });
   },
   toggleSearchMode: () => {

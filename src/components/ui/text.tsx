@@ -10,6 +10,7 @@ type TextProps = PropsWithChildren<{
   icon?: keyof typeof Icon;
   iconOrientation?: 'left' | 'right';
   noWrap?: boolean;
+  flex?: boolean;
   onClick?: () => void;
   secondary?: boolean;
   size?: 'md' | 'lg' | 'xl';
@@ -22,6 +23,7 @@ export const Text = ({
   children,
   className,
   ellipsis,
+  flex = true,
   hide,
   icon,
   iconOrientation = 'left',
@@ -36,7 +38,7 @@ export const Text = ({
   const text = (
     <span
       className={cn(
-        'flex gap-x-2',
+        flex && 'flex gap-x-2',
         noWrap && 'whitespace-nowrap',
         bold && 'font-bold',
         onClick && 'cursor-pointer hover:underline',

@@ -4,16 +4,13 @@ import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Modal, type ModalProps } from '~/components/ui/modal';
 import { Text } from '~/components/ui/text';
+import { trpc } from '~/trpc/client';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
-import { useAPI } from '~/utils/use-api';
 import { Crate } from '../ui/box';
 
 /*
-  layout options
-  - table
-  - mini cards w/ poster - doesn't need to wrap
-  - simple compressed big award header + one line <i>movie</i> - recip
+ this would be better as a dedicated page and table
 */
 
 type OscarYearModalProps = { movieId: number; year: number } & ModalProps;
@@ -22,7 +19,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
   const containerRef = useRef<HTMLDivElement>(null);
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
-  const { data = [] } = useAPI(`/api/oscars/year/${selectedYear}`);
+  const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
   const movieSpotlight = data.filter(a => a.movie_id === movieId);
   return (
     <Modal {...modalProps} className="p-3">

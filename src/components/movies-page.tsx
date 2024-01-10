@@ -10,8 +10,12 @@ import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
-import { movieTableActions, movieTableData, movieTableMachine } from '~/data/movie-data-machine';
-import { type ApiGetMoviesResponse } from '~/pages/api/movies';
+import {
+  movieTableActions,
+  movieTableData,
+  movieTableMachine,
+} from '~/data/movie-data-machine';
+import { ApiResponses } from '~/trpc/router';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
@@ -19,10 +23,10 @@ import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { MovieSpotlightModal } from './overlays/movie-spotlight-modal';
 import { OscarYearModal } from './overlays/oscar-year-modal';
 
-export type MoviesPageMovie = ApiGetMoviesResponse['movies'][number];
+export type MoviesPageMovie = ApiResponses['getMovies']['movies'][number];
 
 type MoviesPageProps = {
-  preloaded: { url: string; data: ApiGetMoviesResponse };
+  preloaded: { url: string; data: ApiResponses['getMovies'] };
 };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {

@@ -16,23 +16,27 @@ type SpaceDirection = 'x' | 'y' | 't' | 'b' | 'l' | 'r';
 type Padding = 'p' | `p${SpaceDirection}`;
 type Margin = 'm' | `m${SpaceDirection}`;
 type CrateProps = PropsWithChildren<{
+  className?: string;
   column?: boolean;
   justifyCenter?: boolean;
   alignCenter?: boolean;
   hide?: boolean;
   overflowScroll?: boolean;
   gap?: NumericalSize;
+  fullWidth?: boolean;
 }> &
   Partial<Record<Padding, NumericalSize>> &
   Partial<Record<Margin, NumericalSize>>;
 
 export const Crate = ({
+  className,
   column,
   justifyCenter,
   alignCenter,
   children,
   overflowScroll,
   hide,
+  fullWidth,
   ...direct
 }: CrateProps) => (
   <div
@@ -43,7 +47,9 @@ export const Crate = ({
       justifyCenter && 'justify-center',
       overflowScroll && 'overflow-scroll',
       keys(direct).reduce((acc, key) => acc + ` ${key}-${direct[key]}`, ''),
-      hide && 'hidden'
+      hide && 'hidden',
+      fullWidth && 'w-full',
+      className
     )}
   >
     {children}

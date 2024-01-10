@@ -5,8 +5,8 @@ import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
 import { type QpSchema } from '~/data/query-params';
 import { type Token } from '~/data/tokens';
+import { trpc } from '~/trpc/client';
 import { capitalize } from '~/utils/format';
-import { useAPI } from '~/utils/use-api';
 import { useDebounce } from '~/utils/use-debounce';
 
 type SearchBarProps = {
@@ -20,19 +20,15 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading } = useAPI(
-    '/api/search',
-    { search: debouncedSearch, filter },
-    { skip: !debouncedSearch }
+  const { data, isLoading } = trpc.searchTokens.useQuery(
+    { filter, search: debouncedSearch },
+    { enabled: !!debouncedSearch }
   );
 
   useEffect(() => {
-    if (data?.length || isLoading) setShowResults(true);
-  }, [data, isLoading, setShowResults]);
-
-  useEffect(() => {
-    if (!search) setShowResults(false);
-  }, [search, setShowResults]);
+    if (!debouncedSearch) setShowResults(false);
+    else if (isLoading) setShowResults(true);
+  }, [debouncedSearch, isLoading, setShowResults]);
 
   const byCategory = Object.entries(groupBy(data || [], item => item.type));
 

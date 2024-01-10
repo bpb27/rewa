@@ -1,14 +1,17 @@
-import { QpSchema } from '~/data/query-params';
+import { z } from 'zod';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
 import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
-export type SearchTokensParams = {
-  filter: QpSchema['movieMode'];
-  search: string;
-};
+export type SearchTokensParams = z.infer<typeof searchTokensParams>;
+
+export const searchTokensParams = z.object({
+  filter: z.enum(['rewa', 'oscar', 'any']),
+  search: z.string(),
+});
+
 export type SearchTokensResponse = Awaited<ReturnType<typeof searchTokens>>;
 
 export const searchTokens = async ({ filter, search }: SearchTokensParams) => {
