@@ -68,8 +68,14 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
     where: {
       name: { contains: search },
       AND: [
-        { crew_on_movies: { some: { job: 'Director' } } },
-        { crew_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+        {
+          crew_on_movies: {
+            some: {
+              job: 'Director',
+              movies: { [filterField]: { some: {} } },
+            },
+          },
+        },
       ],
     },
     take: 5,

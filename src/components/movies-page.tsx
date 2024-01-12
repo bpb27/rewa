@@ -10,11 +10,7 @@ import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
-import {
-  movieTableActions,
-  movieTableData,
-  movieTableMachine,
-} from '~/data/movie-data-machine';
+import { movieTableActions, movieTableData, movieTableMachine } from '~/data/movie-data-machine';
 import { ApiResponses } from '~/trpc/router';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { useUrlChange } from '~/utils/use-url-change';

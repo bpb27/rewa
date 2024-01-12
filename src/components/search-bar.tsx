@@ -18,7 +18,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
   const [resultsContainer, setResultsContainer] = useState<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 333);
 
   const { data, isLoading } = trpc.searchTokens.useQuery(
     { filter, search: debouncedSearch },
@@ -26,9 +26,8 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
   );
 
   useEffect(() => {
-    if (!debouncedSearch) setShowResults(false);
-    else if (isLoading) setShowResults(true);
-  }, [debouncedSearch, isLoading, setShowResults]);
+    setShowResults(!!debouncedSearch);
+  }, [debouncedSearch, setShowResults]);
 
   const byCategory = Object.entries(groupBy(data || [], item => item.type));
 
