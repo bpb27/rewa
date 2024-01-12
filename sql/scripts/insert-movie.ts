@@ -24,14 +24,32 @@ const run = async (params: {
 
 const newEps = [
   {
-    tmdb_id: 5825,
-    title: "National Lampoon's Christmas Vacation",
-    episode_order: 325,
+    tmdb_id: 8845,
+    title: 'Under Siege',
+    episode_order: 326,
     date: 'Dec 2023',
-    spotify_url: 'https://open.spotify.com/episode/3i034ysNAntAE0PsiRF6OB?si=885ee1a6c658498d',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey', 'Van Lathan'],
-    ebert: { rating: 2, path: '/reviews/national-lampoons-christmas-vacation-1989' },
+    spotify_url: 'https://open.spotify.com/episode/1srWRyDzHSL4twwSFFDhqp?si=4464903272fa4ca0',
+    hosts: ['Bill Simmons', 'Kyle Brandt'],
+    ebert: { rating: 3, path: '/reviews/under-siege-1992' },
+  },
+  {
+    tmdb_id: 14291,
+    title: 'Searching for Bobby Fischer',
+    episode_order: 327,
+    date: 'Jan 2023',
+    spotify_url: 'https://open.spotify.com/episode/0lZQW13TNkalG07ACHVliS?si=ea2d26c2b06f4864',
+    hosts: ['Bill Simmons', 'Van Lathan', 'Charles Holmes'],
+    ebert: { rating: 4, path: '/reviews/searching-for-bobby-fischer-1993' },
+  },
+  {
+    tmdb_id: 87502,
+    title: 'Flight',
+    episode_order: 328,
+    date: 'Jan 2023',
+    spotify_url: 'https://open.spotify.com/episode/0qb8o0HGCry0hKA3sWFb9r?si=841dfebfbe9242d7',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
+    ebert: { rating: 4, path: '/reviews/flight-2012' },
   },
 ];
 
-run(newEps[0]);
+run(newEps[2]);
