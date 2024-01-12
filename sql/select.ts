@@ -38,6 +38,16 @@ export const getAllMoviesWithEpisodes = () =>
     select: { id: true, tmdb_id: true, title: true, release_date: true },
   });
 
+export const getAllMoviesWithHighOscars = () =>
+  prisma.movies.findMany({
+    select: { id: true, title: true, tmdb_id: true },
+    where: {
+      oscars_nominations: {
+        some: { award: { AND: { oscars_categories: { relevance: 'high' } } } },
+      },
+    },
+  });
+
 export const getAllMovies = () =>
   prisma.movies.findMany({
     select: { id: true, title: true, release_date: true, tmdb_id: true },

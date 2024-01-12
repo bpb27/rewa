@@ -1,12 +1,15 @@
+import { uniqBy } from 'remeda';
 import { createTable } from '../create-tables';
 import { connectToDb, dropTable } from '../general';
 import { prepareInsert } from '../insert';
-import { getAllMoviesWithEpisodes, getAllStreamers } from '../select';
+import { getAllMoviesWithEpisodes, getAllMoviesWithHighOscars, getAllStreamers } from '../select';
 import { tmdbApi } from '../tmdb-api';
 
 const run = async () => {
   const db = connectToDb();
-  const movies = await getAllMoviesWithEpisodes();
+  const moviesWithEpisodes = await getAllMoviesWithEpisodes();
+  const moviesWithRelevantOscars = await getAllMoviesWithHighOscars();
+  const movies = uniqBy([...moviesWithEpisodes, ...moviesWithRelevantOscars], m => m.tmdb_id);
   const allStreamers = await getAllStreamers();
 
   const inserter = prepareInsert(db);

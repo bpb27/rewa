@@ -35,7 +35,6 @@ export const MoviesTable = ({
 }: MoviesTableProps) => {
   const showHosts = mode === 'rewa';
   const showEbert = mode === 'rewa';
-  const showStreamers = mode === 'rewa';
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -72,7 +71,7 @@ export const MoviesTable = ({
               </th>
             )}
             <th>Keywords</th>
-            {showStreamers && <th>Streaming</th>}
+            <th>Streaming</th>
             <th>
               <Crate>
                 Links <Icon.Link className="ml-2" />
@@ -181,17 +180,17 @@ export const MoviesTable = ({
                     )}
                   </Crate>
                 </td>
-                {showStreamers && (
-                  <td>
-                    <Crate column>
-                      {m.streamers.map(s => (
-                        <Text key={s.id} onClick={() => onTokenClick(s)}>
-                          {streamerShortName(s.name)}
-                        </Text>
-                      ))}
-                    </Crate>
-                  </td>
-                )}
+
+                <td>
+                  <Crate column>
+                    {m.streamers.map(s => (
+                      <Text key={s.id} onClick={() => onTokenClick(s)}>
+                        {streamerShortName(s.name)}
+                      </Text>
+                    ))}
+                  </Crate>
+                </td>
+
                 <td>
                   <Crate column>
                     <ImdbLink id={m.imdb_id} className="text-blue-500 underline">
