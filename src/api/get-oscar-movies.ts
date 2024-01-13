@@ -1,6 +1,4 @@
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const getOscarMovies = async () => {
   const response = await prisma.movies.findMany({

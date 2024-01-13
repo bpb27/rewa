@@ -1,8 +1,6 @@
 import fs from 'fs';
-import { Prisma } from '../../src/prisma';
+import prisma from '../../src/prisma';
 import { getYear } from '../../src/utils/format';
-
-const prisma = Prisma.getPrisma();
 
 const run = async () => {
   const data = await prisma.oscars_nominations.findMany({

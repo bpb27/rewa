@@ -11,7 +11,7 @@ import {
   tokenizeRuntime,
   tokenizeYear,
 } from '~/data/tokens';
-import { Prisma } from '~/prisma';
+import prisma from '~/prisma';
 import { getYear } from '~/utils/format';
 import { sortCrew } from '~/utils/sorting';
 
@@ -23,7 +23,6 @@ type QueryOrderBy = Pick<PrismaBaseType.movies_with_computed_fieldsFindManyArgs,
 type QuerySkip = Pick<PrismaBaseType.movies_with_computed_fieldsFindManyArgs, 'skip'>;
 type OrderByKey = keyof PrismaBaseType.movies_with_computed_fieldsOrderByWithAggregationInput;
 
-const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
 const take = 25;
 

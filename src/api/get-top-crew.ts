@@ -1,8 +1,6 @@
 import { z } from 'zod';
 import { crewJobs } from '~/data/crew-jobs';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const getTopCrewParams = z.object({
   mode: z.enum(['rewa', 'oscars']),

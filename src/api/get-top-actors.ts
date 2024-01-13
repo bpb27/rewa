@@ -1,8 +1,6 @@
 import { uniqBy } from 'remeda';
 import { z } from 'zod';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const getTopActorsParams = z.object({
   mode: z.enum(['rewa', 'oscars']),

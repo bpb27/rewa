@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const searchTokensParams = z.object({
   filter: z.enum(['rewa', 'oscar', 'any']),
