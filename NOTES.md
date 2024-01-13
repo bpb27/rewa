@@ -1,5 +1,12 @@
 # Latest
 
+- API needs to be faster
+
+  - cloudflare + prisma accelerate
+  - maybe turso
+  - just a regular node server (DO droplet maybe)
+
+- add more streamer options (Criterion, Tubi)
 - more crate and text
 - look into suspense for modals + sidebars + dialogs that are loading?
 - leaderboard hover should show title somewhere (maybe make posters a little bigger)
