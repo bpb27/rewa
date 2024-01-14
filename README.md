@@ -1,6 +1,6 @@
 ## Rewa
 
-A site to explore movie data related to The Rewatchables podcast and the Oscars.
+Explore movie data from The Rewatchables podcast and Academy Awards
 
 ## Running locally
 
@@ -9,6 +9,10 @@ A site to explore movie data related to The Rewatchables podcast and the Oscars.
 
 Use the SQLite VSCode extension and/or `npx prisma studio` to view the DB
 
+## Deployments
+
+Branches are auto-deployed via Vercel (production tracks main branch)
+
 ## Stack
 
-React, Next, Radix, Tailwind, Prisma, SQLite, Vercel
+Next, SQLite, Prisma, TRPC, React, Radix, Tailwind, Vercel
