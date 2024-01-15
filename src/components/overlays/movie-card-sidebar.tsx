@@ -23,9 +23,9 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
       <Sidebar.HeaderAndPoster {...movie} header={movie.title} />
-      <Crate mb={5} mt={1} gap={1} column alignCenter>
+      <Crate mb={5} mt={3} gap={2} column alignCenter>
         {movie.tagline && (
-          <Text secondary noWrap={false}>
+          <Text secondary textAlign="center">
             {movie.tagline}
           </Text>
         )}
@@ -34,7 +34,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
             <Text bold>{role}</Text>
           </Sidebar.StarBar>
         )}
-        <Text noWrap={false}>{movie.overview}</Text>
+        <Text>{movie.overview}</Text>
       </Crate>
       <Crate mb={5} column>
         {movieMode === 'rewa' && movie.episode && (

@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
-import { tmdbImage } from '~/components/images';
+import { useCallback, useMemo, useState } from 'react';
+import { moviePosterSize, tmdbImage } from '~/components/images';
 import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
@@ -8,7 +8,8 @@ import { type Boxes } from '~/components/ui/box';
 import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
-import { cn } from '~/utils/style';
+import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
+import { Text } from './ui/text';
 
 type TopCategoryProps = {
   category: 'actor' | 'director' | 'writer' | 'cinematographer' | 'producer';
@@ -35,19 +36,17 @@ const pageTitles = {
 
 export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
+  const selectFirst = useCallback(() => {
+    const movieId = people[0].movies[0].id;
+    const personId = people[0].id;
+    select(isActor ? { movieId, actorId: personId } : { movieId });
+  }, [people, isActor]);
 
   const [selected, select] = useState<
     { movieId: number } | { actorId: number } | { movieId: number; actorId: number } | undefined
   >(undefined);
 
-  // popup sidebar w/ first entry on desktop
-  useEffect(() => {
-    if (window.innerWidth > 1100) {
-      const movieId = people[0].movies[0].id;
-      const personId = people[0].id;
-      select(isActor ? { movieId, actorId: personId } : { movieId });
-    }
-  }, [people, category, isActor]);
+  useScreenSizeOnMount({ onDesktop: selectFirst });
 
   return (
     <Layout title={tabTitles[category]}>
@@ -77,25 +76,19 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
             <Box.EmptyProfilePic />
           )}
           <Box.HeaderAndMovies>
-            <h3 className="text-lg sm:text-xl">
-              <span
-                className={cn(isActor && 'cursor-pointer hover:underline')}
-                onClick={() => isActor && select({ actorId: person.id })}
-              >
-                #{person.rank} {person.name} with {person.movies.length} movies{' '}
-              </span>
-              <span className="text-gray-400">{person.ties > 1 && ` (T-${person.ties})`}</span>
-            </h3>
+            <Text size="lg" onClick={isActor ? () => select({ actorId: person.id }) : undefined}>
+              #{person.rank} {person.name} with {person.movies.length} movies{' '}
+              <Text secondary>{person.ties > 1 && ` (${person.ties} tied)`}</Text>
+            </Text>
             <Box.MovieBar>
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
                 .map(m => (
                   <Image
+                    {...moviePosterSize(80)}
                     key={m.id}
                     src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
                     alt={`Movie poster for ${m.title}`}
-                    width={40}
-                    height={60}
                     className="m-1 scale-100 cursor-pointer border-2 border-black hover:scale-110 hover:drop-shadow-xl"
                     onClick={() =>
                       select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })

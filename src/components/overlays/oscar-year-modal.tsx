@@ -101,10 +101,8 @@ const AwardCategory = ({ items, key, name }: AwardCategoryProps) => (
         className={cn('my-1 flex items-center justify-between space-x-2')}
       >
         <Crate column>
-          <Text bold noWrap={false}>
-            {movie}
-          </Text>
-          <Text noWrap={false}>{recipient}</Text>
+          <Text bold>{movie}</Text>
+          <Text>{recipient}</Text>
         </Crate>
         {won && <Icon.Trophy className="flex-shrink-0" />}
       </div>

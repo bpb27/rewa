@@ -1,6 +1,5 @@
 # Latest
 
-- director, etc. tokens should have letter prefix
 - oscars year should be table
   - can take a year range
   - movie | award | won | recipient

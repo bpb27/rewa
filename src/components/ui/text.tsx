@@ -27,7 +27,7 @@ export const Text = ({
   hide,
   icon,
   iconOrientation = 'left',
-  noWrap = true,
+  noWrap,
   onClick,
   secondary,
   size,
