@@ -123,9 +123,10 @@ export const MoviesTable = ({
                 </td>
                 <td>
                   <Crate column>
-                    <Text>{m.oscars.noms} noms</Text>
-                    <Text>{m.oscars.wins} wins</Text>
+                    <Text noWrap>{m.oscars.noms} noms</Text>
+                    <Text noWrap>{m.oscars.wins} wins</Text>
                     <Text
+                      noWrap
                       hide={!m.oscars.noms}
                       onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
                       secondary
@@ -155,13 +156,19 @@ export const MoviesTable = ({
                   </td>
                 )}
                 <td>
-                  <Text onClick={() => onTokenClick(m.budget)}>{m.budget.name}</Text>
+                  <Text noWrap onClick={() => onTokenClick(m.budget)}>
+                    {m.budget.name}
+                  </Text>
                 </td>
                 <td>
-                  <Text onClick={() => onTokenClick(m.revenue)}>{m.revenue.name}</Text>
+                  <Text noWrap onClick={() => onTokenClick(m.revenue)}>
+                    {m.revenue.name}
+                  </Text>
                 </td>
                 <td>
-                  <Text onClick={() => onTokenClick(m.runtime)}>{m.runtime.name}</Text>
+                  <Text noWrap onClick={() => onTokenClick(m.runtime)}>
+                    {m.runtime.name}
+                  </Text>
                 </td>
                 {showEbert && (
                   <td>
