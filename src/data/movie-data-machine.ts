@@ -247,6 +247,10 @@ export const movieTableActions = (send: (event: Event) => void) => ({
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
   toggleToken: (token: Omit<Token, 'name'>) => {
-    send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
+    if (token.type === 'movie') {
+      send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
+    } else {
+      send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
+    }
   },
 });
