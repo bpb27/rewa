@@ -29,7 +29,7 @@ export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardS
       />
       <Crate column gap={2} mb={6}>
         <Sidebar.StarBar>
-          <Text size="lg" bold>
+          <Text size="lg" bold textAlign="center">
             Movie Run: {firstYear} to {lastYear}
           </Text>
         </Sidebar.StarBar>
@@ -57,7 +57,7 @@ const listItem = { noWrap: false, flex: false };
 
 type MovieProps = { title: string; year: string; onClick: () => void };
 const Movie = ({ title, onClick, year }: MovieProps) => (
-  <Text {...listItem} bold onClick={onClick}>
+  <Text {...listItem} bold onClick={onClick} tag="span">
     {title} ({year})
   </Text>
 );

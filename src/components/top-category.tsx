@@ -4,7 +4,7 @@ import { moviePosterSize, tmdbImage } from '~/components/images';
 import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
-import { type Boxes } from '~/components/ui/box';
+import { Crate, type Boxes } from '~/components/ui/box';
 import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
@@ -50,7 +50,11 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
 
   return (
     <Layout title={tabTitles[category]}>
-      {mode === 'oscars' && <h1 className="text-center text-lg">{pageTitles[category]}</h1>}
+      {mode === 'oscars' && (
+        <Crate mb={3} justifyCenter>
+          <Text size="lg">{pageTitles[category]}</Text>
+        </Crate>
+      )}
       {selected && 'movieId' in selected && (
         <MovieCardSidebar {...selected} onClose={() => select(undefined)} />
       )}
@@ -62,7 +66,7 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
         />
       )}
       {rankByTotalMovies(people).map(person => (
-        <Box.Page key={person.id}>
+        <Box.Person key={person.id}>
           {person.profile_path ? (
             <Box.ProfilePic>
               <Image
@@ -76,9 +80,18 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
             <Box.EmptyProfilePic />
           )}
           <Box.HeaderAndMovies>
-            <Text size="lg" onClick={isActor ? () => select({ actorId: person.id }) : undefined}>
+            <Text
+              size="lg"
+              onClick={isActor ? () => select({ actorId: person.id }) : undefined}
+              flex={false}
+              tag="span"
+            >
               #{person.rank} {person.name} with {person.movies.length} movies{' '}
-              <Text secondary>{person.ties > 1 && ` (${person.ties} tied)`}</Text>
+              {person.ties > 1 && (
+                <Text flex={false} className="text-slate-400">
+                  ({person.ties} tied)
+                </Text>
+              )}
             </Text>
             <Box.MovieBar>
               {person.movies
@@ -97,15 +110,17 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
                 ))}
             </Box.MovieBar>
           </Box.HeaderAndMovies>
-        </Box.Page>
+        </Box.Person>
       ))}
     </Layout>
   );
 };
 
 const Box = {
-  Page: ({ children }) => (
-    <div className="mb-8 flex flex-col items-start sm:flex-row sm:items-center">{children}</div>
+  Person: ({ children }) => (
+    <div className="mb-8 flex flex-col items-start bg-slate-100 shadow-md sm:flex-row sm:items-center">
+      {children}
+    </div>
   ),
   ProfilePic: ({ children }) => (
     <div className="rounderd relative mb-4 hidden border-2  border-slate-700 shadow-xl sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
@@ -121,6 +136,8 @@ const Box = {
     <div className="flex w-full flex-col content-center">{children}</div>
   ),
   MovieBar: ({ children }) => (
-    <div className="hide-scrollbar mt-2 flex space-x-2 overflow-x-scroll">{children}</div>
+    <div className="hide-scrollbar mt-2 flex space-x-2 overflow-y-hidden overflow-x-scroll">
+      {children}
+    </div>
   ),
 } satisfies Boxes;

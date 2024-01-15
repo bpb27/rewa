@@ -31,7 +31,9 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
         )}
         {role && (
           <Sidebar.StarBar>
-            <Text bold>{role}</Text>
+            <Text bold textAlign="center">
+              {role}
+            </Text>
           </Sidebar.StarBar>
         )}
         <Text>{movie.overview}</Text>
