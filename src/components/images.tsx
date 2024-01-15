@@ -25,7 +25,9 @@ export const MovieCardPoster = ({
 }) => (
   <Image
     className="border-x-2 border-solid border-slate-900"
-    src={`https://image.tmdb.org/t/p/original${poster_path}`}
+    src={
+      poster_path ? `https://image.tmdb.org/t/p/original${poster_path}` : '/profile-pic-empty.jpg'
+    }
     alt={`Poster for ${title}`}
     {...moviePosterSize(size)}
   />

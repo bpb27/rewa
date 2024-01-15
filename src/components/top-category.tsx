@@ -8,7 +8,7 @@ import { Crate, type Boxes } from '~/components/ui/box';
 import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
-import { useScreenSizeOnMount } from '~/utils/use-screen-size-on-mount';
+import { cn } from '~/utils/style';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
@@ -46,7 +46,7 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
     { movieId: number } | { actorId: number } | { movieId: number; actorId: number } | undefined
   >(undefined);
 
-  useScreenSizeOnMount({ onDesktop: selectFirst });
+  // useScreenSizeOnMount({ onDesktop: selectFirst });
 
   return (
     <Layout title={tabTitles[category]}>
@@ -67,18 +67,13 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
       )}
       {rankByTotalMovies(people).map(person => (
         <Box.Person key={person.id}>
-          {person.profile_path ? (
-            <Box.ProfilePic>
-              <Image
-                className="h-full w-full object-cover"
-                src={tmdbImage(person.profile_path)}
-                alt={`Image of ${person.name}`}
-                fill
-              />
-            </Box.ProfilePic>
-          ) : (
-            <Box.EmptyProfilePic />
-          )}
+          <Box.ProfilePic>
+            <Image
+              {...moviePosterSize(170)}
+              src={person.profile_path ? tmdbImage(person.profile_path) : '/profile-pic-empty.jpg'}
+              alt={`Image of ${person.name}`}
+            />
+          </Box.ProfilePic>
           <Box.HeaderAndMovies>
             <Text
               size="lg"
@@ -118,25 +113,19 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
 
 const Box = {
   Person: ({ children }) => (
-    <div className="mb-8 flex flex-col items-start bg-slate-100 shadow-md sm:flex-row sm:items-center">
+    <div
+      className={cn(
+        'mb-3 flex flex-row items-center gap-x-3 p-1',
+        'border-2 border-slate-300 bg-slate-100 shadow-md'
+      )}
+    >
       {children}
     </div>
   ),
-  ProfilePic: ({ children }) => (
-    <div className="rounderd relative mb-4 hidden border-2  border-slate-700 shadow-xl sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
-      {children}
-    </div>
-  ),
-  EmptyProfilePic: ({ children }) => (
-    <div className="relative mb-4 hidden bg-gradient-to-r from-gray-200 to-gray-500 sm:mb-0 sm:mr-4 sm:block sm:h-[200px] sm:w-[130px]">
-      {children}
-    </div>
-  ),
-  HeaderAndMovies: ({ children }) => (
-    <div className="flex w-full flex-col content-center">{children}</div>
-  ),
+  ProfilePic: ({ children }) => <div className="hidden shrink-0 sm:block">{children}</div>,
+  HeaderAndMovies: ({ children }) => <div className="">{children}</div>,
   MovieBar: ({ children }) => (
-    <div className="hide-scrollbar mt-2 flex space-x-2 overflow-y-hidden overflow-x-scroll">
+    <div className="hide-scrollbar flex space-x-2 overflow-y-hidden overflow-x-scroll">
       {children}
     </div>
   ),
