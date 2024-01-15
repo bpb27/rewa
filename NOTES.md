@@ -1,6 +1,10 @@
 # Latest
 
+- director, etc. tokens should have letter prefix
 - oscars year should be table
+  - can take a year range
+  - movie | award | won | recipient
+  - also be cool to have top movies of that year by popularity / revenue / tmdb avg (can be a dynamic call)
 - trpc caching
 - add more streamer options (Criterion, Tubi)
 - more crate and text (remove noWrap default)
