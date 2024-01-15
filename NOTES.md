@@ -15,11 +15,6 @@
 - title in table has extra padding that overlaps table border
 - tooltips and popovers should be centered aligned to content
 
-# Data probs
-
-- The Hunt is wrong (should be the Mads movie)
-- Accented characters when searching
-
 # TODO
 
 - proper caching https://vercel.com/docs/edge-network/caching#how-to-cache-responses
