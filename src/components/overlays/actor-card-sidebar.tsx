@@ -2,6 +2,7 @@ import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
 import { bookends } from '~/utils/object';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { PersonPoster, TheaterBackground } from '../images';
 import { Crate } from '../ui/box';
 import { Text } from '../ui/text';
 
@@ -22,17 +23,20 @@ export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardS
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
-      <Sidebar.HeaderAndPoster
-        header={actor.name}
-        poster_path={actor.profilePath!}
-        title={actor.name}
-      />
-      <Crate column gap={2} mb={6}>
+      <Crate gap={1} column alignCenter my={3}>
+        <Text bold size="xl">
+          {actor.name}
+        </Text>
+        <TheaterBackground>
+          <PersonPoster name={actor.name} poster_path={actor.profilePath} variant="card" />
+        </TheaterBackground>
         <Sidebar.StarBar>
-          <Text size="lg" bold textAlign="center">
+          <Text bold>
             Movie Run: {firstYear} to {lastYear}
           </Text>
         </Sidebar.StarBar>
+      </Crate>
+      <Crate column gap={2} mb={6}>
         {actor.movies.map(movie => (
           <Crate key={movie.character + movie.movieId}>
             <Text {...listItem}>
