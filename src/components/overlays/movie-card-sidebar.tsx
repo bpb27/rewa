@@ -3,6 +3,7 @@ import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
 import { formatDate } from '~/utils/format';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { MoviePoster, TheaterBackground } from '../images';
 import { Crate } from '../ui/box';
 import { Text } from '../ui/text';
 
@@ -22,18 +23,17 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
-      <Sidebar.HeaderAndPoster {...movie} header={movie.title} />
-      <Crate mb={5} mt={3} gap={2} column alignCenter>
-        {movie.tagline && (
-          <Text secondary textAlign="center">
-            {movie.tagline}
-          </Text>
-        )}
+      <Crate gap={1} column alignCenter mt={3} mb={6}>
+        <Text bold size="xl">
+          {movie.title}
+        </Text>
+        <TheaterBackground>
+          <MoviePoster {...movie} variant="card" />
+        </TheaterBackground>
+        {movie.tagline && <Text secondary>{movie.tagline}</Text>}
         {role && (
           <Sidebar.StarBar>
-            <Text bold textAlign="center">
-              {role}
-            </Text>
+            <Text bold>{role}</Text>
           </Sidebar.StarBar>
         )}
         <Text>{movie.overview}</Text>

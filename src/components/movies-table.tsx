@@ -1,5 +1,4 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
-import Image from 'next/image';
 import { Fragment, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
@@ -9,8 +8,7 @@ import { streamerShortName } from '~/data/streamers';
 import { type Token } from '~/data/tokens';
 import { capitalize } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
-import { cn } from '~/utils/style';
-import { MovieTablePoster, tmdbImage } from './images';
+import { MoviePoster, PersonPoster } from './images';
 import { Crate } from './ui/box';
 import { PopoverMenu } from './ui/popover';
 import { StarRating } from './ui/stars';
@@ -86,7 +84,7 @@ export const MoviesTable = ({
               <tr className="h-4"></tr>
               <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md [&>td]:px-2">
                 <td>
-                  <MovieTablePoster title={m.title} poster_path={m.poster_path} />
+                  <MoviePoster title={m.title} poster_path={m.poster_path} variant="table" />
                 </td>
                 <td className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3">
                   <Text bold onClick={() => onMovieTitleClick(m.id)}>
@@ -113,7 +111,7 @@ export const MoviesTable = ({
                 <td>
                   <Crate column>
                     {m.actors.map(a => (
-                      <ImageTooltip key={a.id} path={a.profile_path}>
+                      <ImageTooltip key={a.id} path={a.profile_path} name={a.name}>
                         <Text noWrap onClick={() => onTokenClick(a)} tag="span">
                           {a.name}
                         </Text>
@@ -256,10 +254,10 @@ const StandardPopover = ({ tokens, onClick }: PopoverProps) => (
 );
 
 const ImageTooltip = ({
-  alt,
+  name,
   children,
   path,
-}: PropsWithChildren<{ alt?: string; path: string | null }>) => {
+}: PropsWithChildren<{ name: string; path: string | null }>) => {
   if (!path) return null;
   return (
     <Tooltip.Provider delayDuration={1200}>
@@ -267,13 +265,8 @@ const ImageTooltip = ({
         <Tooltip.Trigger>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content sideOffset={5}>
-            <div className={cn('rounded border-2 border-slate-700 shadow-xl')}>
-              <Image
-                src={tmdbImage(path)}
-                alt={alt ? `Image of ${alt}` : 'Person'}
-                height={200}
-                width={130}
-              />
+            <div className="rounded shadow-xl">
+              <PersonPoster name={name} poster_path={path} variant="tooltip" />
             </div>
             <Tooltip.Arrow className="fill-black" />
           </Tooltip.Content>

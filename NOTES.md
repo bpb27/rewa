@@ -1,5 +1,27 @@
 # TODO
 
+images loaded via next/image use vercel's image optimization, which has hit it's limit and now they don't render:
+
+- need to pass "unoptimized={true}"
+- instead of original, use a smaller poster size
+-
+
+"poster_sizes": [
+"w92",
+"w154",
+"w185",
+"w342",
+"w500",
+"w780",
+"original"
+],
+"profile_sizes": [
+"w45",
+"w185",
+"h632",
+"original"
+],
+
 - oscars year should be table
   - can take a year range
   - movie | award | won | recipient

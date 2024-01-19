@@ -1,6 +1,5 @@
-import Image from 'next/image';
 import { useCallback, useMemo, useState } from 'react';
-import { moviePosterSize, tmdbImage } from '~/components/images';
+import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
@@ -68,13 +67,13 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
       {rankByTotalMovies(people).map(person => (
         <Box.Person key={person.id}>
           <Box.ProfilePic>
-            <Image
-              {...moviePosterSize(170)}
-              src={person.profile_path ? tmdbImage(person.profile_path) : '/profile-pic-empty.jpg'}
-              alt={`Image of ${person.name}`}
+            <PersonPoster
+              name={person.name}
+              poster_path={person.profile_path}
+              variant="leaderboard"
             />
           </Box.ProfilePic>
-          <Box.HeaderAndMovies>
+          <Crate gap={2} column>
             <Text
               size="lg"
               onClick={isActor ? () => select({ actorId: person.id }) : undefined}
@@ -92,19 +91,19 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
                 .map(m => (
-                  <Image
-                    {...moviePosterSize(80)}
+                  <MoviePoster
+                    className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
                     key={m.id}
-                    src={`https://image.tmdb.org/t/p/original${m.poster_path}`}
-                    alt={`Movie poster for ${m.title}`}
-                    className="m-1 scale-100 cursor-pointer border-2 border-black hover:scale-110 hover:drop-shadow-xl"
+                    poster_path={m.poster_path}
+                    variant="leaderboard"
+                    title={m.title}
                     onClick={() =>
                       select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
                     }
                   />
                 ))}
             </Box.MovieBar>
-          </Box.HeaderAndMovies>
+          </Crate>
         </Box.Person>
       ))}
     </Layout>
@@ -123,7 +122,7 @@ const Box = {
     </div>
   ),
   ProfilePic: ({ children }) => <div className="hidden shrink-0 sm:block">{children}</div>,
-  HeaderAndMovies: ({ children }) => <div className="">{children}</div>,
+  HeaderAndMovies: ({ children }) => <div>{children}</div>,
   MovieBar: ({ children }) => (
     <div className="hide-scrollbar flex space-x-2 overflow-y-hidden overflow-x-scroll">
       {children}
