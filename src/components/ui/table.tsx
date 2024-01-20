@@ -44,8 +44,13 @@ const TableRow = ({ children }: PropsWithChildren<{}>) => (
   </Fragment>
 );
 
-const StickyTd = ({ children }: PropsWithChildren<{}>) => (
-  <td className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3">
+const TableData = ({ children, sticky }: PropsWithChildren<{ sticky?: boolean }>) => (
+  <td
+    className={cn(
+      sticky &&
+        'sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3'
+    )}
+  >
     {children}
   </td>
 );
@@ -54,4 +59,4 @@ Table.Head = TableHead;
 Table.Header = TableHeader;
 Table.Body = TableBody;
 Table.Row = TableRow;
-Table.StickyTd = StickyTd;
+Table.Data = TableData;
