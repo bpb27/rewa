@@ -32,7 +32,7 @@ const run = async (params: Movie | (Movie & Episode) | (Movie & Episode & Ebert)
 
 const newEps = [
   {
-    tmdb_id: 103663,
+    tmdb_id: 42724,
   },
   // {
   //   tmdb_id: 87502,

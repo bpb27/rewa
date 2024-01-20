@@ -1,83 +1,52 @@
 import { Prisma } from '../../src/prisma';
-import { normalizeName } from '../../src/utils/format';
 
 const prisma = Prisma.getPrisma();
 
 const run = async () => {
-  const actingOscars = await prisma.oscars_nominations.findMany({
+  const oscars = await prisma.oscars_nominations.findMany({
     select: {
       id: true,
       movie_id: true,
       recipient: true,
+      movie: {
+        select: {
+          id: true,
+          title: true,
+          release_date: true,
+          actors_on_movies: {
+            select: { actors: { select: { id: true, name: true } } },
+          },
+        },
+      },
     },
     where: {
       award: {
         oscars_categories: {
           name: {
-            in: ['actor', 'actress', 'supporting_actor', 'supporting_actress'],
+            in: ['supporting_actress', 'actress', 'supporting_actor', 'actor'],
           },
         },
       },
     },
   });
 
-  const actors = await prisma.actors.findMany({
-    select: {
-      id: true,
-      name: true,
-      actors_on_movies: {
-        select: { movie_id: true },
-      },
-    },
-    where: {
-      name: {
-        in: actingOscars.map(ao => ao.recipient),
-      },
-    },
+  const stuff = oscars.map(oscar => {
+    const actor = oscar.movie.actors_on_movies
+      .map(aom => aom.actors)
+      .find(a => a.name === oscar.recipient);
+    const movie = oscar.movie.title;
+    return { actor: actor?.name, movie, recipient: oscar.recipient };
   });
 
-  const movies = await prisma.movies.findMany({
-    select: {
-      id: true,
-      title: true,
-    },
-  });
+  console.log('total records', stuff.length);
 
-  const moviesIdHash = movies.reduce(
-    (hash, o) => ({ ...hash, [o.id]: o.title }),
-    {} as Record<number, string>
+  console.log(
+    JSON.stringify(
+      stuff.filter(t => !t.actor),
+      null,
+      2
+    )
   );
-
-  const oscarsNameHash = actingOscars.reduce(
-    (hash, o) => ({ ...hash, [normalizeName(o.recipient)]: o }),
-    {} as Record<string, (typeof actingOscars)[number]>
-  );
-
-  const actingNameHash = actors.reduce(
-    (hash, o) => ({ ...hash, [normalizeName(o.name)]: o }),
-    {} as Record<string, (typeof actors)[number]>
-  );
-
-  const actorNameToMovieIdsHash = actors.reduce(
-    (hash, o) => ({
-      ...hash,
-      [normalizeName(o.name)]: o.actors_on_movies.map(aom => aom.movie_id),
-    }),
-    {} as Record<string, number[]>
-  );
-
-  actingOscars.forEach(ao => {
-    const actorName = normalizeName(ao.recipient);
-    if (!actingNameHash[actorName]) {
-      console.log(`couldnt find ${actorName}`);
-    } else if (!actorNameToMovieIdsHash[actorName]?.includes(ao.movie_id)) {
-      console.log(`couldnt find ${actorName} movie ${moviesIdHash[ao.movie_id]}`);
-    } else {
-      // TODO: add actor_id on nomination
-    }
-  });
-
-  console.log(actingOscars.length);
 };
 
 run();
