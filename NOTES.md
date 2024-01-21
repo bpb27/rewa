@@ -6,7 +6,6 @@
 
 - searching for short title, e.g. "red"
 - need to return exact matches first (also show year in movie dropdown)
-- also can't click to clear title tokens
 
 - oscars year should be table
   - can take a year range

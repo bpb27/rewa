@@ -52,7 +52,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
             clear={actions.clearTokens}
             mode={data.searchMode}
             toggleSearchMode={actions.toggleSearchMode}
-            toggleToken={actions.toggleToken}
+            toggleToken={actions.removeToken}
             tokens={data.tokens}
           />
         </Crate>

@@ -17,7 +17,7 @@ type MovieFiltersDialogProps = {
   ranges: InitialState;
   oscarsCategoriesNom: number[];
   oscarsCategoriesWon: number[];
-  removeToken: (tokenType: Token['type']) => void;
+  clearTokenType: (tokenType: Token['type']) => void;
   replaceToken: (token: Omit<Token, 'name'>) => void;
   toggleToken: (token: Omit<Token, 'name'>) => void;
 };
@@ -49,7 +49,7 @@ export const MovieFiltersDialog = ({
   ranges,
   oscarsCategoriesNom,
   oscarsCategoriesWon,
-  removeToken,
+  clearTokenType,
   replaceToken,
   toggleToken,
 }: MovieFiltersDialogProps) => {
@@ -71,13 +71,13 @@ export const MovieFiltersDialog = ({
   const handleDebounce = useCallback(
     ({ name, value }: EventParams) => {
       if (value == '') {
-        removeToken(name);
+        clearTokenType(name);
       } else {
         if (name.includes('year') && !isYear(value)) return;
         replaceToken({ type: name, id: Number(value) });
       }
     },
-    [removeToken, replaceToken]
+    [clearTokenType, replaceToken]
   );
 
   useEffect(() => {
@@ -100,10 +100,7 @@ export const MovieFiltersDialog = ({
       <DialogOverlay
         container={container}
         isOpen={dialog.isOpen}
-        onClose={() => {
-          dialog.setClosed();
-          send({ type: 'RESET' });
-        }}
+        onClose={dialog.setClosed}
         className="rounded-md border-2 border-slate-500 bg-white p-4 shadow-xl"
       >
         <Crate column gap={2}>

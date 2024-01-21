@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
@@ -35,17 +35,10 @@ const pageTitles = {
 
 export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
-  const selectFirst = useCallback(() => {
-    const movieId = people[0].movies[0].id;
-    const personId = people[0].id;
-    select(isActor ? { movieId, actorId: personId } : { movieId });
-  }, [people, isActor]);
 
   const [selected, select] = useState<
     { movieId: number } | { actorId: number } | { movieId: number; actorId: number } | undefined
   >(undefined);
-
-  // useScreenSizeOnMount({ onDesktop: selectFirst });
 
   return (
     <Layout title={tabTitles[category]}>

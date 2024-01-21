@@ -45,13 +45,14 @@ type Context = {
 
 type Event =
   | { type: 'CLEAR_ALL_TOKENS' }
+  | { type: 'CLEAR_BY_TOKEN_TYPE'; name: TokenType }
   | { type: 'GET_NEXT_PAGE' }
   | { type: 'SORT'; field: QpSchema['sort'] }
   | { type: 'TOGGLE_SEARCH_MODE' }
   | { type: 'TOGGLE_SORT_ORDER' }
   | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
   | { type: 'REPLACE_TOKEN'; name: TokenType; value: number }
-  | { type: 'REMOVE_TOKEN'; name: TokenType }
+  | { type: 'REMOVE_TOKEN'; name: TokenType; value: number }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
@@ -109,6 +110,12 @@ export const movieTableMachine = createMachine(
               updateUrl(context, cleared);
             },
           },
+          CLEAR_BY_TOKEN_TYPE: {
+            actions: ({ context, event }) => {
+              const { name } = event;
+              updateUrl(context, { [name]: [] });
+            },
+          },
           GET_NEXT_PAGE: {
             guard: ({ context }) => context.data.hasNext,
             actions: ({ context }) => {
@@ -124,8 +131,10 @@ export const movieTableMachine = createMachine(
           },
           REMOVE_TOKEN: {
             actions: ({ context, event }) => {
-              const { name } = event;
-              updateUrl(context, { [name]: [] });
+              const { name, value } = event;
+              const current = context.queryParams[name];
+              const updated = current.filter(v => v !== value);
+              updateUrl(context, { [name]: updated });
             },
           },
           SORT: {
@@ -225,14 +234,17 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   clearTokens: () => {
     send({ type: 'CLEAR_ALL_TOKENS' });
   },
+  clearTokenType: (tokenType: TokenType) => {
+    send({ type: 'CLEAR_BY_TOKEN_TYPE', name: tokenType });
+  },
   nextPage: () => {
     send({ type: 'GET_NEXT_PAGE' });
   },
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
   },
-  removeToken: (tokenType: Token['type']) => {
-    send({ type: 'REMOVE_TOKEN', name: tokenType });
+  removeToken: (token: Omit<Token, 'name'>) => {
+    send({ type: 'REMOVE_TOKEN', name: token.type, value: token.id });
   },
   replaceToken: (token: Omit<Token, 'name'>) => {
     send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
