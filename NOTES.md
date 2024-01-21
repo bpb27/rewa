@@ -1,26 +1,12 @@
 # TODO
 
-images loaded via next/image use vercel's image optimization, which has hit it's limit and now they don't render:
+- link oscars w/ actors and crew
+- should make an actors_on_oscars and crew_on_oscars table
+- many crew involved in oscars
 
-- need to pass "unoptimized={true}"
-- instead of original, use a smaller poster size
--
-
-"poster_sizes": [
-"w92",
-"w154",
-"w185",
-"w342",
-"w500",
-"w780",
-"original"
-],
-"profile_sizes": [
-"w45",
-"w185",
-"h632",
-"original"
-],
+- searching for short title, e.g. "red"
+- need to return exact matches first (also show year in movie dropdown)
+- also can't click to clear title tokens
 
 - oscars year should be table
   - can take a year range
