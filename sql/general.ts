@@ -11,8 +11,10 @@ export const connectToDb = () =>
 const tableNameSchema = z.enum([
   'actors',
   'actors_on_movies',
+  'actors_on_oscars',
   'crew',
   'crew_on_movies',
+  'crew_on_oscars',
   'ebert_reviews',
   'episodes',
   'genres',

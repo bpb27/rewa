@@ -15,6 +15,7 @@ model actors {
   name               String
   profile_path       String?
   actors_on_movies   actors_on_movies[]
+  actors_on_oscars   actors_on_oscars[]
   oscars_nominations oscars_nominations[]
 }
 
@@ -36,6 +37,7 @@ model crew {
   name               String
   profile_path       String?
   crew_on_movies     crew_on_movies[]
+  crew_on_oscars     crew_on_oscars[]
   oscars_nominations oscars_nominations[]
 }
 
@@ -163,19 +165,21 @@ model oscars_awards {
 }
 
 model oscars_nominations {
-  id            Int           @id @default(autoincrement())
-  film_year     Int
-  ceremony_year Int
-  won           Boolean
-  recipient     String
-  movie_id      Int
-  award_id      Int
-  actor_id      Int?
-  crew_id       Int?
-  crew          crew?         @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  actors        actors?       @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  award         oscars_awards @relation(fields: [award_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movie         movies        @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id               Int                @id @default(autoincrement())
+  film_year        Int
+  ceremony_year    Int
+  won              Boolean
+  recipient        String
+  movie_id         Int
+  award_id         Int
+  actor_id         Int?
+  crew_id          Int?
+  actors_on_oscars actors_on_oscars[]
+  crew_on_oscars   crew_on_oscars[]
+  crew             crew?              @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  actors           actors?            @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  award            oscars_awards      @relation(fields: [award_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movie            movies             @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([movie_id, award_id, recipient], map: "sqlite_autoindex_oscars_nominations_1")
 }
@@ -209,6 +213,26 @@ model ebert_reviews {
   rating   Float
   path     String?
   movies   movies  @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model actors_on_oscars {
+  id                 Int                @id @default(autoincrement())
+  oscar_id           Int
+  actor_id           Int
+  actors             actors             @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  oscars_nominations oscars_nominations @relation(fields: [oscar_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([oscar_id, actor_id], map: "sqlite_autoindex_actors_on_oscars_1")
+}
+
+model crew_on_oscars {
+  id                 Int                @id @default(autoincrement())
+  oscar_id           Int
+  crew_id            Int
+  crew               crew               @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  oscars_nominations oscars_nominations @relation(fields: [oscar_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([oscar_id, crew_id], map: "sqlite_autoindex_crew_on_oscars_1")
 }
 
 view movies_with_computed_fields {

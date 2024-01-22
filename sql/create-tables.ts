@@ -40,6 +40,17 @@ CREATE TABLE IF NOT EXISTS ${TABLES.actors_on_movies} (
 );
 `;
 
+export const createActorsOnOscarsTableSql = `
+CREATE TABLE IF NOT EXISTS ${TABLES.actors_on_oscars} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  oscar_id INTEGER NOT NULL,
+  actor_id INTEGER NOT NULL,
+  FOREIGN KEY (oscar_id) REFERENCES ${TABLES.oscars_nominations} (id) ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES ${TABLES.actors} (id) ON DELETE CASCADE,
+  UNIQUE (oscar_id, actor_id)
+);
+`;
+
 export const createCrewTableSql = `
 CREATE TABLE IF NOT EXISTS ${TABLES.crew} (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,6 +58,17 @@ CREATE TABLE IF NOT EXISTS ${TABLES.crew} (
   tmdb_id INTEGER NOT NULL UNIQUE,
   name TEXT NOT NULL,
   profile_path TEXT
+);
+`;
+
+export const createCrewOnOscarsTableSql = `
+CREATE TABLE IF NOT EXISTS ${TABLES.crew_on_oscars} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  oscar_id INTEGER NOT NULL,
+  crew_id INTEGER NOT NULL,
+  FOREIGN KEY (oscar_id) REFERENCES ${TABLES.oscars_nominations} (id) ON DELETE CASCADE,
+  FOREIGN KEY (crew_id) REFERENCES ${TABLES.crew} (id) ON DELETE CASCADE,
+  UNIQUE (oscar_id, crew_id)
 );
 `;
 
@@ -220,8 +242,10 @@ CREATE TABLE IF NOT EXISTS ${TABLES.ebert_reviews} (
 const createMap = {
   [TABLES.actors]: createActorsTableSql,
   [TABLES.actors_on_movies]: createActorsOnMoviesTableSql,
+  [TABLES.actors_on_oscars]: createActorsOnOscarsTableSql,
   [TABLES.crew]: createCrewTableSql,
   [TABLES.crew_on_movies]: createCrewOnMoviesSql,
+  [TABLES.crew_on_oscars]: createCrewOnOscarsTableSql,
   [TABLES.ebert_reviews]: createEbertReviewsTable,
   [TABLES.episodes]: createEpisodesTableSql,
   [TABLES.genres]: createGenresTableSql,
