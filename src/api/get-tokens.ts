@@ -17,9 +17,7 @@ import {
   tokenizeYearGte,
   tokenizeYearLte,
 } from '~/data/tokens';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const getTokens = async (params: QpSchema) => {
   const response = await Promise.all(

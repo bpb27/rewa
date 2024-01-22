@@ -1,6 +1,4 @@
-import { Prisma } from '../src/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '../src/prisma';
 
 const byTmdbId = (id: number) => ({
   where: {

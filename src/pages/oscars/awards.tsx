@@ -1,10 +1,8 @@
 import { groupBy } from 'remeda';
 import Layout from '~/components/layout';
-import { Prisma } from '~/prisma';
+import prisma from '~/prisma';
 import { capitalize } from '~/utils/format';
 import { type StaticProps } from '~/utils/general-types';
-
-const prisma = Prisma.getPrisma();
 
 export const getStaticProps = async () => {
   const oscars = await prisma.oscars_nominations.findMany({

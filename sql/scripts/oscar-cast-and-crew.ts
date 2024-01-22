@@ -1,7 +1,5 @@
-import { Prisma } from '../../src/prisma';
+import prisma from '../../src/prisma';
 import { normalizeName } from '../../src/utils/format';
-
-const prisma = Prisma.getPrisma();
 
 const run = async () => {
   const actingOscars = await prisma.oscars_nominations.findMany({

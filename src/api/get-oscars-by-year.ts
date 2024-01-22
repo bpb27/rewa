@@ -1,7 +1,5 @@
 import { z } from 'zod';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import prisma from '~/prisma';
 
 export const getOscarsByYearParams = z.object({
   year: z.number(),

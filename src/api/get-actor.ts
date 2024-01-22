@@ -1,11 +1,9 @@
 import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { qpSchema } from '~/data/query-params';
-import { Prisma } from '~/prisma';
+import prisma from '~/prisma';
 import { getYear } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
-
-const prisma = Prisma.getPrisma();
 
 export const getActorParams = z.object({
   id: z.number(),
