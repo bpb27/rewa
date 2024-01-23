@@ -105,6 +105,32 @@ export const MovieFiltersDialog = ({
       >
         <Crate column gap={2}>
           <Crate column>
+            <label className="font-semibold">Nominated | Won Oscars</label>
+            {categories.map(({ id, name }) => (
+              <Crate key={id} my={1}>
+                <Checkbox
+                  checked={oscarsCategoriesNom.includes(id)}
+                  id={id}
+                  label=""
+                  onCheck={() => toggleToken({ type: 'oscarsCategoriesNom', id })}
+                />
+                <Checkbox
+                  checked={oscarsCategoriesWon.includes(id)}
+                  id={id}
+                  label={titleCase(name)}
+                  onCheck={() => toggleToken({ type: 'oscarsCategoriesWon', id })}
+                />
+              </Crate>
+            ))}
+            <Button
+              variant="card"
+              onClick={() => setFilterCategories(!filterCategories)}
+              className="mt-2"
+            >
+              {filterCategories ? 'More' : 'Fewer'} categories...
+            </Button>
+          </Crate>
+          <Crate column>
             <label className="font-semibold">Year</label>
             <Crate gap={2} alignCenter>
               <Input name="yearGte" value={state.yearGte} {...rangeProps} />
@@ -135,32 +161,6 @@ export const MovieFiltersDialog = ({
               <span>-</span>
               <Input name="runtimeLte" value={state.runtimeLte} {...rangeProps} />
             </Crate>
-          </Crate>
-          <Crate column>
-            <label className="font-semibold">Nominated/Won Oscars</label>
-            {categories.map(({ id, name }) => (
-              <Crate key={id} my={1}>
-                <Checkbox
-                  checked={oscarsCategoriesNom.includes(id)}
-                  id={id}
-                  label=""
-                  onCheck={() => toggleToken({ type: 'oscarsCategoriesNom', id })}
-                />
-                <Checkbox
-                  checked={oscarsCategoriesWon.includes(id)}
-                  id={id}
-                  label={titleCase(name)}
-                  onCheck={() => toggleToken({ type: 'oscarsCategoriesWon', id })}
-                />
-              </Crate>
-            ))}
-            <Button
-              variant="card"
-              onClick={() => setFilterCategories(!filterCategories)}
-              className="mt-2"
-            >
-              {filterCategories ? 'More' : 'Fewer'} categories...
-            </Button>
           </Crate>
         </Crate>
       </DialogOverlay>
