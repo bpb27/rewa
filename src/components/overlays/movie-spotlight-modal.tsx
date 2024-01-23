@@ -1,8 +1,12 @@
 import { Modal, type ModalProps } from '~/components/ui/modal';
 import { MoviePoster, TheaterBackground } from '../images';
-import { MoviesPageMovie } from '../movies-page';
 
-type MovieSpotlightModal = MoviesPageMovie & ModalProps;
+type MovieSpotlightModal = {
+  overview: string;
+  poster_path: string;
+  tagline?: string;
+  title: string;
+} & ModalProps;
 
 export const MovieSpotlightModal = ({
   title,
@@ -18,7 +22,7 @@ export const MovieSpotlightModal = ({
       <TheaterBackground>
         <MoviePoster poster_path={poster_path} title={title} variant="card" />
       </TheaterBackground>
-      <p className="mt-2 text-center text-sm text-slate-500">{tagline}</p>
+      {tagline && <p className="mt-2 text-center text-sm text-slate-500">{tagline}</p>}
       <p className="my-4">{overview}</p>
     </Modal>
   );
