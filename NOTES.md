@@ -12,20 +12,27 @@
 
 # TODO
 
-- migrations?
+- table element text should be selectable for easy copy/pasting
 
-- link oscars w/ actors and crew
-- should make an actors_on_oscars and crew_on_oscars table
-- many crew involved in oscars - would be good to normalize those recipients - comma or pipe separated, no additional words
-- have already fixed all actors and directors names, so should be easy to look those up
+- since DB is read-only at production time, the file can be bundled w/ deployments
+- so deploying to multiple regions for edge functions should be fast
+- currently only in west coast though - look into vercel pricing for multi-region
+
+- more views? annoying going thru join tables in prisma every time
+- oscar: won, name, category, crew, actors, movie
+
+- migrations?
 
 - searching for short title, e.g. "red"
 - need to return exact matches first (also show year in movie dropdown)
+- really should be able to search for anything
+- also run into search probs with accented characters - probably store normalized string alongside actual
 
 - oscars year should be table
-  - can take a year range
-  - movie | award | won | recipient
-  - also be cool to have top movies of that year by popularity / revenue / tmdb avg (can be a dynamic call)
+- can take a year range
+- movie | award | won | recipient
+- also be cool to have top movies of that year by popularity / revenue / tmdb avg (can be a dynamic call)
+
 - trpc caching (https://vercel.com/docs/edge-network/caching#how-to-cache-responses)
 - add more streamer options (Criterion, Tubi)
 - xstate update to v5

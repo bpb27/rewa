@@ -45,15 +45,19 @@ const run = async () => {
   const add = async (i: number) => {
     const oscar = mapped[i];
     if (!oscar) return console.log('done', i);
-    await prisma.oscars_nominations.update({
-      where: { id: oscar.oscarId },
-      data: { actor_id: oscar.actorId },
+    await prisma.actors_on_oscars.create({
+      data: { actor_id: oscar.actorId!, oscar_id: oscar.oscarId },
     });
     console.log(`added ${oscar.actorName} on ${oscar.movieName}`);
     add(i + 1);
   };
 
-  add(0);
+  const misses = mapped.filter(o => !o.actorId);
+  if (misses.length) {
+    console.log('missing', JSON.stringify(misses, null, 2));
+  } else {
+    add(0);
+  }
 };
 
 run();
