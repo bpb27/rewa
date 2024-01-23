@@ -23,8 +23,6 @@
 
 - migrations?
 
-- searching for short title, e.g. "red"
-- need to return exact matches first (also show year in movie dropdown)
 - really should be able to search for anything
 - also run into search probs with accented characters - probably store normalized string alongside actual
 
@@ -38,8 +36,6 @@
 - xstate update to v5
 - more crate and text
 - look into suspense for modals + sidebars + dialogs that are loading?
-- leaderboard hover show title and year in tooltip
-- figure out image console warning
 - title in table has extra padding that overlaps table border
 - tooltips and popovers should be centered aligned to content
 - streamer update strategy (ideally once a week cron)

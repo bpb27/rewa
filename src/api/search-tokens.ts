@@ -1,3 +1,4 @@
+import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
@@ -13,77 +14,95 @@ export const searchTokensParams = z.object({
 export const searchTokens = async ({ filter, search }: z.infer<typeof searchTokensParams>) => {
   const filterField = filter === 'rewa' ? ('episodes' as const) : ('oscars_nominations' as const);
 
-  const movies = await prisma.movies.findMany({
-    select: { id: true, title: true },
-    orderBy: { title: 'asc' },
-    where: {
-      title: { contains: search },
-      AND: { [filterField]: { some: {} } },
-    },
-    take: 5,
-  });
-
-  const actors = await prisma.actors.findMany({
-    select: { id: true, name: true },
-    orderBy: { actors_on_movies: { _count: 'desc' } },
-    where: {
-      name: { contains: search },
-      AND: { actors_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
-    },
-    take: 5,
-  });
-
-  const hosts = await prisma.hosts.findMany({
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-    where: { name: { contains: search } },
-    take: 5,
-  });
-
-  const keywords = await prisma.keywords.findMany({
-    select: { id: true, name: true },
-    orderBy: { keywords_on_movies: { _count: 'desc' } },
-    where: {
-      name: { contains: search },
-      AND: { keywords_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
-    },
-    take: 5,
-  });
-
-  const streamers = await prisma.streamers.findMany({
-    select: { id: true, name: true },
-    orderBy: { name: 'asc' },
-    where: {
-      name: { contains: search },
-      AND: {
-        name: { in: relevantStreamers },
+  const [exactMovies, movies, actors, hosts, keywords, streamers, directors] = await Promise.all([
+    // exact match is for short movie titles that may be cutoff in the subsequent query - e.g. the movie "Z"
+    // NB: title.equals is case sensitive, so using SW/EW
+    prisma.movies.findMany({
+      select: { id: true, title: true },
+      orderBy: { release_date: 'desc' },
+      where: {
+        AND: [
+          { title: { startsWith: search } },
+          { title: { endsWith: search } },
+          { [filterField]: { some: {} } },
+        ],
       },
-    },
-    take: 5,
-  });
+    }),
 
-  const directors = await prisma.crew.findMany({
-    select: { id: true, name: true },
-    orderBy: { crew_on_movies: { _count: 'desc' } },
-    where: {
-      name: { contains: search },
-      AND: [
-        {
-          crew_on_movies: {
-            some: {
-              job: 'Director',
-              movies: { [filterField]: { some: {} } },
+    prisma.movies.findMany({
+      select: { id: true, title: true },
+      orderBy: { title: 'asc' },
+      where: {
+        title: { contains: search },
+        AND: { [filterField]: { some: {} } },
+      },
+      take: 5,
+    }),
+
+    prisma.actors.findMany({
+      select: { id: true, name: true },
+      orderBy: { actors_on_movies: { _count: 'desc' } },
+      where: {
+        name: { contains: search },
+        AND: { actors_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+      },
+      take: 5,
+    }),
+
+    prisma.hosts.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+      where: { name: { contains: search } },
+      take: 5,
+    }),
+
+    prisma.keywords.findMany({
+      select: { id: true, name: true },
+      orderBy: { keywords_on_movies: { _count: 'desc' } },
+      where: {
+        name: { contains: search },
+        AND: { keywords_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
+      },
+      take: 5,
+    }),
+
+    prisma.streamers.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+      where: {
+        name: { contains: search },
+        AND: {
+          name: { in: relevantStreamers },
+        },
+      },
+      take: 5,
+    }),
+
+    prisma.crew.findMany({
+      select: { id: true, name: true },
+      orderBy: { crew_on_movies: { _count: 'desc' } },
+      where: {
+        name: { contains: search },
+        AND: [
+          {
+            crew_on_movies: {
+              some: {
+                job: 'Director',
+                movies: { [filterField]: { some: {} } },
+              },
             },
           },
-        },
-      ],
-    },
-    take: 5,
-  });
+        ],
+      },
+      take: 5,
+    }),
+  ]);
 
   const results = [
-    ...movies.map(item => tokenize('movie', item)),
-    ...hosts.map(item => tokenize('host', item)),
+    ...uniqBy([...exactMovies, ...movies], m => m.id)
+      .slice(0, 5)
+      .map(item => tokenize('movie', item)),
+    ...(filter === 'rewa' ? hosts : []).map(item => tokenize('host', item)),
     ...actors.map(item => tokenize('actor', item)),
     ...directors.map(item => tokenize('director', item)),
     ...streamers.map(item => tokenize('streamer', item)),
