@@ -1,9 +1,9 @@
+import { awardsMap } from '../../src/data/awards-map';
 import { createTable } from '../create-tables';
 import { connectToDb, dropTable } from '../general';
 import { prepareInsert } from '../insert';
-import data from '../oscars-data/oscars.json';
 import { categories } from '../oscars-data/categories';
-import { awardsMap } from '../../src/data/awards-map';
+import data from '../oscars-data/oscars.json';
 
 const run = async () => {
   const db = connectToDb();
@@ -33,10 +33,8 @@ const run = async () => {
   data.forEach((nomination, i) => {
     if (i % 1000 === 0) console.log('noms batch', i);
     inserter.oscarNomination.run({
-      actor_id: null,
       award_id: awardsHash[nomination.awardName],
       ceremony_year: nomination.ceremonyYear,
-      crew_id: null,
       film_year: nomination.movieYear,
       movie_id: nomination.movieRewaId,
       recipient: nomination.awardRecipient,

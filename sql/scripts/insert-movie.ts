@@ -40,15 +40,6 @@ const newEps = [
     hosts: ['Bill Simmons', 'Chris Ryan', 'Wesley Morris'],
     ebert: { rating: 3.5, path: '/reviews/philadelphia-1994' },
   },
-  {
-    tmdb_id: 82693,
-    title: 'Silver Linings Playbook',
-    episode_order: 329,
-    date: 'Jan 2023',
-    spotify_url: 'https://open.spotify.com/episode/7LDY9ZBci9jNgXdoWQbgxe?si=2bbe4035762e48eb',
-    hosts: ['Chris Ryan', 'Andy Greenwald', 'Zach Baron'],
-    ebert: { rating: 3.5, path: '/reviews/silver-linings-playbook-2012' },
-  },
 ];
 
 run(newEps[0]);
