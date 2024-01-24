@@ -36,7 +36,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
       <input
         className="w-full rounded-lg border p-4 text-lg shadow-md outline-none"
         onChange={e => setSearch(e.target.value)}
-        placeholder="Search titles, actors, keywords..."
+        placeholder="Search for something..."
         value={search}
       />
       <DialogOverlay
@@ -82,6 +82,9 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   {item.type === 'actor' && <Icon.Actor />}
                   {item.type === 'host' && <Icon.Mic />}
                   {item.type === 'director' && <Icon.Video />}
+                  {item.type === 'cinematographer' && <Icon.FilmStrip />}
+                  {item.type === 'producer' && <Icon.Dollar />}
+                  {item.type === 'writer' && <Icon.Pen />}
                   {item.type === 'streamer' && <Icon.Tv />}
                   {item.type === 'keyword' && <Icon.Key />}
                   <span className="ml-2">{item.name}</span>

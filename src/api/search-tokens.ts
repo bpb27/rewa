@@ -1,5 +1,6 @@
 import { uniqBy } from 'remeda';
 import { z } from 'zod';
+import { crewJobs } from '~/data/crew-jobs';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize } from '~/data/tokens';
 import { Prisma } from '~/prisma';
@@ -14,7 +15,38 @@ export const searchTokensParams = z.object({
 export const searchTokens = async ({ filter, search }: z.infer<typeof searchTokensParams>) => {
   const filterField = filter === 'rewa' ? ('episodes' as const) : ('oscars_nominations' as const);
 
-  const [exactMovies, movies, actors, hosts, keywords, streamers, directors] = await Promise.all([
+  const searchCrew = (jobs: string[], take: number) =>
+    prisma.crew.findMany({
+      select: { id: true, name: true },
+      orderBy: { crew_on_movies: { _count: 'desc' } },
+      where: {
+        name: { contains: search },
+        AND: [
+          {
+            crew_on_movies: {
+              some: {
+                job: { in: jobs },
+                movies: { [filterField]: { some: {} } },
+              },
+            },
+          },
+        ],
+      },
+      take,
+    });
+
+  const [
+    exactMovies,
+    movies,
+    actors,
+    hosts,
+    keywords,
+    streamers,
+    directors,
+    cinematographers,
+    writers,
+    producers,
+  ] = await Promise.all([
     // exact match is for short movie titles that may be cutoff in the subsequent query - e.g. the movie "Z"
     // NB: title.equals is case sensitive, so using SW/EW
     prisma.movies.findMany({
@@ -36,7 +68,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
         title: { contains: search },
         AND: { [filterField]: { some: {} } },
       },
-      take: 5,
+      take: 3,
     }),
 
     prisma.actors.findMany({
@@ -46,14 +78,14 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
         name: { contains: search },
         AND: { actors_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
       },
-      take: 5,
+      take: 3,
     }),
 
     prisma.hosts.findMany({
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
       where: { name: { contains: search } },
-      take: 5,
+      take: 3,
     }),
 
     prisma.keywords.findMany({
@@ -63,7 +95,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
         name: { contains: search },
         AND: { keywords_on_movies: { some: { movies: { [filterField]: { some: {} } } } } },
       },
-      take: 5,
+      take: 3,
     }),
 
     prisma.streamers.findMany({
@@ -75,36 +107,28 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
           name: { in: relevantStreamers },
         },
       },
-      take: 5,
+      take: 3,
     }),
 
-    prisma.crew.findMany({
-      select: { id: true, name: true },
-      orderBy: { crew_on_movies: { _count: 'desc' } },
-      where: {
-        name: { contains: search },
-        AND: [
-          {
-            crew_on_movies: {
-              some: {
-                job: 'Director',
-                movies: { [filterField]: { some: {} } },
-              },
-            },
-          },
-        ],
-      },
-      take: 5,
-    }),
+    searchCrew(crewJobs.director, 3),
+
+    searchCrew(crewJobs.cinematographer, 1),
+
+    searchCrew(crewJobs.writer, 1),
+
+    searchCrew(crewJobs.producer, 1),
   ]);
 
   const results = [
     ...uniqBy([...exactMovies, ...movies], m => m.id)
-      .slice(0, 5)
+      .slice(0, 3)
       .map(item => tokenize('movie', item)),
     ...(filter === 'rewa' ? hosts : []).map(item => tokenize('host', item)),
     ...actors.map(item => tokenize('actor', item)),
     ...directors.map(item => tokenize('director', item)),
+    ...cinematographers.map(item => tokenize('cinematographer', item)),
+    ...writers.map(item => tokenize('writer', item)),
+    ...producers.map(item => tokenize('producer', item)),
     ...streamers.map(item => tokenize('streamer', item)),
     ...keywords.map(item => tokenize('keyword', item)),
   ];

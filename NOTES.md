@@ -27,8 +27,7 @@
 
 - migrations?
 
-- really should be able to search for anything
-- also run into search probs with accented characters - probably store normalized string alongside actual
+- search probs with accented characters - probably store normalized string alongside actual
 
 - oscars year should be table
 - can take a year range

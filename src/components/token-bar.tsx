@@ -27,13 +27,32 @@ export const TokenBar = ({ clear, mode, tokens, toggleSearchMode, toggleToken }:
       )}
       {tokens.map(token => (
         <Button
+          className="flex gap-1"
           key={`${token.id}-${token.type}`}
           onClick={() => toggleToken(token)}
           variant="token"
         >
+          {icon(token.type)}
           {token.name}
         </Button>
       ))}
     </>
   );
+};
+
+const icon = (tokenType: Token['type']) => {
+  switch (tokenType) {
+    case 'director':
+      return <Icon.Movie />;
+    case 'actor':
+      return <Icon.Actor />;
+    case 'producer':
+      return <Icon.Dollar />;
+    case 'writer':
+      return <Icon.Pen />;
+    case 'cinematographer':
+      return <Icon.FilmStrip />;
+    default:
+      return '';
+  }
 };
