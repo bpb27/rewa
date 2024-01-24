@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { crewJobs } from '~/data/crew-jobs';
+import { movieModeFilter } from '~/data/movie-search-conditions';
 import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
@@ -9,6 +10,7 @@ export const getTopCrewParams = z.object({
   job: z.enum(['director', 'producer', 'cinematographer', 'writer']),
 });
 
+// todo: use crewJobs in data
 const WHERE_JOB = {
   director: {
     job: 'Director',
@@ -38,10 +40,7 @@ export const getTopCrew = async ({ job, mode }: z.infer<typeof getTopCrewParams>
     where: {
       OR: crewJobs[job].map(item => ({ job: item })),
       AND: {
-        movies: {
-          ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),
-          ...(mode === 'rewa' ? { episodes: { some: {} } } : undefined),
-        },
+        movies: movieModeFilter(mode),
       },
     },
     take: 30,
@@ -54,9 +53,10 @@ export const getTopCrew = async ({ job, mode }: z.infer<typeof getTopCrewParams>
           in: top.map(p => p.crew_id!),
         },
         ...WHERE_JOB[job],
+        movies: movieModeFilter(mode),
       },
     },
-    include: {
+    select: {
       crew: {
         select: {
           id: true,
@@ -70,8 +70,6 @@ export const getTopCrew = async ({ job, mode }: z.infer<typeof getTopCrewParams>
           poster_path: true,
           release_date: true,
           title: true,
-          episodes: { select: { id: true } },
-          oscars_nominations: { select: { id: true } },
         },
       },
     },
@@ -96,14 +94,7 @@ export const getTopCrew = async ({ job, mode }: z.infer<typeof getTopCrewParams>
   }, {});
 
   const response = Object.values(parsed)
-    .map(entry => ({
-      ...entry.person,
-      movies: entry.movies.filter(movie => {
-        if (mode === 'oscars') return movie.oscars_nominations.length;
-        if (mode === 'rewa') return movie.episodes.length;
-        return true;
-      }),
-    }))
+    .map(entry => ({ ...entry.person, movies: entry.movies }))
     .sort((a, b) => b.movies.length - a.movies.length);
 
   return response;

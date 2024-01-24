@@ -18,11 +18,11 @@ const movieImage = ({ name, path, size }: { name: string; path: string; size: nu
     unoptimized: true,
     src: '',
   } satisfies ImageProps;
-  if (size < 100) {
+  if (size <= 70) {
     props.src = tmdbMoviePosterPath(path, 92);
-  } else if (size < 200) {
+  } else if (size <= 185) {
     props.src = tmdbMoviePosterPath(path, 185);
-  } else if (size < 350) {
+  } else if (size <= 342) {
     props.src = tmdbMoviePosterPath(path, 342);
   } else {
     props.src = tmdbMoviePosterPath(path, 500);
@@ -74,7 +74,7 @@ export const MoviePoster = ({
   });
   return (
     <Image
-      className={cn('border-2 border-solid border-slate-700', className)}
+      className={cn('shrink-0 grow-0 border-2 border-solid border-slate-700', className)}
       onClick={onClick}
       {...imageProps}
       alt={imageProps.alt}

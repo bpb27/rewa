@@ -214,3 +214,8 @@ export const getSearches = (options: QpSchema) => {
     })
     .filter(Boolean);
 };
+
+export const movieModeFilter = (mode: 'rewa' | 'oscars'): PrismaBaseType.moviesWhereInput => ({
+  ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),
+  ...(mode === 'rewa' ? { episodes: { some: {} } } : undefined),
+});

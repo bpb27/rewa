@@ -12,6 +12,10 @@
 
 # TODO
 
+- more leaderboard: production companies, generes (rewa only? will be a lot), oscar actors, oscar directors
+
+- look for name extraction lib to get oscar links for writers and others
+
 - table element text should be selectable for easy copy/pasting
 
 - since DB is read-only at production time, the file can be bundled w/ deployments

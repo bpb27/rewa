@@ -4,7 +4,6 @@ import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
-import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { sortByDate } from '~/utils/sorting';
 import { cn } from '~/utils/style';
@@ -13,7 +12,18 @@ import { Text } from './ui/text';
 type TopCategoryProps = {
   category: 'actor' | 'director' | 'writer' | 'cinematographer' | 'producer';
   mode: 'rewa' | 'oscars';
-  people: ApiResponses['getTopActors'] | ApiResponses['getTopCrew'];
+  hideProfileImage?: boolean;
+  people: {
+    id: number;
+    name: string;
+    profile_path: string | null | undefined;
+    movies: {
+      id: number;
+      title: string;
+      release_date: string;
+      poster_path: string;
+    }[];
+  }[];
 };
 
 const tabTitles = {
@@ -33,12 +43,11 @@ const pageTitles = {
   writer: `Wrote ${pt}`,
 };
 
-export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
+export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
 
-  const [selected, select] = useState<
-    { movieId: number } | { actorId: number } | { movieId: number; actorId: number } | undefined
-  >(undefined);
+  type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
+  const [selected, select] = useState<Selected | undefined>(undefined);
 
   return (
     <Layout title={tabTitles[category]}>
@@ -47,25 +56,17 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
           <Text size="lg">{pageTitles[category]}</Text>
         </Crate>
       )}
-      {selected && 'movieId' in selected && (
-        <MovieCardSidebar {...selected} onClose={() => select(undefined)} />
-      )}
-      {selected && 'actorId' in selected && !('movieId' in selected) && (
-        <ActorCardSidebar
-          {...selected}
-          onClose={() => select(undefined)}
-          onSelectMovie={movieId => select({ actorId: selected.actorId, movieId })}
-        />
-      )}
       {rankByTotalMovies(people).map(person => (
         <Box.Person key={person.id}>
-          <Box.ProfilePic>
-            <PersonPoster
-              name={person.name}
-              poster_path={person.profile_path}
-              variant="leaderboard"
-            />
-          </Box.ProfilePic>
+          {!hideProfileImage && (
+            <Box.ProfilePic>
+              <PersonPoster
+                name={person.name}
+                poster_path={person.profile_path}
+                variant="leaderboard"
+              />
+            </Box.ProfilePic>
+          )}
           <Crate gap={2} column>
             <Text
               size="lg"
@@ -99,6 +100,16 @@ export const TopCategory = ({ category, mode, people }: TopCategoryProps) => {
           </Crate>
         </Box.Person>
       ))}
+      {selected && 'movieId' in selected && (
+        <MovieCardSidebar {...selected} onClose={() => select(undefined)} />
+      )}
+      {selected && 'actorId' in selected && !('movieId' in selected) && (
+        <ActorCardSidebar
+          {...selected}
+          onClose={() => select(undefined)}
+          onSelectMovie={movieId => select({ actorId: selected.actorId, movieId })}
+        />
+      )}
     </Layout>
   );
 };
