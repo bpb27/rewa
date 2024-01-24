@@ -100,8 +100,6 @@ const insertSchema = z.object({
     award_id: z.number(),
     ceremony_year: z.number(),
     film_year: z.number(),
-    actor_id: z.number().nullable(),
-    crew_id: z.number().nullable(),
     movie_id: z.number(),
     recipient: z.string(),
     won: z.number(),

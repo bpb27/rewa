@@ -201,12 +201,8 @@ CREATE TABLE IF NOT EXISTS ${TABLES.oscars_nominations} (
   recipient TEXT NOT NULL,
   movie_id INTEGER NOT NULL,
   award_id INTEGER NOT NULL,
-  actor_id INTEGER,
-  crew_id INTEGER,
   FOREIGN KEY (movie_id) REFERENCES ${TABLES.movies} (id) ON DELETE CASCADE,
   FOREIGN KEY (award_id) REFERENCES ${TABLES.oscars_awards} (id) ON DELETE CASCADE,
-  FOREIGN KEY (actor_id) REFERENCES ${TABLES.actors} (id) ON DELETE CASCADE,
-  FOREIGN KEY (crew_id) REFERENCES ${TABLES.crew} (id) ON DELETE CASCADE,
   UNIQUE (movie_id, award_id, recipient)
 );
 `;

@@ -32,17 +32,23 @@ const run = async (params: Movie | (Movie & Episode) | (Movie & Episode & Ebert)
 
 const newEps = [
   {
-    tmdb_id: 110,
+    tmdb_id: 9800,
+    title: 'Philadelphia',
+    episode_order: 330,
+    date: 'Jan 2023',
+    spotify_url: 'https://open.spotify.com/episode/0QEGoj8RVfG1nCKKMnwOwo?si=6240786b019e4acb',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Wesley Morris'],
+    ebert: { rating: 3.5, path: '/reviews/philadelphia-1994' },
   },
-  // {
-  //   tmdb_id: 87502,
-  //   title: 'Flight',
-  //   episode_order: 328,
-  //   date: 'Jan 2023',
-  //   spotify_url: 'https://open.spotify.com/episode/0qb8o0HGCry0hKA3sWFb9r?si=841dfebfbe9242d7',
-  //   hosts: ['Bill Simmons', 'Chris Ryan', 'Van Lathan'],
-  //   ebert: { rating: 4, path: '/reviews/flight-2012' },
-  // },
+  {
+    tmdb_id: 82693,
+    title: 'Silver Linings Playbook',
+    episode_order: 329,
+    date: 'Jan 2023',
+    spotify_url: 'https://open.spotify.com/episode/7LDY9ZBci9jNgXdoWQbgxe?si=2bbe4035762e48eb',
+    hosts: ['Chris Ryan', 'Andy Greenwald', 'Zach Baron'],
+    ebert: { rating: 3.5, path: '/reviews/silver-linings-playbook-2012' },
+  },
 ];
 
 run(newEps[0]);
