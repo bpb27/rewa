@@ -83,6 +83,7 @@ export const MoviePoster = ({
 };
 
 const PERSON_POSTER_VARIANT_SIZES = {
+  table: 62,
   card: 150,
   leaderboard: 185,
   tooltip: 185,

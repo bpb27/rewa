@@ -1,5 +1,5 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { Fragment, type PropsWithChildren } from 'react';
+import { useCallback, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
@@ -12,6 +12,7 @@ import { MoviePoster, PersonPoster } from './images';
 import { Crate } from './ui/box';
 import { PopoverMenu } from './ui/popover';
 import { StarRating } from './ui/stars';
+import { Table } from './ui/table';
 import { Text } from './ui/text';
 
 type MoviesTableProps = {
@@ -33,198 +34,175 @@ export const MoviesTable = ({
 }: MoviesTableProps) => {
   const showHosts = mode === 'rewa';
   const showEbert = mode === 'rewa';
+  const handleHeaderClick = useCallback(
+    (sortKey: SortKey) => () => onSortClick(sortKey),
+    [onSortClick]
+  );
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:whitespace-nowrap [&>th]:px-2 [&>th]:py-2">
-            <th>Poster</th>
-            <th
-              onClick={() => onSortClick('title')}
-              className="sticky left-0 cursor-pointer bg-gradient-to-r from-blue-100 from-90% to-blue-100/90"
-            >
-              Title
-            </th>
-            <th onClick={() => onSortClick('release_date')} className="cursor-pointer">
-              Year
-            </th>
-            <th onClick={() => onSortClick('director')} className="cursor-pointer">
-              Director
-            </th>
-            <th>Top Cast</th>
-            <th>Oscars</th>
-            {showHosts && <th>Hosts</th>}
-            <th onClick={() => onSortClick('budget')} className="cursor-pointer">
-              Budget
-            </th>
-            <th onClick={() => onSortClick('revenue')} className="cursor-pointer">
-              Box Office
-            </th>
-            <th onClick={() => onSortClick('runtime')} className="cursor-pointer">
-              Runtime
-            </th>
-            {showEbert && (
-              <th onClick={() => onSortClick('ebert')} className="cursor-pointer">
-                Our Guy
-              </th>
-            )}
-            <th>Keywords</th>
-            <th>Streaming</th>
-            <th>
-              <Crate>
-                Links <Icon.Link className="ml-2" />
+    <Table>
+      <Table.Head>
+        <Table.Header>Poster</Table.Header>
+        <Table.Header onClick={handleHeaderClick('title')} sticky>
+          Title
+        </Table.Header>
+        <Table.Header onClick={handleHeaderClick('release_date')}>Year</Table.Header>
+        <Table.Header onClick={handleHeaderClick('director')}>Director</Table.Header>
+        <Table.Header>Top Cast</Table.Header>
+        <Table.Header>Oscars</Table.Header>
+        {showHosts && <Table.Header>Hosts</Table.Header>}
+        <Table.Header onClick={handleHeaderClick('budget')}>Budget</Table.Header>
+        <Table.Header onClick={handleHeaderClick('revenue')}>Box Office</Table.Header>
+        <Table.Header onClick={handleHeaderClick('runtime')}>Runtime</Table.Header>
+        {showEbert && <Table.Header onClick={handleHeaderClick('ebert')}>Our Guy</Table.Header>}
+        <Table.Header>Keywords</Table.Header>
+        <Table.Header>Streaming</Table.Header>
+        <Table.Header>
+          <Crate>
+            Links <Icon.Link className="ml-2" />
+          </Crate>
+        </Table.Header>
+      </Table.Head>
+      <Table.Body>
+        {movies.map(m => (
+          <Table.Row key={m.id}>
+            <Table.Data>
+              <MoviePoster title={m.title} poster_path={m.poster_path} variant="table" />
+            </Table.Data>
+            <Table.Data sticky>
+              <Text bold onClick={() => onMovieTitleClick(m.id)}>
+                {m.title}
+              </Text>
+            </Table.Data>
+            <Table.Data>
+              <Text noWrap onClick={() => onTokenClick(m.year)}>
+                {m.year.name}
+              </Text>
+            </Table.Data>
+            <Table.Data>
+              <Crate column>
+                {m.directors.map(d => (
+                  <Text noWrap key={d.id} onClick={() => onTokenClick(d)}>
+                    {d.name}
+                  </Text>
+                ))}
+                <PopoverMenu content={<CrewPopover tokens={m.crew} onClick={onTokenClick} />}>
+                  <Text secondary>Show crew</Text>
+                </PopoverMenu>
               </Crate>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {movies.map(m => (
-            <Fragment key={m.id}>
-              {/* NB: can't add padding or margin to trs, or using empty row as a spacer */}
-              <tr className="h-4"></tr>
-              <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md [&>td]:px-2">
-                <td>
-                  <MoviePoster title={m.title} poster_path={m.poster_path} variant="table" />
-                </td>
-                <td className="sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3">
-                  <Text bold onClick={() => onMovieTitleClick(m.id)}>
-                    {m.title}
-                  </Text>
-                </td>
-                <td>
-                  <Text noWrap onClick={() => onTokenClick(m.year)}>
-                    {m.year.name}
-                  </Text>
-                </td>
-                <td>
-                  <Crate column>
-                    {m.directors.map(d => (
-                      <Text noWrap key={d.id} onClick={() => onTokenClick(d)}>
-                        {d.name}
-                      </Text>
-                    ))}
-                    <PopoverMenu content={<CrewPopover tokens={m.crew} onClick={onTokenClick} />}>
-                      <Text secondary>Show crew</Text>
-                    </PopoverMenu>
-                  </Crate>
-                </td>
-                <td>
-                  <Crate column>
-                    {m.actors.map(a => (
-                      <ImageTooltip key={a.id} path={a.profile_path} name={a.name}>
-                        <Text noWrap onClick={() => onTokenClick(a)} tag="span">
-                          {a.name}
-                        </Text>
-                      </ImageTooltip>
-                    ))}
-                  </Crate>
-                </td>
-                <td>
-                  <Crate column>
-                    <Text noWrap>{m.oscars.noms} noms</Text>
-                    <Text noWrap>{m.oscars.wins} wins</Text>
-                    <Text
-                      noWrap
-                      hide={!m.oscars.noms}
-                      onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
-                      secondary
-                    >
-                      Show
+            </Table.Data>
+            <Table.Data>
+              <Crate column>
+                {m.actors.map(a => (
+                  <ImageTooltip key={a.id} path={a.profile_path} name={a.name}>
+                    <Text noWrap onClick={() => onTokenClick(a)} tag="span">
+                      {a.name}
                     </Text>
-                  </Crate>
-                </td>
-                {showHosts && (
-                  <td>
-                    <Crate column>
-                      {m.hosts.slice(0, 3).map(h => (
-                        <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
-                          {h.name}
-                        </Text>
-                      ))}
-                      {m.hosts.length > 3 && (
-                        <PopoverMenu
-                          content={<StandardPopover tokens={m.hosts} onClick={onTokenClick} />}
-                        >
-                          <Text noWrap secondary>
-                            {m.hosts.length - 3} more
-                          </Text>
-                        </PopoverMenu>
-                      )}
-                    </Crate>
-                  </td>
-                )}
-                <td>
-                  <Text noWrap onClick={() => onTokenClick(m.budget)}>
-                    {m.budget.name}
-                  </Text>
-                </td>
-                <td>
-                  <Text noWrap onClick={() => onTokenClick(m.revenue)}>
-                    {m.revenue.name}
-                  </Text>
-                </td>
-                <td>
-                  <Text noWrap onClick={() => onTokenClick(m.runtime)}>
-                    {m.runtime.name}
-                  </Text>
-                </td>
-                {showEbert && (
-                  <td>
-                    <StarRating value={m.ebertReview?.rating} />
-                  </td>
-                )}
-                <td>
-                  <Crate column>
-                    {m.keywords.slice(0, 3).map(h => (
-                      <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
-                        {h.name}
+                  </ImageTooltip>
+                ))}
+              </Crate>
+            </Table.Data>
+            <Table.Data>
+              <Crate column>
+                <Text noWrap>{m.oscars.noms} noms</Text>
+                <Text noWrap>{m.oscars.wins} wins</Text>
+                <Text
+                  noWrap
+                  hide={!m.oscars.noms}
+                  onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
+                  secondary
+                >
+                  Show
+                </Text>
+              </Crate>
+            </Table.Data>
+            {showHosts && (
+              <Table.Data>
+                <Crate column>
+                  {m.hosts.slice(0, 3).map(h => (
+                    <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
+                      {h.name}
+                    </Text>
+                  ))}
+                  {m.hosts.length > 3 && (
+                    <PopoverMenu
+                      content={<StandardPopover tokens={m.hosts} onClick={onTokenClick} />}
+                    >
+                      <Text noWrap secondary>
+                        {m.hosts.length - 3} more
                       </Text>
-                    ))}
-                    {m.keywords.length > 3 && (
-                      <PopoverMenu
-                        content={<StandardPopover tokens={m.keywords} onClick={onTokenClick} />}
-                      >
-                        <Text noWrap secondary>
-                          {m.keywords.length - 3} more
-                        </Text>
-                      </PopoverMenu>
-                    )}
-                  </Crate>
-                </td>
-
-                <td>
-                  <Crate column>
-                    {m.streamers.map(s => (
-                      <Text noWrap key={s.id} onClick={() => onTokenClick(s)}>
-                        {streamerShortName(s.name)}
-                      </Text>
-                    ))}
-                  </Crate>
-                </td>
-
-                <td>
-                  <Crate column>
-                    <ImdbLink id={m.imdb_id} className="text-blue-500 underline">
-                      IMDB
-                    </ImdbLink>
-                    {!!m.episode && (
-                      <SpotifyLink url={m.episode.spotify_url} className="text-blue-500 underline">
-                        Spotify
-                      </SpotifyLink>
-                    )}
-                    {!!m.ebertReview?.path && (
-                      <EbertLink path={m.ebertReview.path} className="text-blue-500 underline">
-                        Ebert
-                      </EbertLink>
-                    )}
-                  </Crate>
-                </td>
-              </tr>
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                    </PopoverMenu>
+                  )}
+                </Crate>
+              </Table.Data>
+            )}
+            <Table.Data>
+              <Text noWrap onClick={() => onTokenClick(m.budget)}>
+                {m.budget.name}
+              </Text>
+            </Table.Data>
+            <Table.Data>
+              <Text noWrap onClick={() => onTokenClick(m.revenue)}>
+                {m.revenue.name}
+              </Text>
+            </Table.Data>
+            <Table.Data>
+              <Text noWrap onClick={() => onTokenClick(m.runtime)}>
+                {m.runtime.name}
+              </Text>
+            </Table.Data>
+            {showEbert && (
+              <Table.Data>
+                <StarRating value={m.ebertReview?.rating} />
+              </Table.Data>
+            )}
+            <Table.Data>
+              <Crate column>
+                {m.keywords.slice(0, 3).map(h => (
+                  <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
+                    {h.name}
+                  </Text>
+                ))}
+                {m.keywords.length > 3 && (
+                  <PopoverMenu
+                    content={<StandardPopover tokens={m.keywords} onClick={onTokenClick} />}
+                  >
+                    <Text noWrap secondary>
+                      {m.keywords.length - 3} more
+                    </Text>
+                  </PopoverMenu>
+                )}
+              </Crate>
+            </Table.Data>
+            <Table.Data>
+              <Crate column>
+                {m.streamers.map(s => (
+                  <Text noWrap key={s.id} onClick={() => onTokenClick(s)}>
+                    {streamerShortName(s.name)}
+                  </Text>
+                ))}
+              </Crate>
+            </Table.Data>
+            <Table.Data>
+              <Crate column>
+                <ImdbLink id={m.imdb_id} className="text-blue-500 underline">
+                  IMDB
+                </ImdbLink>
+                {!!m.episode && (
+                  <SpotifyLink url={m.episode.spotify_url} className="text-blue-500 underline">
+                    Spotify
+                  </SpotifyLink>
+                )}
+                {!!m.ebertReview?.path && (
+                  <EbertLink path={m.ebertReview.path} className="text-blue-500 underline">
+                    Ebert
+                  </EbertLink>
+                )}
+              </Crate>
+            </Table.Data>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table>
   );
 };
 
