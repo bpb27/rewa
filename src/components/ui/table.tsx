@@ -2,7 +2,7 @@ import { Fragment, PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
 
 export const Table = ({ children }: PropsWithChildren<{}>) => (
-  <div className="overflow-x-auto">
+  <div className="overflow-x-auto text-sm">
     <table className="w-full">{children}</table>
   </div>
 );
