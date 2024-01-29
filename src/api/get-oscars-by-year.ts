@@ -49,9 +49,11 @@ export const getOscarsByYear = async ({
   return response.map(nom => ({
     id: nom.id,
     actors: nom.actors_on_oscars.map(jt => jt.actors),
+    awardId: nom.award.id,
     awardName: nom.award.name,
     categoryId: nom.award.oscars_categories.id,
     categoryName: nom.award.oscars_categories.name,
+    categoryRelevance: nom.award.oscars_categories.relevance,
     ceremonyYear: nom.ceremony_year,
     crew: nom.crew_on_oscars.map(jt => jt.crew),
     movie: nom.movie,

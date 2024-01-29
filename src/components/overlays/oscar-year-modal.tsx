@@ -20,7 +20,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
-  const movieSpotlight = data.filter(a => a.movie_id === movieId);
+  const movieSpotlight = data.filter(a => a.movie.id === movieId);
   return (
     <Modal {...modalProps} className="p-3">
       <div className="my-8 flex items-center justify-between" ref={containerRef}>
@@ -48,7 +48,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
             key={movieSpotlight[0].id}
             name={movieSpotlight[0].movie.title.toUpperCase()}
             items={movieSpotlight.map(a => ({
-              movie: a.award.name,
+              movie: a.awardName,
               recipient: a.recipient,
               won: a.won,
             }))}
@@ -56,14 +56,12 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
         )}
       </div>
       <div>
-        {Object.values(groupBy(data, item => item.award.id))
-          .filter(group =>
-            limitAwards ? group.every(e => e.award.oscars_categories.relevance === 'high') : true
-          )
+        {Object.values(groupBy(data, item => item.awardId))
+          .filter(group => (limitAwards ? group.every(e => e.categoryRelevance === 'high') : true))
           .map(group => (
             <AwardCategory
               key={group[0].id}
-              name={group[0].award.name}
+              name={group[0].awardName}
               items={smartSort(group, i => i.movie.title).map(a => ({
                 movie: a.movie.title,
                 recipient: a.recipient,
