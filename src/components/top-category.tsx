@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
@@ -10,7 +11,7 @@ import { cn } from '~/utils/style';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
-  category: 'actor' | 'director' | 'writer' | 'cinematographer' | 'producer';
+  category: keyof typeof titles;
   mode: 'rewa' | 'oscars';
   hideProfileImage?: boolean;
   people: {
@@ -26,34 +27,26 @@ type TopCategoryProps = {
   }[];
 };
 
-const tabTitles = {
-  actor: 'Top Actors',
-  cinematographer: 'Top Cinematographers',
-  director: 'Top Directors',
-  producer: 'Top Producers',
-  writer: 'Top Writers',
-};
-
-const pt = 'the most Oscar-nominated movies since 1950';
-const pageTitles = {
-  actor: `Acted in ${pt}`,
-  cinematographer: `Filmed ${pt}`,
-  director: `Directed ${pt}`,
-  producer: `Produced ${pt}`,
-  writer: `Wrote ${pt}`,
-};
-
 export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
-
+  const { heading, tab, subtext, subtextLink } = titles[category];
   type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
   const [selected, select] = useState<Selected | undefined>(undefined);
 
   return (
-    <Layout title={tabTitles[category]}>
+    <Layout title={tab}>
       {mode === 'oscars' && (
-        <Crate mb={3} justifyCenter>
-          <Text size="lg">{pageTitles[category]}</Text>
+        <Crate mb={3} px={2} pt={3} pb={2} column gap={2} alignCenter>
+          <Text size="lg" bold>
+            {heading}
+          </Text>
+          {subtext && (
+            <Link href={subtextLink}>
+              <Text secondary icon="ArrowRight" iconOrientation="right">
+                {subtext}
+              </Text>
+            </Link>
+          )}
         </Crate>
       )}
       {rankByTotalMovies(people).map(person => (
@@ -133,3 +126,49 @@ const Box = {
     </div>
   ),
 } satisfies Boxes;
+
+const pageTitle = 'the most Oscar-nominated movies (since 1950)';
+const titles = {
+  actor: {
+    tab: 'Top Actors',
+    heading: `Acted in ${pageTitle}`,
+    subtext: 'See most acting nominations',
+    subtextLink: '/oscars/top/actors-noms',
+  },
+  actorNoms: {
+    tab: 'Top Actors (Oscar Nominations)',
+    heading: `Best Actor and Supporting Actor nominations (since 1950)`,
+    subtext: 'See acted in most Oscar-nominated movies',
+    subtextLink: '/oscars/top/actors',
+  },
+  cinematographer: {
+    tab: 'Top Cinematographers',
+    heading: `Filmed ${pageTitle}`,
+    subtext: '',
+    subtextLink: '',
+  },
+  director: {
+    tab: 'Top Directors',
+    heading: `Directed ${pageTitle}`,
+    subtext: 'See most directing nominations',
+    subtextLink: '/oscars/top/directors-noms',
+  },
+  directorNoms: {
+    tab: 'Top Directors (Oscar Nominations)',
+    heading: `Best Director nominations (since 1950)`,
+    subtext: 'See directed most Oscar-nominated movies',
+    subtextLink: '/oscars/top/directors',
+  },
+  producer: {
+    tab: 'Top Producers',
+    heading: `Produced ${pageTitle}`,
+    subtext: '',
+    subtextLink: '',
+  },
+  writer: {
+    tab: 'Top Writers',
+    heading: `Wrote ${pageTitle}`,
+    subtext: '',
+    subtextLink: '',
+  },
+};

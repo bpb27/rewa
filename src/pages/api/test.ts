@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getTopProductionCompanies } from '~/api/get-top-production-companies';
-import { Prisma } from '~/prisma';
-
-const prisma = Prisma.getPrisma();
+import { getTopOscarActors } from '~/api/get-top-oscar-actors';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const stuff = await getTopProductionCompanies({ mode: 'oscars' });
+  const stuff = await getTopOscarActors();
   res.status(200).json(stuff);
 }
