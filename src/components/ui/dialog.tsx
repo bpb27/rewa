@@ -1,6 +1,7 @@
-import { useState, type PropsWithChildren, useEffect, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { type PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
+import { useOverflowedOffScreen } from '~/utils/use-overflowed-off-screen';
 
 type DialogOverlayProps = PropsWithChildren<{
   className?: string;
@@ -16,19 +17,12 @@ export const DialogOverlay = ({
   onClose,
   isOpen,
 }: DialogOverlayProps) => {
-  const [ref, setRef] = useState<HTMLDivElement | null>(null);
-  const [offScreen, setOffScreen] = useState(false);
-
-  useEffect(() => {
-    const rightPosition = ref?.getBoundingClientRect()?.right || 0;
-    setOffScreen(rightPosition > window.innerWidth);
-  }, [ref]);
-
+  const { offScreen, setOffScreenRef } = useOverflowedOffScreen();
   return (
     <Dialog.Root modal={false} open={isOpen}>
       <Dialog.Portal container={container}>
         <Dialog.Content
-          ref={setRef}
+          ref={setOffScreenRef}
           className={cn('absolute z-10', offScreen ? 'right-0' : '', className)}
           onEscapeKeyDown={onClose}
           onInteractOutside={e => {

@@ -1,15 +1,14 @@
 import * as Nav from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { Icon } from '~/components/ui/icons';
 import { capitalize } from '~/utils/format';
 import { NAV } from '~/utils/nav-routes';
 import { cn } from '~/utils/style';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { useOverflowedOffScreen } from '~/utils/use-overflowed-off-screen';
 
 // TODO: preserve params across mode
 export const Navbar = () => {
-  const router = useRouter();
   const mode = useMovieMode();
   return (
     <Nav.Root
@@ -67,49 +66,55 @@ export const Navbar = () => {
               aria-hidden
             />
           </Nav.Trigger>
-          <Nav.Content className="absolute rounded-b-md bg-slate-600 shadow-lg">
-            {mode === 'rewa' && (
-              <Menu
-                items={[
-                  { href: NAV.rewa.top.actors, text: 'Actors' },
-                  { href: NAV.rewa.top.directors, text: 'Directors' },
-                  { href: NAV.rewa.top.writers, text: 'Writers' },
-                  { href: NAV.rewa.top.cinematographers, text: 'Cinematographers' },
-                  { href: NAV.rewa.top.producers, text: 'Producers' },
-                  { href: NAV.rewa.top.companies, text: 'Production Companies' },
-                ]}
-              />
-            )}
-            {mode === 'oscar' && (
-              <Menu
-                items={[
-                  { href: NAV.oscar.top.actorsNoms, text: 'Actors (most noms)' },
-                  { href: NAV.oscar.top.actors, text: 'Actors (most films)' },
-                  { href: NAV.oscar.top.directorsNoms, text: 'Directors (most noms)' },
-                  { href: NAV.oscar.top.directors, text: 'Directors (most films)' },
-                  { href: NAV.oscar.top.writers, text: 'Writers' },
-                  { href: NAV.oscar.top.cinematographers, text: 'Cinematographers' },
-                  { href: NAV.oscar.top.producers, text: 'Producers' },
-                ]}
-              />
-            )}
-          </Nav.Content>
+          {mode === 'rewa' && (
+            <Menu
+              items={[
+                { href: NAV.rewa.top.actors, text: 'Actors' },
+                { href: NAV.rewa.top.directors, text: 'Directors' },
+                { href: NAV.rewa.top.writers, text: 'Writers' },
+                { href: NAV.rewa.top.cinematographers, text: 'Cinematographers' },
+                { href: NAV.rewa.top.producers, text: 'Producers' },
+                { href: NAV.rewa.top.companies, text: 'Production Companies' },
+              ]}
+            />
+          )}
+          {mode === 'oscar' && (
+            <Menu
+              items={[
+                { href: NAV.oscar.top.actorsNoms, text: 'Actors (most noms)' },
+                { href: NAV.oscar.top.actors, text: 'Actors (most films)' },
+                { href: NAV.oscar.top.directorsNoms, text: 'Directors (most noms)' },
+                { href: NAV.oscar.top.directors, text: 'Directors (most films)' },
+                { href: NAV.oscar.top.writers, text: 'Writers' },
+                { href: NAV.oscar.top.cinematographers, text: 'Cinematographers' },
+                { href: NAV.oscar.top.producers, text: 'Producers' },
+              ]}
+            />
+          )}
         </Nav.Item>
       </Nav.List>
     </Nav.Root>
   );
 };
 
-const Menu = ({ items }: { items: { href: string; text: string }[] }) => (
-  <ul className="p-3">
-    {items.map(item => (
-      <li key={item.href} className="hover:bg-slate-500">
-        <Nav.Link asChild>
-          <Link href={item.href} className="block p-1">
-            {item.text}
-          </Link>
-        </Nav.Link>
-      </li>
-    ))}
-  </ul>
-);
+const Menu = ({ items }: { items: { href: string; text: string }[] }) => {
+  const { offScreen, setOffScreenRef } = useOverflowedOffScreen();
+  return (
+    <Nav.Content
+      ref={setOffScreenRef}
+      className={cn('absolute rounded-b-md bg-slate-600 shadow-lg', offScreen ? 'right-0' : '')}
+    >
+      <ul className="p-3">
+        {items.map(item => (
+          <li key={item.href} className="hover:bg-slate-500">
+            <Nav.Link asChild>
+              <Link href={item.href} className="block p-1">
+                {item.text}
+              </Link>
+            </Nav.Link>
+          </li>
+        ))}
+      </ul>
+    </Nav.Content>
+  );
+};
