@@ -27,7 +27,7 @@ type TopCategoryProps = {
 };
 
 export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCategoryProps) => {
-  const isActor = useMemo(() => category === 'actor', [category]);
+  const isActor = useMemo(() => category === 'actor' || category === 'actorNoms', [category]);
   const { heading, tab } = titles[category];
   type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
   const [selected, select] = useState<Selected | undefined>(undefined);

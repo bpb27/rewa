@@ -32,13 +32,13 @@ const run = async (params: Movie | (Movie & Episode) | (Movie & Episode & Ebert)
 
 const newEps = [
   {
-    tmdb_id: 9800,
-    title: 'Philadelphia',
-    episode_order: 330,
+    tmdb_id: 9008,
+    title: 'The Insider',
+    episode_order: 331,
     date: 'Jan 2023',
-    spotify_url: 'https://open.spotify.com/episode/0QEGoj8RVfG1nCKKMnwOwo?si=6240786b019e4acb',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Wesley Morris'],
-    ebert: { rating: 3.5, path: '/reviews/philadelphia-1994' },
+    spotify_url: 'https://open.spotify.com/episode/2wnlO2GLqJwoP1YskNEbLy?si=accc19179df644c0',
+    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
+    ebert: { rating: 3.5, path: '/reviews/the-insider-1999' },
   },
 ];
 
