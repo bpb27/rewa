@@ -1,3 +1,8 @@
+# VSCode
+
+- copy line down: shift + option + down
+- multiline cursor on selection: shift + option + i
+
 # How To
 
 ## Add a new table
@@ -12,7 +17,11 @@
 
 # TODO
 
-- more leaderboard: production companies, generes (rewa only? will be a lot), oscar actors, oscar directors
+- sidebar needs to be better - spacing inconsistent
+
+- manual leaderboard nav + props for title
+- Actors (most Oscar-nominated films)
+- Actors (most Oscar acting noms)
 
 - look for name extraction lib to get oscar links for writers and others
 

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
@@ -29,24 +28,17 @@ type TopCategoryProps = {
 
 export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCategoryProps) => {
   const isActor = useMemo(() => category === 'actor', [category]);
-  const { heading, tab, subtext, subtextLink } = titles[category];
+  const { heading, tab } = titles[category];
   type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
   const [selected, select] = useState<Selected | undefined>(undefined);
 
   return (
     <Layout title={tab}>
       {mode === 'oscars' && (
-        <Crate mb={3} px={2} pt={3} pb={2} column gap={2} alignCenter>
+        <Crate mb={3} px={2} pt={3} pb={2} column alignCenter>
           <Text size="lg" bold>
             {heading}
           </Text>
-          {subtext && (
-            <Link href={subtextLink}>
-              <Text secondary icon="ArrowRight" iconOrientation="right">
-                {subtext}
-              </Text>
-            </Link>
-          )}
         </Crate>
       )}
       {rankByTotalMovies(people).map(person => (
@@ -60,9 +52,10 @@ export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCat
               />
             </Box.ProfilePic>
           )}
-          <Crate gap={2} column>
+          <Crate gap={3} column>
             <Text
               size="lg"
+              className="ml-1 mt-2"
               onClick={isActor ? () => select({ actorId: person.id }) : undefined}
               flex={false}
               tag="span"
@@ -78,16 +71,17 @@ export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCat
               {person.movies
                 .sort((a, b) => sortByDate(a.release_date, b.release_date))
                 .map(m => (
-                  <MoviePoster
-                    className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
-                    key={m.id}
-                    poster_path={m.poster_path}
-                    variant="leaderboard"
-                    title={m.title}
-                    onClick={() =>
-                      select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
-                    }
-                  />
+                  <Box.MoviePoster key={m.id}>
+                    <MoviePoster
+                      className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
+                      poster_path={m.poster_path}
+                      variant="leaderboard"
+                      title={m.title}
+                      onClick={() =>
+                        select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
+                      }
+                    />
+                  </Box.MoviePoster>
                 ))}
             </Box.MovieBar>
           </Crate>
@@ -125,6 +119,7 @@ const Box = {
       {children}
     </div>
   ),
+  MoviePoster: ({ children }) => <div className="shrink-0">{children}</div>,
 } satisfies Boxes;
 
 const pageTitle = 'the most Oscar-nominated movies (since 1950)';
@@ -132,43 +127,29 @@ const titles = {
   actor: {
     tab: 'Top Actors',
     heading: `Acted in ${pageTitle}`,
-    subtext: 'See most acting nominations',
-    subtextLink: '/oscars/top/actors-noms',
   },
   actorNoms: {
     tab: 'Top Actors (Oscar Nominations)',
     heading: `Best Actor and Supporting Actor nominations (since 1950)`,
-    subtext: 'See acted in most Oscar-nominated movies',
-    subtextLink: '/oscars/top/actors',
   },
   cinematographer: {
     tab: 'Top Cinematographers',
     heading: `Filmed ${pageTitle}`,
-    subtext: '',
-    subtextLink: '',
   },
   director: {
     tab: 'Top Directors',
     heading: `Directed ${pageTitle}`,
-    subtext: 'See most directing nominations',
-    subtextLink: '/oscars/top/directors-noms',
   },
   directorNoms: {
     tab: 'Top Directors (Oscar Nominations)',
     heading: `Best Director nominations (since 1950)`,
-    subtext: 'See directed most Oscar-nominated movies',
-    subtextLink: '/oscars/top/directors',
   },
   producer: {
     tab: 'Top Producers',
     heading: `Produced ${pageTitle}`,
-    subtext: '',
-    subtextLink: '',
   },
   writer: {
     tab: 'Top Writers',
     heading: `Wrote ${pageTitle}`,
-    subtext: '',
-    subtextLink: '',
   },
 };
