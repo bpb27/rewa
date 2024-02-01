@@ -1,0 +1,1262 @@
+[
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "ACTOR",
+    "name": "Richard Barthelmess",
+    "film": "The Noose",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "ACTOR",
+    "name": "Emil Jannings",
+    "film": "The Last Command",
+    "winner": true
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "ACTRESS",
+    "name": "Louise Dresser",
+    "film": "A Ship Comes In",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "ACTRESS",
+    "name": "Gloria Swanson",
+    "film": "Sadie Thompson",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "ART DIRECTION",
+    "name": "William Cameron Menzies",
+    "film": "The Dove;",
+    "winner": true
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "DIRECTING (Comedy Picture)",
+    "name": "Ted Wilde",
+    "film": "Speedy",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "DIRECTING (Dramatic Picture)",
+    "name": "King Vidor",
+    "film": "The Crowd",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "OUTSTANDING PICTURE",
+    "name": "The Caddo Company",
+    "film": "The Racket",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "UNIQUE AND ARTISTIC PICTURE",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "The Crowd",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "UNIQUE AND ARTISTIC PICTURE",
+    "name": "Paramount Famous Lasky",
+    "film": "Chang",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "WRITING (Adaptation)",
+    "name": "Alfred Cohn",
+    "film": "The Jazz Singer",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "WRITING (Adaptation)",
+    "name": "Anthony Coldeway",
+    "film": "Glorious Betsy",
+    "winner": false
+  },
+  {
+    "year_film": 1927,
+    "year_ceremony": 1928,
+    "ceremony": 1,
+    "category": "WRITING (Original Story)",
+    "name": "Lajos Biro",
+    "film": "The Last Command",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTOR",
+    "name": "George Bancroft",
+    "film": "Thunderbolt",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTOR",
+    "name": "Chester Morris",
+    "film": "Alibi",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTOR",
+    "name": "Paul Muni",
+    "film": "The Valiant",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTRESS",
+    "name": "Ruth Chatterton",
+    "film": "Madame X",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTRESS",
+    "name": "Jeanne Eagels",
+    "film": "The Letter",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ACTRESS",
+    "name": "Bessie Love",
+    "film": "The Broadway Melody",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ART DIRECTION",
+    "name": "Cedric Gibbons",
+    "film": "The Bridge of San Luis Rey",
+    "winner": true
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ART DIRECTION",
+    "name": "Mitchell Leisen",
+    "film": "Dynamite",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "ART DIRECTION",
+    "name": "William Cameron Menzies",
+    "film": "Alibi;",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "DIRECTING",
+    "name": "Lionel Barrymore",
+    "film": "Madame X",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "DIRECTING",
+    "name": "Harry Beaumont",
+    "film": "The Broadway Melody",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "DIRECTING",
+    "name": "Frank Lloyd",
+    "film": "Drag;",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "OUTSTANDING PICTURE",
+    "name": "Feature Productions",
+    "film": "Alibi",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "OUTSTANDING PICTURE",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "The Broadway Melody",
+    "winner": true
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "OUTSTANDING PICTURE",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "Hollywood Revue",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "WRITING",
+    "name": "Elliott Clawson",
+    "film": "The Cop;",
+    "winner": false
+  },
+  {
+    "year_film": 1928,
+    "year_ceremony": 1929,
+    "ceremony": 2,
+    "category": "WRITING",
+    "name": "Hans Kraly",
+    "film": "The Last of Mrs. Cheyney",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTOR",
+    "name": "George Arliss",
+    "film": "The Green Goddess",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTOR",
+    "name": "Wallace Beery",
+    "film": "The Big House",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTOR",
+    "name": "Maurice Chevalier",
+    "film": "The Big Pond",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTOR",
+    "name": "Lawrence Tibbett",
+    "film": "The Rogue Song",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTRESS",
+    "name": "Nancy Carroll",
+    "film": "The Devil's Holiday",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTRESS",
+    "name": "Ruth Chatterton",
+    "film": "Sarah and Son",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTRESS",
+    "name": "Greta Garbo",
+    "film": "Anna Christie",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ACTRESS",
+    "name": "Norma Shearer",
+    "film": "The Divorcee",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ART DIRECTION",
+    "name": "Herman Rosse",
+    "film": "King of Jazz",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ART DIRECTION",
+    "name": "(Hans Dreier)",
+    "film": "The Love Parade",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "ART DIRECTION",
+    "name": "(Hans Dreier)",
+    "film": "The Vagabond King",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "CINEMATOGRAPHY",
+    "name": "(Arthur Edeson)",
+    "film": "All Quiet on the Western Front",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "CINEMATOGRAPHY",
+    "name": "(William Daniels)",
+    "film": "Anna Christie",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "CINEMATOGRAPHY",
+    "name": "(Gaetano Gaudio), (Harry Perry)",
+    "film": "Hell's Angels",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "CINEMATOGRAPHY",
+    "name": "(Victor Milner)",
+    "film": "The Love Parade",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "CINEMATOGRAPHY",
+    "name": "Joseph T. Rucker, Willard Van Der Veer",
+    "film": "With Byrd at the South Pole",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "DIRECTING",
+    "name": "Clarence Brown",
+    "film": "Anna Christie;",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "DIRECTING",
+    "name": "Robert Leonard",
+    "film": "The Divorcee",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "DIRECTING",
+    "name": "Ernst Lubitsch",
+    "film": "The Love Parade",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "DIRECTING",
+    "name": "Lewis Milestone",
+    "film": "All Quiet on the Western Front",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Universal",
+    "film": "All Quiet on the Western Front",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Cosmopolitan",
+    "film": "The Big House",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "The Divorcee",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Paramount Famous Lasky",
+    "film": "The Love Parade",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "SOUND RECORDING",
+    "name": "Metro-Goldwyn-Mayer Studio Sound Department, Douglas Shearer, Sound Director",
+    "film": "The Big House",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "SOUND RECORDING",
+    "name": "(RKO Radio Studio Sound Department, John Tribby, Sound Director)",
+    "film": "The Case of Sergeant Grischa",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "SOUND RECORDING",
+    "name": "(Paramount Famous Lasky Studio Sound Department, Franklin Hansen, Sound Director)",
+    "film": "The Love Parade",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "SOUND RECORDING",
+    "name": "(First National Studio Sound Department, George Groves, Sound Director)",
+    "film": "Song of the Flame",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "WRITING",
+    "name": "(George Abbott), (Maxwell Anderson), (Del Andrews)",
+    "film": "All Quiet on the Western Front",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "WRITING",
+    "name": "Frances Marion",
+    "film": "The Big House",
+    "winner": true
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "WRITING",
+    "name": "(John Meehan)",
+    "film": "The Divorcee",
+    "winner": false
+  },
+  {
+    "year_film": 1929,
+    "year_ceremony": 1930,
+    "ceremony": 3,
+    "category": "WRITING",
+    "name": "(Howard Estabrook)",
+    "film": "Street of Chance",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ACTOR",
+    "name": "Lionel Barrymore",
+    "film": "A Free Soul",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ACTOR",
+    "name": "Jackie Cooper",
+    "film": "Skippy",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ACTOR",
+    "name": "Richard Dix",
+    "film": "Cimarron",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ACTRESS",
+    "name": "Irene Dunne",
+    "film": "Cimarron",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ACTRESS",
+    "name": "Norma Shearer",
+    "film": "A Free Soul",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "ART DIRECTION",
+    "name": "Max Rée",
+    "film": "Cimarron",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "CINEMATOGRAPHY",
+    "name": "Edward Cronjager",
+    "film": "Cimarron",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "CINEMATOGRAPHY",
+    "name": "Floyd Crosby",
+    "film": "Tabu",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "DIRECTING",
+    "name": "Wesley Ruggles",
+    "film": "Cimarron",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "DIRECTING",
+    "name": "Clarence Brown",
+    "film": "A Free Soul",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "DIRECTING",
+    "name": "Norman Taurog",
+    "film": "Skippy",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "RKO Radio",
+    "film": "Cimarron",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Fox",
+    "film": "East Lynne",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Paramount Publix",
+    "film": "Skippy",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "Trader Horn",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Adaptation)",
+    "name": "Howard Estabrook",
+    "film": "Cimarron",
+    "winner": true
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Adaptation)",
+    "name": "Seton I. Miller, Fred Niblo, Jr.",
+    "film": "The Criminal Code",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Adaptation)",
+    "name": "Francis Faragoh, Robert N. Lee",
+    "film": "Little Caesar",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Adaptation)",
+    "name": "Joseph L. Mankiewicz, Sam Mintz",
+    "film": "Skippy",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Original Story)",
+    "name": "John Bright, Kubec Glasmon",
+    "film": "The Public Enemy",
+    "winner": false
+  },
+  {
+    "year_film": 1930,
+    "year_ceremony": 1931,
+    "ceremony": 4,
+    "category": "WRITING (Original Story)",
+    "name": "Lucien Hubbard, Joseph Jackson",
+    "film": "Smart Money",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "ACTRESS",
+    "name": "Marie Dressler",
+    "film": "Emma",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "CINEMATOGRAPHY",
+    "name": "Lee Garmes",
+    "film": "Shanghai Express",
+    "winner": true
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "DIRECTING",
+    "name": "Josef Von Sternberg",
+    "film": "Shanghai Express",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Metro-Goldwyn-Mayer",
+    "film": "Grand Hotel",
+    "winner": true
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Paramount Publix",
+    "film": "One Hour with You",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Paramount Publix",
+    "film": "Shanghai Express",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "WRITING (Original Story)",
+    "name": "Grover Jones, William Slavens McNutt",
+    "film": "Lady and Gent",
+    "winner": false
+  },
+  {
+    "year_film": 1931,
+    "year_ceremony": 1932,
+    "ceremony": 5,
+    "category": "WRITING (Original Story)",
+    "name": "Adela Rogers St. Johns, Jane Murfin",
+    "film": "What Price Hollywood?",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ACTOR",
+    "name": "Leslie Howard",
+    "film": "Berkeley Square",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ACTOR",
+    "name": "Charles Laughton",
+    "film": "The Private Life of Henry VIII",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ACTRESS",
+    "name": "Katharine Hepburn",
+    "film": "Morning Glory",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ACTRESS",
+    "name": "May Robson",
+    "film": "Lady for a Day",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ACTRESS",
+    "name": "Diana Wynyard",
+    "film": "Cavalcade",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ART DIRECTION",
+    "name": "William S. Darling",
+    "film": "Cavalcade",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "ART DIRECTION",
+    "name": "Cedric Gibbons",
+    "film": "When Ladies Meet",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "CINEMATOGRAPHY",
+    "name": "George J. Folsey",
+    "film": "Reunion in Vienna",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "DIRECTING",
+    "name": "Frank Lloyd",
+    "film": "Cavalcade",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "DIRECTING",
+    "name": "Frank Capra",
+    "film": "Lady for a Day",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "DIRECTING",
+    "name": "George Cukor",
+    "film": "Little Women",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Fox",
+    "film": "Cavalcade",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Warner Bros.",
+    "film": "42nd Street",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Columbia",
+    "film": "Lady for a Day",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "RKO Radio",
+    "film": "Little Women",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "London Films",
+    "film": "The Private Life of Henry VIII",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Paramount",
+    "film": "She Done Him Wrong",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "Fox",
+    "film": "State Fair",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "SOUND RECORDING",
+    "name": "Warner Bros. Studio Sound Department, Nathan Levinson, Sound Director",
+    "film": "42nd Street",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "SOUND RECORDING",
+    "name": "Warner Bros. Studio Sound Department, Nathan Levinson, Sound Director",
+    "film": "Gold Diggers of 1933",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "WRITING (Adaptation)",
+    "name": "Robert Riskin",
+    "film": "Lady for a Day",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "WRITING (Adaptation)",
+    "name": "Victor Heerman, Sarah Y. Mason",
+    "film": "Little Women",
+    "winner": true
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "WRITING (Adaptation)",
+    "name": "Paul Green, Sonya Levien",
+    "film": "State Fair",
+    "winner": false
+  },
+  {
+    "year_film": 1932,
+    "year_ceremony": 1933,
+    "ceremony": 6,
+    "category": "WRITING (Original Story)",
+    "name": "Frances Marion",
+    "film": "The Prizefighter and the Lady",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "ACTRESS IN A SUPPORTING ROLE",
+    "name": "Alice Brady",
+    "film": "In Old Chicago",
+    "winner": true
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "ART DIRECTION",
+    "name": "Alexander Toluboff",
+    "film": "Walter Wanger's Vogues of 1938",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "MUSIC (Scoring)",
+    "name": "20th Century-Fox Studio Music Department, Louis Silvers, head of department  (no composer credit)",
+    "film": "In Old Chicago",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "MUSIC (Song)",
+    "name": "Music by Sammy Fain; Lyrics by Lew Brown",
+    "film": "Walter Wanger's Vogues of 1938",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "OUTSTANDING PRODUCTION",
+    "name": "20th Century-Fox",
+    "film": "In Old Chicago",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "SOUND RECORDING",
+    "name": "20th Century-Fox Studio Sound Department, E. H. Hansen, Sound Director",
+    "film": "In Old Chicago",
+    "winner": false
+  },
+  {
+    "year_film": 1937,
+    "year_ceremony": 1938,
+    "ceremony": 10,
+    "category": "WRITING (Original Story)",
+    "name": "Niven Busch",
+    "film": "In Old Chicago",
+    "winner": false
+  },
+  {
+    "year_film": 1938,
+    "year_ceremony": 1939,
+    "ceremony": 11,
+    "category": "MUSIC (Original Score)",
+    "name": "Russell Bennett",
+    "film": "Pacific Liner",
+    "winner": false
+  },
+  {
+    "year_film": 1940,
+    "year_ceremony": 1941,
+    "ceremony": 13,
+    "category": "MUSIC (Original Score)",
+    "name": "Louis Gruenberg",
+    "film": "The Fight for Life",
+    "winner": false
+  },
+  {
+    "year_film": 1940,
+    "year_ceremony": 1941,
+    "ceremony": 13,
+    "category": "MUSIC (Scoring)",
+    "name": "Artie Shaw",
+    "film": "Second Chorus",
+    "winner": false
+  },
+  {
+    "year_film": 1940,
+    "year_ceremony": 1941,
+    "ceremony": 13,
+    "category": "MUSIC (Song)",
+    "name": "Music by Artie Shaw; Lyrics by Johnny Mercer",
+    "film": "Second Chorus",
+    "winner": false
+  },
+  {
+    "year_film": 1941,
+    "year_ceremony": 1942,
+    "ceremony": 14,
+    "category": "WRITING (Original Story)",
+    "name": "Gordon Wellesley",
+    "film": "Night Train",
+    "winner": false
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "DOCUMENTARY",
+    "name": "Walt Disney, Producer",
+    "film": "The Grain That Built a Hemisphere",
+    "winner": false
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "MUSIC (Music Score of a Dramatic or Comedy Picture)",
+    "name": "Max Terr",
+    "film": "The Gold Rush",
+    "winner": false
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "OUTSTANDING MOTION PICTURE",
+    "name": "Ortus",
+    "film": "The Invaders",
+    "winner": false
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "SOUND RECORDING",
+    "name": "RCA Sound, James Fields, Sound Director",
+    "film": "The Gold Rush",
+    "winner": false
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "WRITING (Original Motion Picture Story)",
+    "name": "Emeric Pressburger",
+    "film": "The Invaders",
+    "winner": true
+  },
+  {
+    "year_film": 1942,
+    "year_ceremony": 1943,
+    "ceremony": 15,
+    "category": "WRITING (Screenplay)",
+    "name": "Rodney Ackland, Emeric Pressburger",
+    "film": "The Invaders",
+    "winner": false
+  },
+  {
+    "year_film": 1943,
+    "year_ceremony": 1944,
+    "ceremony": 16,
+    "category": "DOCUMENTARY (Feature)",
+    "name": "Negro Marches On, Inc.",
+    "film": "We've Come a Long, Long Way",
+    "winner": false
+  },
+  {
+    "year_film": 1945,
+    "year_ceremony": 1946,
+    "ceremony": 18,
+    "category": "DOCUMENTARY (Feature)",
+    "name": "United States Army Air Force",
+    "film": "The Last Bomb",
+    "winner": false
+  },
+  {
+    "year_film": 1946,
+    "year_ceremony": 1947,
+    "ceremony": 19,
+    "category": "MUSIC (Music Score of a Dramatic or Comedy Picture)",
+    "name": "Franz Waxman",
+    "film": "Humoresque",
+    "winner": false
+  },
+  {
+    "year_film": 1947,
+    "year_ceremony": 1948,
+    "ceremony": 20,
+    "category": "DOCUMENTARY (Feature)",
+    "name": "Sid Rogell, Executive Producer;  Theron Warth and Richard O. Fleischer, Producers",
+    "film": "Design for Death",
+    "winner": true
+  },
+  {
+    "year_film": 1947,
+    "year_ceremony": 1948,
+    "ceremony": 20,
+    "category": "DOCUMENTARY (Feature)",
+    "name": "United States Department of State Office of Information and Educational Exchange",
+    "film": "Journey into Medicine",
+    "winner": false
+  },
+  {
+    "year_film": 1947,
+    "year_ceremony": 1948,
+    "ceremony": 20,
+    "category": "WRITING (Original Screenplay)",
+    "name": "Sergio Amidei, Adolfo Franci, C. G. Viola, Cesare Zavattini",
+    "film": "Shoe-Shine",
+    "winner": false
+  },
+  {
+    "year_film": 1948,
+    "year_ceremony": 1949,
+    "ceremony": 21,
+    "category": "DOCUMENTARY (Feature)",
+    "name": "Orville O. Dull, Producer",
+    "film": "The Secret Land",
+    "winner": true
+  }
+]

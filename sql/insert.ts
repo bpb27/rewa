@@ -1,14 +1,19 @@
 import { type Database } from 'better-sqlite3';
+import stringComp from 'string-comparison';
 import { z } from 'zod';
 import { type TableName } from './general';
 import {
   getActorByTmdbId,
+  getActorsOnMovie,
+  getAwardByName,
   getCrewByTmdbId,
+  getCrewOnMovie,
   getEpisodeByUrl,
   getGenreByName,
   getHostByName,
   getKeywordByName,
   getMovieByTmdbId,
+  getOscarNom,
   getProductionCompanyByTmdbId,
 } from './select';
 import { tmdbApi } from './tmdb-api';
@@ -29,6 +34,10 @@ const insertSchema = z.object({
     credit_order: z.number(),
     movie_id: z.number(),
   }),
+  actors_on_oscars: z.object({
+    actor_id: z.number(),
+    oscar_id: z.number(),
+  }),
   crew: z.object({
     gender: z.number(),
     name: z.string(),
@@ -42,6 +51,10 @@ const insertSchema = z.object({
     job: z.string(),
     known_for_department: z.string(),
     movie_id: z.number(),
+  }),
+  crew_on_oscars: z.object({
+    crew_id: z.number(),
+    oscar_id: z.number(),
   }),
   ebert_review: z.object({
     movie_id: z.number(),
@@ -139,9 +152,15 @@ export const prepareInsert = (db: Database) => {
     actorsOnMovie: db.prepare<InsertSchema['actors_on_movie']>(
       buildInsertSql('actors_on_movies', getFields('actors_on_movie'))
     ),
+    actorsOnOscar: db.prepare<InsertSchema['actors_on_oscars']>(
+      buildInsertSql('actors_on_oscars', getFields('actors_on_oscars'))
+    ),
     crew: db.prepare<InsertSchema['crew']>(buildInsertSql('crew', getFields('crew'))),
     crewOnMovie: db.prepare<InsertSchema['crew_on_movie']>(
       buildInsertSql('crew_on_movies', getFields('crew_on_movie'))
+    ),
+    crewOnOscar: db.prepare<InsertSchema['crew_on_oscars']>(
+      buildInsertSql('crew_on_oscars', getFields('crew_on_oscars'))
     ),
     ebert_review: db.prepare<InsertSchema['ebert_review']>(
       buildInsertSql('ebert_reviews', getFields('ebert_review'))
@@ -310,4 +329,72 @@ export const insertNewEbert = async (
   const movie = await getMovieByTmdbId(review.tmdb_id);
   if (!movie) throw new Error('Failed to get movie');
   inserter.ebert_review.run({ ...review, movie_id: movie.id });
+};
+
+export const insertNewOscarNom = async (params: {
+  db: Database;
+  award_name: string;
+  category_id: number;
+  nomination: Omit<z.infer<typeof insertSchema.shape.oscars_nomination>, 'award_id'>;
+}) => {
+  const inserter = prepareInsert(params.db);
+
+  // add + retrieve award (e.g. BEST ACTOR) - may already exist
+  inserter.oscarAward.run({ category_id: params.category_id, name: params.award_name });
+  const award = await getAwardByName(params.award_name);
+  if (!award) throw new Error(`Award issue: ${params.award_name}`);
+
+  // add + retrieve specific nomination (e.g. Robert Deniro for Best Actor in Goodfellas)
+  inserter.oscarNomination.run({ award_id: award.id, ...params.nomination });
+  const nom = await getOscarNom({
+    awardId: award.id,
+    movieId: params.nomination.movie_id,
+    recipient: params.nomination.recipient,
+  });
+  if (!nom) throw new Error(`Nom issue: ${params.nomination.recipient} ${award.name}`);
+
+  // add actor on oscar nomination if applicable (e.g. Robert Deniro's actor id + the oscar nomination id)
+  if ([1, 2, 19, 20].includes(params.category_id)) {
+    const actors = await getActorsOnMovie(params.nomination.movie_id);
+    const actorNames = actors.map(a => a.actors.name);
+    const cos = stringComp.cosine;
+    const matched = cos.sortMatch(params.nomination.recipient, actorNames);
+    const selection = matched[matched.length - 1];
+    if (selection.rating < 0.8) {
+      console.log('low confidence adding actor on oscar ', {
+        actor: selection.member,
+        recipient: params.nomination.recipient,
+        nominationId: nom.id,
+      });
+    }
+    const actor = actors.find(a => a.actors.name === selection.member);
+    if (!actor) throw new Error(`Actor issue: ${params.nomination.recipient}`);
+    inserter.actorsOnOscar.run({ actor_id: actor.actor_id, oscar_id: nom.id });
+  }
+
+  // add crew on oscar nomination if applicable (e.g. Martin Scorcese's crew id + the oscar nomination id)
+  if ([8].includes(params.category_id)) {
+    const allCrew = await getCrewOnMovie(params.nomination.movie_id);
+    const crewNames = allCrew.map(c => c.crew.name);
+    const recipients = params.nomination.recipient
+      .split(',')
+      .map(r => r.trim())
+      .filter(r => !['Jr.', 'Sr.'].includes(r));
+
+    recipients.forEach(recipient => {
+      const cos = stringComp.cosine;
+      const matched = cos.sortMatch(recipient, crewNames);
+      const selection = matched[matched.length - 1];
+      if (selection.rating < 0.8) {
+        console.log('low confidence adding crew on oscar ', {
+          crew: selection.member,
+          recipient: recipient,
+          nominationId: nom.id,
+        });
+      }
+      const crew = allCrew.find(a => a.crew.name === selection.member);
+      if (!crew) throw new Error(`Crew issue: ${recipient}`);
+      inserter.crewOnOscar.run({ crew_id: crew.crew_id, oscar_id: nom.id });
+    });
+  }
 };

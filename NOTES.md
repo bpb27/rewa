@@ -18,12 +18,14 @@
 # TODO
 
 - sidebar needs to be better - spacing inconsistent
-
-- manual leaderboard nav + props for title
-- Actors (most Oscar-nominated films)
-- Actors (most Oscar acting noms)
+- a title + poster + tagline + description component would be useful (spotlight and sidebar)
+- actor sidebar looks bad in mobile - new lines for character + movie
+- actor sidebar actor nom spot
+- add a crew sidebar
 
 - look for name extraction lib to get oscar links for writers and others
+
+- just add all oscars
 
 - table element text should be selectable for easy copy/pasting
 
@@ -31,8 +33,8 @@
 - so deploying to multiple regions for edge functions should be fast
 - currently only in west coast though - look into vercel pricing for multi-region
 
-- more views? annoying going thru join tables in prisma every time
-- oscar: won, name, category, crew, actors, movie
+- more views - annoying going thru join tables in prisma every time
+- example oscar view: won, name, category, crew, actors, movie
 
 - migrations?
 
@@ -44,17 +46,26 @@
 - also be cool to have top movies of that year by popularity / revenue / tmdb avg (can be a dynamic call)
 
 - trpc caching (https://vercel.com/docs/edge-network/caching#how-to-cache-responses)
+
 - add more streamer options (Criterion, Tubi)
+
 - xstate update to v5
+
 - more crate and text
+
 - look into suspense for modals + sidebars + dialogs that are loading?
+
 - title in table has extra padding that overlaps table border
+
 - tooltips and popovers should be centered aligned to content
+
 - streamer update strategy (ideally once a week cron)
+
 - a11y
-  - accessible button name
-  - select label
-  - make sure table is navigable
-- route types
+- accessible button name
+- select label
+- make sure table is navigable
+
 - basic smoke test
+
 - ditch css modules
