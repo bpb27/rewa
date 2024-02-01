@@ -360,16 +360,24 @@ export const insertNewOscarNom = async (params: {
     const cos = stringComp.cosine;
     const matched = cos.sortMatch(params.nomination.recipient, actorNames);
     const selection = matched[matched.length - 1];
-    if (selection.rating < 0.8) {
-      console.log('low confidence adding actor on oscar ', {
+    if (!selection) {
+      console.log('unable to find any actor match for', {
+        recipient: params.nomination.recipient,
+        nominationId: nom.id,
+        movieId: params.nomination.movie_id,
+      });
+    } else if (selection?.rating < 0.8) {
+      console.log('low confidence adding actor on oscar, skipping', {
         actor: selection.member,
         recipient: params.nomination.recipient,
         nominationId: nom.id,
+        movieId: params.nomination.movie_id,
       });
+    } else {
+      const actor = actors.find(a => a.actors.name === selection.member);
+      if (!actor) throw new Error(`Actor issue: ${params.nomination.recipient}`);
+      inserter.actorsOnOscar.run({ actor_id: actor.actor_id, oscar_id: nom.id });
     }
-    const actor = actors.find(a => a.actors.name === selection.member);
-    if (!actor) throw new Error(`Actor issue: ${params.nomination.recipient}`);
-    inserter.actorsOnOscar.run({ actor_id: actor.actor_id, oscar_id: nom.id });
   }
 
   // add crew on oscar nomination if applicable (e.g. Martin Scorcese's crew id + the oscar nomination id)
@@ -379,22 +387,30 @@ export const insertNewOscarNom = async (params: {
     const recipients = params.nomination.recipient
       .split(',')
       .map(r => r.trim())
-      .filter(r => !['Jr.', 'Sr.'].includes(r));
+      .filter(r => !['Jr.', 'Sr.'].includes(r) && !!r);
 
     recipients.forEach(recipient => {
       const cos = stringComp.cosine;
       const matched = cos.sortMatch(recipient, crewNames);
       const selection = matched[matched.length - 1];
-      if (selection.rating < 0.8) {
-        console.log('low confidence adding crew on oscar ', {
+      if (!selection) {
+        console.log('unable to find any crew match for', {
+          recipient: params.nomination.recipient,
+          nominationId: nom.id,
+          movieId: params.nomination.movie_id,
+        });
+      } else if (selection?.rating < 0.8) {
+        console.log('low confidence adding crew on oscar, skipping', {
           crew: selection.member,
           recipient: recipient,
           nominationId: nom.id,
+          movieId: params.nomination.movie_id,
         });
+      } else {
+        const crew = allCrew.find(a => a.crew.name === selection.member);
+        if (!crew) throw new Error(`Crew issue: ${recipient}`);
+        inserter.crewOnOscar.run({ crew_id: crew.crew_id, oscar_id: nom.id });
       }
-      const crew = allCrew.find(a => a.crew.name === selection.member);
-      if (!crew) throw new Error(`Crew issue: ${recipient}`);
-      inserter.crewOnOscar.run({ crew_id: crew.crew_id, oscar_id: nom.id });
     });
   }
 };

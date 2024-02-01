@@ -15,7 +15,7 @@ import { Text } from './ui/text';
 */
 
 export const OscarsTable = () => {
-  const { data = [] } = trpc.getOscarsByYear.useQuery({ year: 2001 });
+  const { data = [] } = trpc.getOscarsByYear.useQuery({ year: 1928 });
   const [movieModalId, setMovieModalId] = useState<number | undefined>();
   const movieModalData = data.find(o => o.movie.id === movieModalId);
   return (

@@ -31,15 +31,16 @@ const run = async (params: Movie | (Movie & Episode) | (Movie & Episode & Ebert)
 };
 
 const newEps = [
-  {
-    tmdb_id: 9008,
-    title: 'The Insider',
-    episode_order: 331,
-    date: 'Jan 2023',
-    spotify_url: 'https://open.spotify.com/episode/2wnlO2GLqJwoP1YskNEbLy?si=accc19179df644c0',
-    hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
-    ebert: { rating: 3.5, path: '/reviews/the-insider-1999' },
-  },
+  { tmdb_id: 25016 },
+  // {
+  //   tmdb_id: 9008,
+  //   title: 'The Insider',
+  //   episode_order: 331,
+  //   date: 'Jan 2023',
+  //   spotify_url: 'https://open.spotify.com/episode/2wnlO2GLqJwoP1YskNEbLy?si=accc19179df644c0',
+  //   hosts: ['Bill Simmons', 'Chris Ryan', 'Sean Fennessey'],
+  //   ebert: { rating: 3.5, path: '/reviews/the-insider-1999' },
+  // },
 ];
 
 run(newEps[0]);
