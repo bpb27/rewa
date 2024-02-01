@@ -25,7 +25,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
     <Modal {...modalProps} className="p-3">
       <div className="my-8 flex items-center justify-between" ref={containerRef}>
         <Button
-          disabled={selectedYear <= 1950}
+          disabled={selectedYear <= 1928}
           onClick={() => setYear(selectedYear - 1)}
           variant="icon"
         >

@@ -122,15 +122,15 @@ const Box = {
   MoviePoster: ({ children }) => <div className="shrink-0">{children}</div>,
 } satisfies Boxes;
 
-const pageTitle = 'the most Oscar-nominated movies (since 1950)';
+const pageTitle = 'the most Oscar-nominated movies';
 const titles = {
   actor: {
     tab: 'Top Actors',
     heading: `Acted in ${pageTitle}`,
   },
   actorNoms: {
-    tab: 'Top Actors (Oscar Nominations)',
-    heading: `Best Actor and Supporting Actor nominations (since 1950)`,
+    tab: 'Top Actors',
+    heading: `Best Actor and Supporting Actor nominations`,
   },
   cinematographer: {
     tab: 'Top Cinematographers',
@@ -141,8 +141,8 @@ const titles = {
     heading: `Directed ${pageTitle}`,
   },
   directorNoms: {
-    tab: 'Top Directors (Oscar Nominations)',
-    heading: `Best Director nominations (since 1950)`,
+    tab: 'Top Directors',
+    heading: `Best Director nominations`,
   },
   producer: {
     tab: 'Top Producers',
