@@ -23,9 +23,12 @@
 - actor sidebar actor nom spot
 - add a crew sidebar
 
-- look for name extraction lib to get oscar links for writers and others
+- year option on top category pages
 
-- just add all oscars
+- more views - annoying going thru join tables in prisma every time
+- example oscar view: won, name, category, crew, actors, movie
+
+- look for name extraction lib to get oscar links for writers and others
 
 - table element text should be selectable for easy copy/pasting
 
@@ -33,10 +36,9 @@
 - so deploying to multiple regions for edge functions should be fast
 - currently only in west coast though - look into vercel pricing for multi-region
 
-- more views - annoying going thru join tables in prisma every time
-- example oscar view: won, name, category, crew, actors, movie
-
 - migrations?
+
+- actors table?
 
 - search probs with accented characters - probably store normalized string alongside actual
 
