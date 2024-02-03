@@ -19,7 +19,7 @@
 
 - top page should have a filter overlay (or sidebar)
 - refactor filter to just take children
-- might need another machine, or make the machine generic (it's mostly there to manage children and some list but it doesn't care about the list contents)
+- might need another machine, or make the machine generic (it's mostly there to manage children and some list but it doesn't care about the list contents) - can make two setup functions, change movie references to results
 
 - may be time to switch to postgres
 - git warnings about 50mb file size, plus it has load in all serverless functions
