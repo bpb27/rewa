@@ -1,4 +1,5 @@
 import { Prisma } from '../src/prisma';
+import { titleCase } from '../src/utils/format';
 import { connectToDb } from './general';
 import { insertNewMovie } from './insert';
 import { getMovieByTmdbId } from './select';
@@ -521,7 +522,7 @@ let oscarMovies: {
   tmdb_id: number;
   actors_on_movies: { actors: { id: number; name: string } }[];
 }[];
-let awards: { name: string; category_id: number }[];
+let awards: { id: number; name: string; category_id: number }[];
 const addNomination = async (i: number) => {
   const nom = noms[i];
   if (!nom) return;
@@ -550,17 +551,27 @@ const addNomination = async (i: number) => {
   const isActor = [1, 2, 19, 20].includes(award.category_id);
   const isDirector = [8].includes(award.category_id);
 
-  if (isActor) {
-    console.log('missed actor', nom.recipient, actors[nom.recipient]);
-  }
+  const record = await prisma.oscars_nominations.create({
+    data: {
+      ceremony_year: 2024,
+      film_year: 2023,
+      recipient: isActor ? titleCase(nom.recipient) : nom.recipient,
+      won: false,
+      movie_id: movie.id,
+      award_id: award.id,
+    },
+  });
 
-  if (isDirector) {
-    console.log('missed director', nom.recipient, directors[nom.recipient]);
+  if (isActor) {
+    await prisma.actors_on_oscars.create({
+      data: { actor_id: actors[nom.recipient], oscar_id: record.id },
+    });
   }
-  // title case actor names before inserting oscar nom
-  // insert oscar nom
-  // add actors_on if applicable
-  // add directors_on if applicable
+  if (isDirector) {
+    await prisma.crew_on_oscars.create({
+      data: { crew_id: directors[nom.recipient], oscar_id: record.id },
+    });
+  }
 
   addNomination(i + 1);
 };
