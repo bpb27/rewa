@@ -34,7 +34,7 @@ export const Input = <TField extends string>({
         </label>
       )}
       <input
-        className="w-[100px] rounded-sm border-2 border-slate-400 p-1"
+        className="w-[100px] rounded-sm border-2 border-slate-400 p-1 shadow-md"
         name={name}
         onChange={e => onChange({ name, value: e.target.value })}
         value={value}

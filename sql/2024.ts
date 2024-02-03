@@ -1,6 +1,7 @@
 import { Prisma } from '../src/prisma';
 import { connectToDb } from './general';
 import { insertNewMovie } from './insert';
+import { getMovieByTmdbId } from './select';
 import { tmdbApi } from './tmdb-api';
 
 const noms = [
@@ -162,42 +163,42 @@ const noms = [
     movie: 'SOCIETY OF THE SNOW',
     recipient: 'Ana López-Puigcerver, David Martí and Montse Ribé',
   },
-  { award: 'MUSIC (ORIGINAL SCORE)', movie: 'AMERICAN FICTION', recipient: 'Laura Karpman' },
+  { award: 'MUSIC (Original Score)', movie: 'AMERICAN FICTION', recipient: 'Laura Karpman' },
   {
-    award: 'MUSIC (ORIGINAL SCORE)',
+    award: 'MUSIC (Original Score)',
     movie: 'INDIANA JONES AND THE DIAL OF DESTINY',
     recipient: 'John Williams',
   },
   {
-    award: 'MUSIC (ORIGINAL SCORE)',
+    award: 'MUSIC (Original Score)',
     movie: 'KILLERS OF THE FLOWER MOON',
     recipient: 'Robbie Robertson',
   },
-  { award: 'MUSIC (ORIGINAL SCORE)', movie: 'OPPENHEIMER', recipient: 'Ludwig Göransson' },
-  { award: 'MUSIC (ORIGINAL SCORE)', movie: 'POOR THINGS', recipient: 'Jerskin Fendrix' },
+  { award: 'MUSIC (Original Score)', movie: 'OPPENHEIMER', recipient: 'Ludwig Göransson' },
+  { award: 'MUSIC (Original Score)', movie: 'POOR THINGS', recipient: 'Jerskin Fendrix' },
 
   {
-    award: 'MUSIC (ORIGINAL SONG)',
+    award: 'MUSIC (Original Song)',
     movie: "FLAMIN' HOT",
     recipient: 'THE FIRE INSIDE; Music and Lyric by Diane Warren',
   },
   {
-    award: 'MUSIC (ORIGINAL SONG)',
+    award: 'MUSIC (Original Song)',
     movie: 'BARBIE',
     recipient: "I'M JUST KEN; Music and Lyric by Mark Ronson and Andrew Wyatt",
   },
   {
-    award: 'MUSIC (ORIGINAL SONG)',
+    award: 'MUSIC (Original Song)',
     movie: 'AMERICAN SYMPHONY',
     recipient: 'IT NEVER WENT AWAY; Music and Lyric by Jon Batiste and Dan Wilson',
   },
   {
-    award: 'MUSIC (ORIGINAL SONG)',
+    award: 'MUSIC (Original Song)',
     movie: 'KILLERS OF THE FLOWER MOON',
     recipient: 'WAHZHAZHE (A SONG FOR MY PEOPLE); Music and Lyric by Scott George',
   },
   {
-    award: 'MUSIC (ORIGINAL SONG)',
+    award: 'MUSIC (Original Song)',
     movie: 'BARBIE',
     recipient: "WHAT WAS I MADE FOR?; Music and Lyric by Billie Eilish and Finneas O'Connell",
   },
@@ -270,48 +271,48 @@ const noms = [
     recipient: 'Production Design: James Price and Shona Heath; Set Decoration: Zsuzsa Mihalek',
   },
   {
-    award: 'ANIMATED SHORT FILM',
+    award: 'SHORT FILM (Animated)',
     movie: 'LETTER TO A PIG',
     recipient: 'Tal Kantor and Amit R. Gicelter',
   },
   {
-    award: 'ANIMATED SHORT FILM',
+    award: 'SHORT FILM (Animated)',
     movie: 'NINETY-FIVE SENSES',
     recipient: 'Jerusha Hess and Jared Hess',
   },
-  { award: 'ANIMATED SHORT FILM', movie: 'OUR UNIFORM', recipient: 'Yegane Moghaddam' },
+  { award: 'SHORT FILM (Animated)', movie: 'OUR UNIFORM', recipient: 'Yegane Moghaddam' },
   {
-    award: 'ANIMATED SHORT FILM',
+    award: 'SHORT FILM (Animated)',
     movie: 'PACHYDERME',
     recipient: 'Stéphanie Clément and Marc Rius',
   },
   {
-    award: 'ANIMATED SHORT FILM',
+    award: 'SHORT FILM (Animated)',
     movie: 'WAR IS OVER! INSPIRED BY THE MUSIC OF JOHN & YOKO',
     recipient: 'Dave Mullins and Brad Booker',
   },
   {
-    award: 'LIVE ACTION SHORT FILM',
+    award: 'SHORT FILM (Live Action)',
     movie: 'THE AFTER',
     recipient: 'Misan Harriman and Nicky Bentham',
   },
   {
-    award: 'LIVE ACTION SHORT FILM',
+    award: 'SHORT FILM (Live Action)',
     movie: 'INVINCIBLE',
     recipient: 'Vincent René-Lortie and Samuel Caron',
   },
   {
-    award: 'LIVE ACTION SHORT FILM',
+    award: 'SHORT FILM (Live Action)',
     movie: 'KNIGHT OF FORTUNE',
     recipient: 'Lasse Lyskjær Noer and Christian Norlyk',
   },
   {
-    award: 'LIVE ACTION SHORT FILM',
+    award: 'SHORT FILM (Live Action)',
     movie: 'RED, WHITE AND BLUE',
     recipient: 'Nazrin Choudhury and Sara McFarlane',
   },
   {
-    award: 'LIVE ACTION SHORT FILM',
+    award: 'SHORT FILM (Live Action)',
     movie: 'THE WONDERFUL STORY OF HENRY SUGAR',
     recipient: 'Wes Anderson and Steven Rales',
   },
@@ -362,58 +363,58 @@ const noms = [
     recipient: 'Charley Henley, Luc-Ewen Martin-Fenouillet, Simone Coco and Neil Corbould',
   },
   {
-    award: 'WRITING (ADAPTED SCREENPLAY)',
+    award: 'WRITING (Adapted Screenplay)',
     movie: 'AMERICAN FICTION',
     recipient: 'Written for the screen by Cord Jefferson',
   },
   {
-    award: 'WRITING (ADAPTED SCREENPLAY)',
+    award: 'WRITING (Adapted Screenplay)',
     movie: 'BARBIE',
     recipient: 'Written by Greta Gerwig & Noah Baumbach',
   },
   {
-    award: 'WRITING (ADAPTED SCREENPLAY)',
+    award: 'WRITING (Adapted Screenplay)',
     movie: 'OPPENHEIMER',
     recipient: 'Written for the screen by Christopher Nolan',
   },
   {
-    award: 'WRITING (ADAPTED SCREENPLAY)',
+    award: 'WRITING (Adapted Screenplay)',
     movie: 'POOR THINGS',
     recipient: 'Screenplay by Tony McNamara',
   },
   {
-    award: 'WRITING (ADAPTED SCREENPLAY)',
+    award: 'WRITING (Adapted Screenplay)',
     movie: 'THE ZONE OF INTEREST',
     recipient: 'Written by Jonathan Glazer',
   },
   {
-    award: 'WRITING (ORIGINAL SCREENPLAY)',
+    award: 'WRITING (Original Screenplay)',
     movie: 'ANATOMY OF A FALL',
     recipient: 'Screenplay - Justine Triet and Arthur Harari',
   },
   {
-    award: 'WRITING (ORIGINAL SCREENPLAY)',
+    award: 'WRITING (Original Screenplay)',
     movie: 'THE HOLDOVERS',
     recipient: 'Written by David Hemingson',
   },
   {
-    award: 'WRITING (ORIGINAL SCREENPLAY)',
+    award: 'WRITING (Original Screenplay)',
     movie: 'MAESTRO',
     recipient: 'Written by Bradley Cooper & Josh Singer',
   },
   {
-    award: 'WRITING (ORIGINAL SCREENPLAY)',
+    award: 'WRITING (Original Screenplay)',
     movie: 'MAY DECEMBER',
     recipient: 'Screenplay by Samy Burch; Story by Samy Burch & Alex Mechanik',
   },
   {
-    award: 'WRITING (ORIGINAL SCREENPLAY)',
+    award: 'WRITING (Original Screenplay)',
     movie: 'PAST LIVES',
     recipient: 'Written by Celine Song',
   },
 ];
 
-const movies = {
+const movies: Record<string, number> = {
   maestro: 523607,
   rustin: 898713,
   'the holdovers': 840430,
@@ -469,35 +470,36 @@ const movies = {
   'may december': 839369,
 };
 
-const actors = {
-  'BRADLEY COOPER': true,
-  'COLMAN DOMINGO': true,
-  'PAUL GIAMATTI': true,
-  'CILLIAN MURPHY': true,
-  'JEFFREY WRIGHT': true,
-  'STERLING K. BROWN': true,
-  'ROBERT DE NIRO': true,
-  'ROBERT DOWNEY JR.': true,
-  'RYAN GOSLING': true,
-  'MARK RUFFALO': true,
-  'ANNETTE BENING': true,
-  'LILY GLADSTONE': true,
-  'SANDRA HÜLLER': true,
-  'CAREY MULLIGAN': true,
-  'EMMA STONE': true,
-  'EMILY BLUNT': true,
-  'DANIELLE BROOKS': true,
-  'AMERICA FERRERA': true,
-  'JODIE FOSTER': true,
-  "DA'VINE JOY RANDOLPH": true,
+// lookup ids via prisma studio
+const actors: Record<string, number> = {
+  'BRADLEY COOPER': 3273,
+  'COLMAN DOMINGO': 109053,
+  'PAUL GIAMATTI': 611,
+  'CILLIAN MURPHY': 9431,
+  'JEFFREY WRIGHT': 15203,
+  'STERLING K. BROWN': 120184,
+  'ROBERT DE NIRO': 88,
+  'ROBERT DOWNEY JR.': 13590,
+  'RYAN GOSLING': 9968,
+  'MARK RUFFALO': 6714,
+  'ANNETTE BENING': 6558,
+  'LILY GLADSTONE': 173767,
+  'SANDRA HÜLLER': 117738,
+  'CAREY MULLIGAN': 96446,
+  'EMMA STONE': 4346,
+  'EMILY BLUNT': 8812,
+  'DANIELLE BROOKS': 174284,
+  'AMERICA FERRERA': 106030,
+  'JODIE FOSTER': 2799,
+  "DA'VINE JOY RANDOLPH": 17435,
 };
 
-const directors = {
-  'Justine Triet': true,
-  'Martin Scorsese': true,
-  'Christopher Nolan': true,
-  'Yorgos Lanthimos': true,
-  'Jonathan Glazer': true,
+const directors: Record<string, number> = {
+  'Justine Triet': 195463,
+  'Martin Scorsese': 57,
+  'Christopher Nolan': 7690,
+  'Yorgos Lanthimos': 161227,
+  'Jonathan Glazer': 125813,
 };
 
 const movieIds = Object.values(movies);
@@ -519,9 +521,7 @@ let oscarMovies: {
   tmdb_id: number;
   actors_on_movies: { actors: { id: number; name: string } }[];
 }[];
-let awards: {
-  name: string;
-}[];
+let awards: { name: string; category_id: number }[];
 const addNomination = async (i: number) => {
   const nom = noms[i];
   if (!nom) return;
@@ -542,14 +542,27 @@ const addNomination = async (i: number) => {
   }
 
   const award = awards.find(a => a.name === nom.award);
-  if (!award) console.log('Cant find', nom.award);
+  if (!award) throw new Error(`Can't find award ${nom.award}`);
+  const tmdbId = movies[nom.movie];
+  const movie = await getMovieByTmdbId(tmdbId);
+  if (!movie) throw new Error(`Cant find movie ${nom.movie}`);
+
+  const isActor = [1, 2, 19, 20].includes(award.category_id);
+  const isDirector = [8].includes(award.category_id);
+
+  if (isActor) {
+    console.log('missed actor', nom.recipient, actors[nom.recipient]);
+  }
+
+  if (isDirector) {
+    console.log('missed director', nom.recipient, directors[nom.recipient]);
+  }
+  // title case actor names before inserting oscar nom
+  // insert oscar nom
+  // add actors_on if applicable
+  // add directors_on if applicable
 
   addNomination(i + 1);
-
-  // need to get award id
-  // lookup rewa movie id by tmdb id via hash
-  // check for actors
-  // check for directors
 };
 
 addNomination(0);

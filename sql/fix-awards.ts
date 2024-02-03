@@ -4,29 +4,22 @@ const prisma = Prisma.getPrisma();
 // TODO: add constraint
 
 const run = async () => {
-  const awards = await prisma.oscars_awards.findMany({
-    orderBy: { id: 'asc' },
+  const awardsWithNominations = await prisma.oscars_nominations.findMany({
+    select: {
+      award_id: true,
+    },
+    distinct: ['award_id'],
   });
-  const picked = awards.reduce(
-    (hash, a) => ({
-      ...hash,
-      [a.name]: a,
-    }),
-    {} as Record<string, { name: string; id: number; category_id: number }>
-  );
 
-  for (const a of awards) {
-    if (picked[a.name].id !== a.id) {
-      await prisma.oscars_nominations.updateMany({
-        where: { award_id: a.id },
-        data: {
-          award_id: picked[a.name].id,
+  await prisma.oscars_awards.deleteMany({
+    where: {
+      NOT: {
+        id: {
+          in: awardsWithNominations.map(award => award.award_id),
         },
-      });
-    }
-  }
-
-  //   console.log(Object.keys(picked).length, awards.length);
+      },
+    },
+  });
 };
 
 run();
