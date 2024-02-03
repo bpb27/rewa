@@ -87,6 +87,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   {item.type === 'writer' && <Icon.Pen />}
                   {item.type === 'streamer' && <Icon.Tv />}
                   {item.type === 'keyword' && <Icon.Key />}
+                  {item.type === 'year' && <Icon.Calendar />}
                   <span className="ml-2">{item.name}</span>
                 </button>
               ))}

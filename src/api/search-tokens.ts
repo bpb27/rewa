@@ -2,8 +2,10 @@ import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { crewJobs } from '~/data/crew-jobs';
 import { relevantStreamers } from '~/data/streamers';
-import { tokenize } from '~/data/tokens';
+import { tokenize, tokenizeYear } from '~/data/tokens';
 import { Prisma } from '~/prisma';
+import { getYear } from '~/utils/format';
+import { isYear } from '~/utils/validate';
 
 const prisma = Prisma.getPrisma();
 
@@ -50,7 +52,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
     // exact match is for short movie titles that may be cutoff in the subsequent query - e.g. the movie "Z"
     // NB: title.equals is case sensitive, so using SW/EW
     prisma.movies.findMany({
-      select: { id: true, title: true },
+      select: { id: true, title: true, release_date: true },
       orderBy: { release_date: 'desc' },
       where: {
         AND: [
@@ -62,7 +64,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
     }),
 
     prisma.movies.findMany({
-      select: { id: true, title: true },
+      select: { id: true, title: true, release_date: true },
       orderBy: { title: 'asc' },
       where: {
         title: { contains: search },
@@ -122,6 +124,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
   const results = [
     ...uniqBy([...exactMovies, ...movies], m => m.id)
       .slice(0, 3)
+      .map(item => ({ ...item, title: `${item.title} (${getYear(item.release_date)})` }))
       .map(item => tokenize('movie', item)),
     ...(filter === 'rewa' ? hosts : []).map(item => tokenize('host', item)),
     ...actors.map(item => tokenize('actor', item)),
@@ -132,6 +135,8 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
     ...streamers.map(item => tokenize('streamer', item)),
     ...keywords.map(item => tokenize('keyword', item)),
   ];
+
+  if (isYear(search)) results.push(tokenizeYear(search));
 
   return results;
 };

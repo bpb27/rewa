@@ -2,7 +2,6 @@ import { Prisma } from '../src/prisma';
 import { titleCase } from '../src/utils/format';
 import { connectToDb } from './general';
 import { insertNewMovie } from './insert';
-import { getMovieByTmdbId } from './select';
 import { tmdbApi } from './tmdb-api';
 
 const noms = [
@@ -544,8 +543,9 @@ const addNomination = async (i: number) => {
 
   const award = awards.find(a => a.name === nom.award);
   if (!award) throw new Error(`Can't find award ${nom.award}`);
-  const tmdbId = movies[nom.movie];
-  const movie = await getMovieByTmdbId(tmdbId);
+  const tmdbId = movies[nom.movie.toLowerCase()];
+  if (!tmdbId) throw new Error(`Can't find tmdb id for ${nom.movie}`);
+  const movie = oscarMovies.find(om => om.tmdb_id === tmdbId);
   if (!movie) throw new Error(`Cant find movie ${nom.movie}`);
 
   const isActor = [1, 2, 19, 20].includes(award.category_id);
