@@ -17,13 +17,20 @@
 
 # TODO
 
+- top page should have a filter overlay (or sidebar)
+- refactor filter to just take children
+- might need another machine, or make the machine generic (it's mostly there to manage children and some list but it doesn't care about the list contents)
+
+- may be time to switch to postgres
+- git warnings about 50mb file size, plus it has load in all serverless functions
+- free hobby PG via vercel, or can look for other cheap options
+- could use prisma accelerate and use edge functions
+
 - sidebar needs to be better - spacing inconsistent
 - a title + poster + tagline + description component would be useful (spotlight and sidebar)
 - actor sidebar looks bad in mobile - new lines for character + movie
 - actor sidebar actor nom spot
 - add a crew sidebar
-
-- year option on top category pages
 
 - more views - annoying going thru join tables in prisma every time
 - example oscar view: won, name, category, crew, actors, movie
