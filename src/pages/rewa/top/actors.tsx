@@ -1,12 +1,19 @@
-import { getTopActors } from '~/api/get-top-actors';
 import { TopCategory } from '~/components/top-category';
+import { defaultQps } from '~/data/query-params';
+import { trpcVanilla } from '~/trpc/client';
 import { type StaticProps } from '~/utils/general-types';
 
+const field = 'actor';
+const movieMode = 'rewa';
+
 export const getStaticProps = async () => {
-  const people = await getTopActors({ mode: 'rewa' });
-  return { props: { people } };
+  const response = await trpcVanilla.getLeaderboard.query({
+    field,
+    params: { ...defaultQps, movieMode },
+  });
+  return { props: response };
 };
 
 export default function TopActors({ people }: StaticProps<typeof getStaticProps>) {
-  return <TopCategory people={people} category="actor" mode="rewa" />;
+  return <TopCategory people={people} field={field} movieMode={movieMode} />;
 }

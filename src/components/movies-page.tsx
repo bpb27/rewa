@@ -19,7 +19,7 @@ import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { MovieSpotlightModal } from './overlays/movie-spotlight-modal';
 import { OscarYearModal } from './overlays/oscar-year-modal';
 
-export type MoviesPageMovie = ApiResponses['getMovies']['movies'][number];
+export type MoviesPageMovie = ApiResponses['getMovies']['results'][number];
 
 type MoviesPageProps = {
   preloaded: { url: string; data: ApiResponses['getMovies'] };

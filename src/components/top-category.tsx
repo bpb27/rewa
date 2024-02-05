@@ -4,37 +4,27 @@ import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
+import { ApiResponses } from '~/trpc/router';
 import { rankByTotalMovies } from '~/utils/ranking';
-import { sortByDate } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
-  category: keyof typeof titles;
-  mode: 'rewa' | 'oscars';
+  field: keyof typeof titles;
+  movieMode: 'rewa' | 'oscar';
   hideProfileImage?: boolean;
-  people: {
-    id: number;
-    name: string;
-    profile_path: string | null | undefined;
-    movies: {
-      id: number;
-      title: string;
-      release_date: string;
-      poster_path: string;
-    }[];
-  }[];
+  people: ApiResponses['getLeaderboard']['people'];
 };
 
-export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCategoryProps) => {
-  const isActor = useMemo(() => category === 'actor' || category === 'actorNoms', [category]);
-  const { heading, tab } = titles[category];
+export const TopCategory = ({ field, hideProfileImage, movieMode, people }: TopCategoryProps) => {
+  const isActor = useMemo(() => field === 'actor' || field === 'actorNoms', [field]);
+  const { heading, tab } = titles[field];
   type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
   const [selected, select] = useState<Selected | undefined>(undefined);
 
   return (
     <Layout title={tab}>
-      {mode === 'oscars' && (
+      {movieMode === 'oscar' && (
         <Crate mb={3} px={2} pt={3} pb={2} column alignCenter>
           <Text size="lg" bold>
             {heading}
@@ -45,11 +35,7 @@ export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCat
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>
-              <PersonPoster
-                name={person.name}
-                poster_path={person.profile_path}
-                variant="leaderboard"
-              />
+              <PersonPoster name={person.name} poster_path={person.image} variant="leaderboard" />
             </Box.ProfilePic>
           )}
           <Crate gap={3} column>
@@ -68,21 +54,19 @@ export const TopCategory = ({ category, hideProfileImage, mode, people }: TopCat
               )}
             </Text>
             <Box.MovieBar>
-              {person.movies
-                .sort((a, b) => sortByDate(a.release_date, b.release_date))
-                .map(m => (
-                  <Box.MoviePoster key={m.id}>
-                    <MoviePoster
-                      className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
-                      poster_path={m.poster_path}
-                      variant="leaderboard"
-                      title={m.title}
-                      onClick={() =>
-                        select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
-                      }
-                    />
-                  </Box.MoviePoster>
-                ))}
+              {person.movies.map(m => (
+                <Box.MoviePoster key={m.id}>
+                  <MoviePoster
+                    className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
+                    poster_path={m.image}
+                    variant="leaderboard"
+                    title={m.title}
+                    onClick={() =>
+                      select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
+                    }
+                  />
+                </Box.MoviePoster>
+              ))}
             </Box.MovieBar>
           </Crate>
         </Box.Person>

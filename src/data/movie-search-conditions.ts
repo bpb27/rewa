@@ -1,22 +1,12 @@
 import { type Prisma as PrismaBaseType } from '@prisma/client';
-import { isArray } from 'remeda';
-import { type QpSchema, type TokenType } from '~/data/query-params';
+import { tokenKeys, type QpSchema, type TokenType } from '~/data/query-params';
 import { crewJobs } from './crew-jobs';
 
-type AndOr = PrismaBaseType.moviesWhereInput['OR'] | PrismaBaseType.moviesWhereInput['AND'];
-
-type SearchFn = (
-  list: number[]
-) => PrismaBaseType.moviesWhereInput['OR'] | PrismaBaseType.moviesWhereInput['AND'];
-
-export const createFilters = (mode: 'OR' | 'AND', conditions: AndOr[]) =>
-  conditions.map(condition => ({ [mode]: condition }));
-
+type MovieWhere = PrismaBaseType.moviesWhereInput;
+type AndOr = MovieWhere['OR'] | MovieWhere['AND'];
 const fiveMil = 5000000;
 
-// TODO: see if in works in some of these cases
-
-export const searchMap: Record<TokenType, SearchFn> = {
+const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
   actor: actors =>
     actors.map(id => ({
       actors_on_movies: {
@@ -202,20 +192,15 @@ export const searchMap: Record<TokenType, SearchFn> = {
     })),
 };
 
-export const getSearches = (options: QpSchema) => {
-  return Object.entries(options)
-    .map(([key, value]) => {
-      if (isArray(value) && value.length && key in searchMap) {
-        const search = searchMap[key as keyof typeof searchMap];
-        return search(value);
-      } else {
-        return undefined;
-      }
-    })
-    .filter(Boolean);
-};
+export const movieFilters = (params: QpSchema): MovieWhere => {
+  const tokenFilters = tokenKeys
+    .filter(token => params[token].length)
+    .map(token => searchMap[token](params[token]))
+    .map(condition => ({ [params.searchMode.toUpperCase()]: condition }));
 
-export const movieModeFilter = (mode: 'rewa' | 'oscars'): PrismaBaseType.moviesWhereInput => ({
-  ...(mode === 'oscars' ? { oscars_nominations: { some: {} } } : undefined),
-  ...(mode === 'rewa' ? { episodes: { some: {} } } : undefined),
-});
+  return {
+    ...(params.movieMode === 'oscar' ? { oscars_nominations: { some: {} } } : undefined),
+    ...(params.movieMode === 'rewa' ? { episodes: { some: {} } } : undefined),
+    ...(tokenFilters.length ? { [params.searchMode.toUpperCase()]: tokenFilters } : undefined),
+  };
+};

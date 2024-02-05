@@ -1,17 +1,16 @@
 import { z } from 'zod';
-import { movieModeFilter } from '~/data/movie-search-conditions';
+import { movieFilters } from '~/data/movie-search-conditions';
+import { parsedQpSchema } from '~/data/query-params';
 import { Prisma } from '~/prisma';
 import { smartSort } from '~/utils/sorting';
 
 const prisma = Prisma.getPrisma();
 
-export const getTopProductionCompaniesParams = z.object({
-  mode: z.enum(['rewa', 'oscars']),
-});
+export const getTopProductionCompaniesParams = parsedQpSchema;
 
-export const getTopProductionCompanies = async ({
-  mode,
-}: z.infer<typeof getTopProductionCompaniesParams>) => {
+export const getTopProductionCompanies = async (
+  params: z.infer<typeof getTopProductionCompaniesParams>
+) => {
   const top = await prisma.production_companies_on_movies.groupBy({
     by: ['production_company_id'],
     orderBy: {
@@ -20,7 +19,7 @@ export const getTopProductionCompanies = async ({
       },
     },
     where: {
-      movies: movieModeFilter(mode),
+      movies: movieFilters(params),
     },
     take: 25,
   });
@@ -35,7 +34,7 @@ export const getTopProductionCompanies = async ({
       logo_path: true,
       production_companies_on_movies: {
         where: {
-          movies: movieModeFilter(mode),
+          movies: movieFilters(params),
         },
         select: {
           movies: {

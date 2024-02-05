@@ -1,6 +1,6 @@
-import { getMovies } from '~/api/get-movies';
 import { MoviesPage } from '~/components/movies-page';
 import { assembleUrl, defaultQps, type QpSchema } from '~/data/query-params';
+import { trpcVanilla } from '~/trpc/client';
 import { type StaticProps } from '~/utils/general-types';
 import { NAV } from '~/utils/nav-routes';
 
@@ -8,7 +8,7 @@ const qps: QpSchema = { ...defaultQps, movieMode: 'oscar', sort: 'total_oscar_wi
 
 export const getStaticProps = async () => {
   const url = assembleUrl(NAV.oscar.movies, qps);
-  const response = await getMovies(qps);
+  const response = await trpcVanilla.getMovies.query(qps);
   const data = { ...response, tokens: [] };
   return { props: { data, url } };
 };

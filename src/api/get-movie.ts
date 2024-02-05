@@ -8,7 +8,7 @@ export const getMovieParams = z.object({
 
 export const getMovie = async (params: z.infer<typeof getMovieParams>) => {
   const response = await getMovies({ ...defaultQps, movie: [params.id], movieMode: 'any' });
-  const [movie] = response.movies;
+  const [movie] = response.results;
   if (!movie) throw new Error('Not found');
   return movie;
 };

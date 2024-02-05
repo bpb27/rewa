@@ -74,7 +74,7 @@ export const Navbar = () => {
                 { href: NAV.rewa.top.writers, text: 'Writers' },
                 { href: NAV.rewa.top.cinematographers, text: 'Cinematographers' },
                 { href: NAV.rewa.top.producers, text: 'Producers' },
-                { href: NAV.rewa.top.companies, text: 'Production Companies' },
+                // { href: NAV.rewa.top.companies, text: 'Production Companies' },
               ]}
             />
           )}

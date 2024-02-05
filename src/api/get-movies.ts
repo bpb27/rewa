@@ -1,7 +1,7 @@
 import { Prisma as PrismaBaseType } from '@prisma/client';
 import { pick, uniqBy } from 'remeda';
 import { crewJobs } from '~/data/crew-jobs';
-import { createFilters, getSearches } from '~/data/movie-search-conditions';
+import { movieFilters } from '~/data/movie-search-conditions';
 import { QpSchema, SortKey } from '~/data/query-params';
 import {
   Token,
@@ -23,7 +23,6 @@ type OrderByKey = keyof PrismaBaseType.movies_with_computed_fieldsOrderByWithAgg
 
 const prisma = Prisma.getPrisma();
 const selectIdAndName = { select: { id: true, name: true } };
-const take = 25;
 
 const sortMap = {
   budget: 'budget',
@@ -40,23 +39,18 @@ const sortMap = {
 } satisfies Record<SortKey, OrderByKey>;
 
 export const getMovies = async (params: QpSchema) => {
-  const mode = params.searchMode.toUpperCase() as 'AND' | 'OR';
-  const sortOrder = params.asc ? 'asc' : 'desc';
+  const take = 25;
+  const sort = sortMap[params.sort];
+  const order = params.asc ? 'asc' : 'desc';
   const offset = params.page * take;
-  const searches = getSearches(params);
-  const prismaSearch = searches.length ? { [mode]: createFilters(mode, searches) } : undefined;
+  const where = movieFilters(params);
 
-  const where: QueryWhere['where'] = {
-    ...(params.movieMode === 'rewa' ? { episodes: { some: {} } } : undefined),
-    ...(params.movieMode === 'oscar' ? { oscars_nominations: { some: {} } } : undefined),
-    ...prismaSearch,
-  };
-
+  // can do more includes to tighten up - only 25 records + being parsed below
   const [total, data] = await Promise.all([
     prisma.movies.count({ where }),
     prisma.movies_with_computed_fields.findMany({
       where: { movie: where },
-      orderBy: { [sortMap[params.sort]]: sortOrder },
+      orderBy: { [sort]: order },
       take,
       skip: offset,
       select: {
@@ -201,7 +195,7 @@ export const getMovies = async (params: QpSchema) => {
 
   return {
     hasNext: offset + take < total,
-    movies,
+    results: movies,
     page: params.page,
     total,
   };

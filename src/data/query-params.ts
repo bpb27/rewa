@@ -1,6 +1,7 @@
 import { parse as qsParse, stringify as qsStringify } from 'qs';
 import { omitBy } from 'remeda';
 import { z } from 'zod';
+import { keys } from '~/utils/object';
 import { boolean, integer, integerList } from '~/utils/zschema';
 
 export const urlToQueryString = (url: string) => url.split('?')[1] || '';
@@ -148,4 +149,4 @@ const tokenSchema = qpSchema.pick({
   yearLte: true,
 });
 
-export const tokenKeys = Object.keys(tokenSchema.shape) as TokenType[];
+export const tokenKeys = keys(tokenSchema.shape);

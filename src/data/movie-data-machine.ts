@@ -12,22 +12,21 @@ import {
   urlToParsedParams,
   urlToQueryString,
 } from './query-params';
-import { Token } from './tokens';
+import { type Token } from './tokens';
 
-export type FetchMoviesResponse = ApiResponses['getMovies'];
+type Movie = ApiResponses['getMovies']['results'][number];
 
-const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
-  const newUrl = assembleUrl(context.url, {
-    ...context.queryParams,
-    ...newQueryParams,
-    page: newQueryParams.page === undefined ? 0 : newQueryParams.page,
-  });
-  context.push(newUrl);
+type Results = {
+  page: number;
+  total: number;
+  hasNext: boolean;
+  results: unknown[];
+  tokens: Token[];
 };
 
 type Context = {
-  data: FetchMoviesResponse;
-  preloaded: { data: FetchMoviesResponse; url: string };
+  data: Results;
+  preloaded: { data: Results; url: string };
   push: (url: string) => void;
   queryParams: QpParsed;
   url: string;
@@ -47,152 +46,163 @@ type Event =
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
 
-export const movieTableMachine = setup({
+const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
+  const newUrl = assembleUrl(context.url, {
+    ...context.queryParams,
+    ...newQueryParams,
+    page: newQueryParams.page === undefined ? 0 : newQueryParams.page,
+  });
+  context.push(newUrl);
+};
+
+const setupTypes = {
+  context: {} as Context,
+  events: {} as Event,
+  input: {} as Input,
+};
+
+const movieTableSetup = setup({
+  types: setupTypes,
   actors: {
-    fetchMovies: fromPromise<FetchMoviesResponse, QpParsed>(async ({ input }) => {
-      const [movies, tokens] = await Promise.all([
-        trpcVanilla.getMovies.query(input),
-        trpcVanilla.getTokens.query(input),
-      ]);
-      return { ...movies, ...tokens };
-    }),
-  },
-  types: {
-    context: {} as Context,
-    events: {} as Event,
-    input: {} as Input,
-  },
-}).createMachine({
-  id: 'movieTable',
-  initial: 'setup',
-  context: ({ input }) => ({
-    data: { hasNext: false, movies: [], page: 0, tokens: [], total: 0 },
-    preloaded: input.preloaded,
-    push: input.push,
-    queryParams: urlToParsedParams(input.url, qpSchema),
-    url: input.url,
-  }),
-  states: {
-    setup: {
-      always: [
-        {
-          guard: ({ context }) => urlToQueryString(context.url).length === 0,
-          actions: assign(({ context }) => ({
-            url: context.preloaded.url,
-            data: context.preloaded.data,
-            queryParams: urlToParsedParams(context.preloaded.url, qpSchema),
-          })),
-          target: 'idle',
-        },
-        {
-          guard: ({ context }) => context.queryParams.page > 0 && !context.data.movies.length,
-          actions: ({ context }) => updateUrl(context, { page: 0 }),
-          target: 'idle',
-        },
-        { target: 'idle' },
-      ],
-    },
-    idle: {
-      on: {
-        URL_HAS_CHANGED: {
-          guard: ({ event }) => urlToQueryString(event.url).length > 0,
-          target: 'fetching',
-          actions: assign(({ event }) => ({
-            url: event.url,
-            queryParams: urlToParsedParams(event.url, qpSchema),
-          })),
-        },
-        CLEAR_ALL_TOKENS: {
-          actions: ({ context }) => {
-            const cleared = tokenKeys.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
-            updateUrl(context, cleared);
-          },
-        },
-        CLEAR_BY_TOKEN_TYPE: {
-          actions: ({ context, event }) => {
-            const { name } = event;
-            updateUrl(context, { [name]: [] });
-          },
-        },
-        GET_NEXT_PAGE: {
-          guard: ({ context }) => context.data.hasNext,
-          actions: ({ context }) => {
-            const page = context.data.page + 1;
-            updateUrl(context, { page });
-          },
-        },
-        REPLACE_TOKEN: {
-          actions: ({ context, event }) => {
-            const { name, value } = event;
-            updateUrl(context, { [name]: [value] });
-          },
-        },
-        REMOVE_TOKEN: {
-          actions: ({ context, event }) => {
-            const { name, value } = event;
-            const current = context.queryParams[name];
-            const updated = current.filter(v => v !== value);
-            updateUrl(context, { [name]: updated });
-          },
-        },
-        SORT: {
-          actions: ({ context, event }) => {
-            const sort = event.field;
-            const asc = !context.queryParams.asc;
-            if (context.queryParams.sort !== sort) {
-              updateUrl(context, { sort });
-            } else {
-              updateUrl(context, { asc });
-            }
-          },
-        },
-        TOGGLE_SEARCH_MODE: {
-          actions: ({ context }) => {
-            const searchMode = context.queryParams.searchMode === 'and' ? 'or' : 'and';
-            updateUrl(context, { searchMode });
-          },
-        },
-        TOGGLE_SORT_ORDER: {
-          actions: ({ context }) => {
-            const asc = !context.queryParams.asc;
-            updateUrl(context, { asc });
-          },
-        },
-        TOGGLE_TOKEN: {
-          actions: ({ context, event }) => {
-            const { name, value } = event;
-            const current = context.queryParams[name];
-            const updated = current.includes(value)
-              ? current.filter(v => v !== value)
-              : [...current, value];
-            updateUrl(context, { [name]: updated.sort() });
-          },
-        },
-      },
-    },
-    fetching: {
-      on: {
-        '*': {
-          target: 'idle',
-          actions: raise(({ event }) => event),
-        },
-      },
-      invoke: {
-        src: 'fetchMovies',
-        input: ({ context }) => context.queryParams,
-        onDone: {
-          target: 'idle',
-          actions: assign(({ context, event }) => {
-            const data = { ...event.output };
-            if (data.page > 0) data.movies = [...context.data.movies, ...data.movies];
-            return { data };
-          }),
-        },
-        onError: 'idle',
-      },
-    },
+    fetchData: fromPromise<Results, QpParsed>(async ({ input }) =>
+      trpcVanilla.getMovies.query(input)
+    ),
   },
 });
+
+export const [movieTableMachine] = [movieTableSetup].map(config =>
+  config.createMachine({
+    id: 'movieTable',
+    initial: 'setup',
+    context: ({ input }) => ({
+      data: { hasNext: false, results: [], page: 0, tokens: [], total: 0 },
+      preloaded: input.preloaded,
+      push: input.push,
+      queryParams: urlToParsedParams(input.url, qpSchema),
+      url: input.url,
+    }),
+    states: {
+      setup: {
+        always: [
+          {
+            guard: ({ context }) => urlToQueryString(context.url).length === 0,
+            actions: assign(({ context }) => ({
+              url: context.preloaded.url,
+              data: context.preloaded.data,
+              queryParams: urlToParsedParams(context.preloaded.url, qpSchema),
+            })),
+            target: 'idle',
+          },
+          {
+            guard: ({ context }) => context.queryParams.page > 0 && !context.data.results.length,
+            actions: ({ context }) => updateUrl(context, { page: 0 }),
+            target: 'idle',
+          },
+          { target: 'idle' },
+        ],
+      },
+      idle: {
+        on: {
+          URL_HAS_CHANGED: {
+            guard: ({ event }) => urlToQueryString(event.url).length > 0,
+            target: 'fetching',
+            actions: assign(({ event }) => ({
+              url: event.url,
+              queryParams: urlToParsedParams(event.url, qpSchema),
+            })),
+          },
+          CLEAR_ALL_TOKENS: {
+            actions: ({ context }) => {
+              const cleared = tokenKeys.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
+              updateUrl(context, cleared);
+            },
+          },
+          CLEAR_BY_TOKEN_TYPE: {
+            actions: ({ context, event }) => {
+              const { name } = event;
+              updateUrl(context, { [name]: [] });
+            },
+          },
+          GET_NEXT_PAGE: {
+            guard: ({ context }) => context.data.hasNext,
+            actions: ({ context }) => {
+              const page = context.data.page + 1;
+              updateUrl(context, { page });
+            },
+          },
+          REPLACE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name, value } = event;
+              updateUrl(context, { [name]: [value] });
+            },
+          },
+          REMOVE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name, value } = event;
+              const current = context.queryParams[name];
+              const updated = current.filter(v => v !== value);
+              updateUrl(context, { [name]: updated });
+            },
+          },
+          SORT: {
+            actions: ({ context, event }) => {
+              const sort = event.field;
+              const asc = !context.queryParams.asc;
+              if (context.queryParams.sort !== sort) {
+                updateUrl(context, { sort });
+              } else {
+                updateUrl(context, { asc });
+              }
+            },
+          },
+          TOGGLE_SEARCH_MODE: {
+            actions: ({ context }) => {
+              const searchMode = context.queryParams.searchMode === 'and' ? 'or' : 'and';
+              updateUrl(context, { searchMode });
+            },
+          },
+          TOGGLE_SORT_ORDER: {
+            actions: ({ context }) => {
+              const asc = !context.queryParams.asc;
+              updateUrl(context, { asc });
+            },
+          },
+          TOGGLE_TOKEN: {
+            actions: ({ context, event }) => {
+              const { name, value } = event;
+              const current = context.queryParams[name];
+              const updated = current.includes(value)
+                ? current.filter(v => v !== value)
+                : [...current, value];
+              updateUrl(context, { [name]: updated.sort() });
+            },
+          },
+        },
+      },
+      fetching: {
+        on: {
+          '*': {
+            target: 'idle',
+            actions: raise(({ event }) => event),
+          },
+        },
+        invoke: {
+          src: 'fetchData',
+          input: ({ context }) => context.queryParams,
+          onDone: {
+            target: 'idle',
+            actions: assign(({ context, event }) => {
+              const data = { ...event.output };
+              if (data.page > 0) data.results = [...context.data.results, ...data.results];
+              return { data };
+            }),
+          },
+          onError: 'idle',
+        },
+      },
+    },
+  })
+);
 
 // abstracting machine context structure for easy component consumption
 export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
@@ -201,11 +211,11 @@ export const movieTableData = (state: StateFrom<typeof movieTableMachine>) => {
     asc: queryParams.asc,
     hasTokens: data.tokens.length > 0,
     movieMode: queryParams.movieMode,
-    movies: data.movies,
+    movies: data.results as Movie[],
     oscarsCategoriesNom: queryParams.oscarsCategoriesNom,
     oscarsCategoriesWon: queryParams.oscarsCategoriesWon,
     searchMode: queryParams.searchMode,
-    showVizSensor: state.matches('idle') && data.hasNext && data.movies.length > 0,
+    showVizSensor: state.matches('idle') && data.hasNext && data.results.length > 0,
     sort: queryParams.sort,
     tokens: data.tokens,
     total: data.total,
