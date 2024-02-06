@@ -1,5 +1,5 @@
-import { SortKey } from '~/data/query-params';
 import { Token } from '~/data/tokens';
+import { AppEnums } from './enums';
 
 export const sortOptions = [
   { value: 'title', label: 'Title' },
@@ -13,7 +13,7 @@ export const sortOptions = [
   { value: 'total_oscar_nominations', label: 'Oscar noms' },
   { value: 'total_oscar_wins', label: 'Oscar wins' },
   { value: 'ebert', label: 'Ebert rating' },
-] satisfies { value: SortKey; label: string }[];
+] satisfies { value: AppEnums['sort']; label: string }[];
 
 export const oscarSortOptions = sortOptions.filter(
   option => !['episodeNumber', 'ebert'].includes(option.value)

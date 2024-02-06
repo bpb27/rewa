@@ -1,10 +1,10 @@
 import { StateFrom, assign, fromPromise, raise, setup } from 'xstate';
 import { trpcVanilla } from '~/trpc/client';
 import { ApiResponses } from '~/trpc/router';
+import { type AppEnums } from '~/utils/enums';
 import {
   QpParsed,
   QpSchema,
-  SortKey,
   TokenType,
   assembleUrl,
   qpSchema,
@@ -36,7 +36,7 @@ type Event =
   | { type: 'CLEAR_ALL_TOKENS' }
   | { type: 'CLEAR_BY_TOKEN_TYPE'; name: TokenType }
   | { type: 'GET_NEXT_PAGE' }
-  | { type: 'SORT'; field: QpSchema['sort'] }
+  | { type: 'SORT'; field: AppEnums['sort'] }
   | { type: 'TOGGLE_SEARCH_MODE' }
   | { type: 'TOGGLE_SORT_ORDER' }
   | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
@@ -64,11 +64,22 @@ const setupTypes = {
 const movieTableSetup = setup({
   types: setupTypes,
   actors: {
-    fetchData: fromPromise<Results, QpParsed>(async ({ input }) =>
-      trpcVanilla.getMovies.query(input)
+    fetchData: fromPromise<Results, Context>(async ({ input }) =>
+      trpcVanilla.getMovies.query(input.queryParams)
     ),
   },
 });
+
+// need to get field in here, could pull from URL
+// const topPeopleSetup = setup({
+//   types: setupTypes,
+//   actors: {
+//     fetchData: fromPromise<Results, Context>(async ({ input }) => {
+//       const url;
+//       return trpcVanilla.getMovies.query(input.queryParams);
+//     }),
+//   },
+// });
 
 export const [movieTableMachine] = [movieTableSetup].map(config =>
   config.createMachine({
@@ -188,7 +199,7 @@ export const [movieTableMachine] = [movieTableSetup].map(config =>
         },
         invoke: {
           src: 'fetchData',
-          input: ({ context }) => context.queryParams,
+          input: ({ context }) => context,
           onDone: {
             target: 'idle',
             actions: assign(({ context, event }) => {
@@ -252,7 +263,7 @@ export const movieTableActions = (send: (event: Event) => void) => ({
   replaceToken: (token: Omit<Token, 'name'>) => {
     send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
   },
-  sort: (field: SortKey) => {
+  sort: (field: AppEnums['sort']) => {
     send({ type: 'SORT', field });
   },
   toggleSearchMode: () => {

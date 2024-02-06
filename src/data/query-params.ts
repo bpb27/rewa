@@ -1,6 +1,7 @@
 import { parse as qsParse, stringify as qsStringify } from 'qs';
 import { omitBy } from 'remeda';
 import { z } from 'zod';
+import { appEnums } from '~/utils/enums';
 import { keys } from '~/utils/object';
 import { boolean, integer, integerList } from '~/utils/zschema';
 
@@ -31,7 +32,6 @@ export const assembleUrl = (
 export type QpSchema = z.infer<typeof qpSchema>;
 export type QpParsed = z.infer<typeof parsedQpSchema>;
 export type TokenType = keyof z.infer<typeof tokenSchema>;
-export type SortKey = QpSchema['sort'];
 
 // transforms query param string values into proper types
 export const qpSchema = z.object({
@@ -46,7 +46,7 @@ export const qpSchema = z.object({
   host: integerList.optional().default(''),
   keyword: integerList.optional().default(''),
   movie: integerList.optional().default(''),
-  movieMode: z.enum(['rewa', 'oscar', 'any']).optional().default('any'),
+  movieMode: appEnums.movieMode.schema.optional().default('any'),
   oscarsCategoriesNom: integerList.optional().default(''),
   oscarsCategoriesWon: integerList.optional().default(''),
   page: integer.optional().default(0),
@@ -57,23 +57,8 @@ export const qpSchema = z.object({
   runtime: integerList.optional().default(''),
   runtimeGte: integerList.optional().default(''),
   runtimeLte: integerList.optional().default(''),
-  searchMode: z.enum(['and', 'or']).optional().default('and'),
-  sort: z
-    .enum([
-      'budget',
-      'director',
-      'ebert',
-      'episodeNumber',
-      'profit',
-      'release_date',
-      'revenue',
-      'runtime',
-      'title',
-      'total_oscar_nominations',
-      'total_oscar_wins',
-    ])
-    .optional()
-    .default('title'),
+  searchMode: appEnums.searchMode.schema.optional().default('and'),
+  sort: appEnums.sort.schema.optional().default('title'),
   streamer: integerList.optional().default(''),
   writer: integerList.optional().default(''),
   year: integerList.optional().default(''),

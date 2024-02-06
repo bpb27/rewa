@@ -58,8 +58,6 @@
 
 - add more streamer options (Criterion, Tubi)
 
-- xstate update to v5
-
 - more crate and text
 
 - look into suspense for modals + sidebars + dialogs that are loading?

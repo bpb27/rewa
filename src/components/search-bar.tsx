@@ -3,14 +3,14 @@ import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
-import { type QpSchema } from '~/data/query-params';
 import { type Token } from '~/data/tokens';
 import { trpc } from '~/trpc/client';
+import { type AppEnums } from '~/utils/enums';
 import { capitalize } from '~/utils/format';
 import { useDebounce } from '~/utils/use-debounce';
 
 type SearchBarProps = {
-  filter: QpSchema['movieMode'];
+  filter: AppEnums['movieMode'];
   onSelect: (selection: Token) => void;
 };
 

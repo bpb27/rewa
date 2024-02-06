@@ -1,7 +1,7 @@
 import { uniqBy } from 'remeda';
 import { z } from 'zod';
-import { qpSchema } from '~/data/query-params';
 import { Prisma } from '~/prisma';
+import { appEnums } from '~/utils/enums';
 import { getYear } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 
@@ -9,7 +9,7 @@ const prisma = Prisma.getPrisma();
 
 export const getActorParams = z.object({
   id: z.number(),
-  filter: qpSchema.shape.movieMode,
+  filter: appEnums.movieMode.schema,
 });
 
 const MOVIE_SELECT = { select: { title: true, release_date: true, id: true } };

@@ -1,4 +1,4 @@
-import { inferRouterOutputs } from '@trpc/server';
+import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { getActor, getActorParams } from '~/api/get-actor';
 import { getActorInMovie, getActorInMovieParams } from '~/api/get-actor-in-movie';
 import { getLeaderboard, getLeaderboardParams } from '~/api/get-leaderboard';
@@ -48,3 +48,4 @@ export const appRouter = router({
 
 export type AppRouter = typeof appRouter;
 export type ApiResponses = inferRouterOutputs<AppRouter>;
+export type ApiParams = inferRouterInputs<AppRouter>;

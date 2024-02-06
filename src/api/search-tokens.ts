@@ -4,13 +4,14 @@ import { crewJobs } from '~/data/crew-jobs';
 import { relevantStreamers } from '~/data/streamers';
 import { tokenize, tokenizeYear } from '~/data/tokens';
 import { Prisma } from '~/prisma';
+import { appEnums } from '~/utils/enums';
 import { getYear } from '~/utils/format';
 import { isYear } from '~/utils/validate';
 
 const prisma = Prisma.getPrisma();
 
 export const searchTokensParams = z.object({
-  filter: z.enum(['rewa', 'oscar', 'any']),
+  filter: appEnums.movieMode.schema,
   search: z.string(),
 });
 

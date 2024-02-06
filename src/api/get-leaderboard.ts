@@ -5,6 +5,7 @@ import { crewJobs } from '~/data/crew-jobs';
 import { movieFilters } from '~/data/movie-search-conditions';
 import { parsedQpSchema } from '~/data/query-params';
 import { Prisma } from '~/prisma';
+import { appEnums } from '~/utils/enums';
 import { smartSort } from '~/utils/sorting';
 
 type Params = z.infer<typeof getLeaderboardParams>;
@@ -28,15 +29,7 @@ type Person = {
 const prisma = Prisma.getPrisma();
 
 export const getLeaderboardParams = z.object({
-  field: z.enum([
-    'actor',
-    'actorNoms',
-    'director',
-    'directorNoms',
-    'cinematographer',
-    'producer',
-    'writer',
-  ]),
+  field: appEnums.topCategory.schema,
   params: parsedQpSchema,
 });
 

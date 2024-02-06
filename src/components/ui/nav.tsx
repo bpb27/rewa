@@ -32,7 +32,7 @@ export const Navbar = () => {
             <Menu
               items={[
                 { href: NAV.rewa.movies, text: 'Rewa' },
-                { href: NAV.oscar.movies, text: 'Oscars' },
+                { href: NAV.oscars.movies, text: 'Oscars' },
               ]}
             />
           </Nav.Content>
@@ -49,7 +49,7 @@ export const Navbar = () => {
         {mode === 'oscar' && (
           <Nav.Item>
             <Nav.Link asChild>
-              <Link href={NAV.oscar.movies} className="flex py-2">
+              <Link href={NAV.oscars.movies} className="flex py-2">
                 All Movies
               </Link>
             </Nav.Link>
@@ -69,11 +69,11 @@ export const Navbar = () => {
           {mode === 'rewa' && (
             <Menu
               items={[
-                { href: NAV.rewa.top.actors, text: 'Actors' },
-                { href: NAV.rewa.top.directors, text: 'Directors' },
-                { href: NAV.rewa.top.writers, text: 'Writers' },
-                { href: NAV.rewa.top.cinematographers, text: 'Cinematographers' },
-                { href: NAV.rewa.top.producers, text: 'Producers' },
+                { href: NAV.rewa.top.actor, text: 'Actors' },
+                { href: NAV.rewa.top.director, text: 'Directors' },
+                { href: NAV.rewa.top.writer, text: 'Writers' },
+                { href: NAV.rewa.top.cinematographer, text: 'Cinematographers' },
+                { href: NAV.rewa.top.producer, text: 'Producers' },
                 // { href: NAV.rewa.top.companies, text: 'Production Companies' },
               ]}
             />
@@ -81,13 +81,13 @@ export const Navbar = () => {
           {mode === 'oscar' && (
             <Menu
               items={[
-                { href: NAV.oscar.top.actorsNoms, text: 'Actors (most noms)' },
-                { href: NAV.oscar.top.actors, text: 'Actors (most films)' },
-                { href: NAV.oscar.top.directorsNoms, text: 'Directors (most noms)' },
-                { href: NAV.oscar.top.directors, text: 'Directors (most films)' },
-                { href: NAV.oscar.top.writers, text: 'Writers' },
-                { href: NAV.oscar.top.cinematographers, text: 'Cinematographers' },
-                { href: NAV.oscar.top.producers, text: 'Producers' },
+                { href: NAV.oscars.top.actorNoms, text: 'Actors (most noms)' },
+                { href: NAV.oscars.top.actor, text: 'Actors (most films)' },
+                { href: NAV.oscars.top.directorNoms, text: 'Directors (most noms)' },
+                { href: NAV.oscars.top.director, text: 'Directors (most films)' },
+                { href: NAV.oscars.top.writer, text: 'Writers' },
+                { href: NAV.oscars.top.cinematographer, text: 'Cinematographers' },
+                { href: NAV.oscars.top.producer, text: 'Producers' },
               ]}
             />
           )}

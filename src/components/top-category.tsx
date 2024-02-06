@@ -5,13 +5,14 @@ import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
 import { ApiResponses } from '~/trpc/router';
+import { AppEnums } from '~/utils/enums';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
   field: keyof typeof titles;
-  movieMode: 'rewa' | 'oscar';
+  movieMode: AppEnums['movieMode'];
   hideProfileImage?: boolean;
   people: ApiResponses['getLeaderboard']['people'];
 };

@@ -2,7 +2,7 @@ import { Prisma as PrismaBaseType } from '@prisma/client';
 import { pick, uniqBy } from 'remeda';
 import { crewJobs } from '~/data/crew-jobs';
 import { movieFilters } from '~/data/movie-search-conditions';
-import { QpSchema, SortKey } from '~/data/query-params';
+import { QpSchema } from '~/data/query-params';
 import {
   Token,
   tokenize,
@@ -12,13 +12,13 @@ import {
   tokenizeYear,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
+import { AppEnums } from '~/utils/enums';
 import { getYear } from '~/utils/format';
 import { sortCrew } from '~/utils/sorting';
 
 // NB: searchMode AND === all conditions present, searchMode OR === any conditions present
 // NB: using a view (movies_with_computed_fields) to sort across tables (e.g. episode order) + custom fields (e.g. profit percentage)
 
-type QueryWhere = Pick<PrismaBaseType.moviesFindManyArgs, 'where'>;
 type OrderByKey = keyof PrismaBaseType.movies_with_computed_fieldsOrderByWithAggregationInput;
 
 const prisma = Prisma.getPrisma();
@@ -36,7 +36,7 @@ const sortMap = {
   title: 'title',
   total_oscar_nominations: 'total_oscar_nominations',
   total_oscar_wins: 'total_oscar_wins',
-} satisfies Record<SortKey, OrderByKey>;
+} satisfies Record<AppEnums['sort'], OrderByKey>;
 
 export const getMovies = async (params: QpSchema) => {
   const take = 25;

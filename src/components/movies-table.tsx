@@ -3,9 +3,9 @@ import { useCallback, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
-import { QpSchema, type SortKey } from '~/data/query-params';
 import { streamerShortName } from '~/data/streamers';
 import { type Token } from '~/data/tokens';
+import { AppEnums } from '~/utils/enums';
 import { capitalize } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { MoviePoster, PersonPoster } from './images';
@@ -16,9 +16,9 @@ import { Table } from './ui/table';
 import { Text } from './ui/text';
 
 type MoviesTableProps = {
-  mode: QpSchema['movieMode'];
+  mode: AppEnums['movieMode'];
   movies: MoviesPageMovie[];
-  onSortClick: (sort: SortKey) => void;
+  onSortClick: (sort: AppEnums['sort']) => void;
   onTokenClick: (token: Token) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
   onMovieTitleClick: (id: number) => void;
@@ -35,7 +35,7 @@ export const MoviesTable = ({
   const showHosts = mode === 'rewa';
   const showEbert = mode === 'rewa';
   const handleHeaderClick = useCallback(
-    (sortKey: SortKey) => () => onSortClick(sortKey),
+    (sortKey: AppEnums['sort']) => () => onSortClick(sortKey),
     [onSortClick]
   );
   return (
