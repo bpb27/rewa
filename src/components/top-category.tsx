@@ -78,6 +78,7 @@ export const TopCategory = ({ field, hideProfileImage, movieMode, people }: TopC
       {selected && 'actorId' in selected && !('movieId' in selected) && (
         <ActorCardSidebar
           {...selected}
+          field={field}
           onClose={() => select(undefined)}
           onSelectMovie={movieId => select({ actorId: selected.actorId, movieId })}
         />

@@ -16,8 +16,9 @@ import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
-import { MovieSpotlightModal } from './overlays/movie-spotlight-modal';
 import { OscarYearModal } from './overlays/oscar-year-modal';
+import { Modal } from './ui/modal';
+import { Spotlight } from './ui/spotlight';
 
 export type MoviesPageMovie = ApiResponses['getMovies']['results'][number];
 
@@ -39,7 +40,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const data = useMemo(() => movieTableData(state), [state]);
   const actions = useMemo(() => movieTableActions(send), [send]);
   const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
-  const [movieModal, setMovieModal] = useState<number | undefined>();
+  const [movieModal, setMovieModal] = useState<MoviesPageMovie | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
   useUrlChange(actions.onUrlUpdate);
 
@@ -79,7 +80,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onTokenClick={actions.toggleToken}
         onSortClick={actions.sort}
         onOscarYearClick={setOscarsModal}
-        onMovieTitleClick={setMovieModal}
+        onMovieTitleClick={id => setMovieModal(data.movies.find(m => m.id === id))}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
       {!!oscarsModal && (
@@ -90,11 +91,14 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         />
       )}
       {!!movieModal && (
-        <MovieSpotlightModal
-          {...data.movies.find(m => m.id === movieModal)!}
-          isOpen={!!movieModal}
-          onClose={() => setMovieModal(undefined)}
-        />
+        <Modal isOpen={!!movieModal} onClose={() => setMovieModal(undefined)}>
+          <Spotlight
+            description={movieModal.overview}
+            image={movieModal.poster_path}
+            name={movieModal.title}
+            tagline={movieModal.tagline}
+          />
+        </Modal>
       )}
       <Button
         variant="icon"

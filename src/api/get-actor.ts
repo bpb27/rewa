@@ -10,71 +10,63 @@ const prisma = Prisma.getPrisma();
 export const getActorParams = z.object({
   id: z.number(),
   filter: appEnums.movieMode.schema,
+  field: appEnums.topCategory.schema.optional(),
 });
 
-const MOVIE_SELECT = { select: { title: true, release_date: true, id: true } };
-const episodeWhere = { movies: { episodes: { some: {} } } };
-const oscarWhere = { movies: { oscars_nominations: { some: {} } } };
-
-export const getActor = async ({ id, filter }: z.infer<typeof getActorParams>) => {
+export const getActor = async ({ id, field, filter }: z.infer<typeof getActorParams>) => {
   const actorResponse = await prisma.actors.findFirstOrThrow({
     where: { id },
     include: {
       actors_on_movies: {
         where: {
-          ...(filter === 'rewa' ? episodeWhere : undefined),
-          ...(filter === 'oscar' ? oscarWhere : undefined),
+          movies: {
+            ...(filter === 'rewa' ? { episodes: { some: {} } } : undefined),
+            ...(filter === 'oscar' ? { oscars_nominations: { some: {} } } : undefined),
+          },
         },
         include: {
-          movies: MOVIE_SELECT,
+          movies: {
+            select: {
+              title: true,
+              release_date: true,
+              id: true,
+              oscars_nominations: {
+                include: {
+                  actors_on_oscars: true,
+                  award: { include: { oscars_categories: true } },
+                },
+              },
+            },
+          },
         },
       },
     },
   });
 
-  const crewResponse = await prisma.crew.findFirst({
-    where: { tmdb_id: actorResponse.tmdb_id },
-    select: {
-      crew_on_movies: {
-        where: {
-          ...(filter === 'rewa' ? episodeWhere : undefined),
-          ...(filter === 'oscar' ? oscarWhere : undefined),
-        },
-        include: { movies: { ...MOVIE_SELECT } },
-      },
-    },
-  });
+  const movies = actorResponse.actors_on_movies
+    .filter(om => om.movies)
+    .map(role => {
+      const oscar = role.movies.oscars_nominations.find(nom =>
+        nom.actors_on_oscars.find(a => a.actor_id === role.actor_id)
+      );
+      return {
+        oscar: oscar ? { award: oscar.award.oscars_categories.name, won: oscar.won } : undefined,
+        character: role.character,
+        movieId: role.movie_id,
+        releaseDate: role.movies.release_date,
+        title: role.movies.title,
+        year: getYear(role.movies.release_date),
+      };
+    })
+    .filter(role => (field === 'actorNoms' ? role.oscar : true));
 
   return {
     id,
     name: actorResponse.name,
-    profilePath: actorResponse.profile_path,
+    image: actorResponse.profile_path,
     movies: uniqBy(
-      smartSort(
-        actorResponse.actors_on_movies
-          .filter(om => om.movies)
-          .map(role => ({
-            character: role.character,
-            movieId: role.movie_id,
-            releaseDate: role.movies.release_date,
-            title: role.movies.title,
-            year: getYear(role.movies.release_date),
-          })),
-        movie => movie.releaseDate
-      ),
+      smartSort(movies, movie => movie.releaseDate),
       m => m.movieId
-    ),
-    crewMovies: smartSort(
-      (crewResponse?.crew_on_movies || [])
-        .filter(om => om.movies)
-        .map(crew => ({
-          job: crew.job,
-          movieId: crew.movies.id,
-          releaseDate: crew.movies.release_date,
-          title: crew.movies.title,
-          year: getYear(crew.movies.release_date),
-        })),
-      movie => movie.releaseDate
     ),
   };
 };

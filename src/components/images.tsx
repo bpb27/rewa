@@ -1,5 +1,4 @@
 import Image, { type ImageProps } from 'next/image';
-import { type PropsWithChildren } from 'react';
 import { cn } from '~/utils/style';
 
 // predefined tmdb image cache sizes for movie posters
@@ -116,9 +115,3 @@ export const PersonPoster = ({
     />
   );
 };
-
-export const TheaterBackground = ({ children }: PropsWithChildren<{}>) => (
-  <div className="flex w-full justify-center rounded-xl border-2 border-solid border-slate-900 bg-gradient-to-r from-slate-500 via-slate-900 to-slate-500">
-    {children}
-  </div>
-);

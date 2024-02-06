@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { trpc } from '~/trpc/client';
+import { ApiResponses } from '~/trpc/router';
 import { titleCase } from '~/utils/format';
 import { MoviePoster, PersonPoster } from './images';
 import Layout from './layout';
-import { MovieSpotlightModal } from './overlays/movie-spotlight-modal';
 import { Crate } from './ui/box';
+import { Modal } from './ui/modal';
+import { Spotlight } from './ui/spotlight';
 import { Table } from './ui/table';
 import { Text } from './ui/text';
 
@@ -14,10 +16,11 @@ import { Text } from './ui/text';
   normalize award names
 */
 
+type Movie = ApiResponses['getOscarsByYear'][number]['movie'];
+
 export const OscarsTable = () => {
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: 1928 });
-  const [movieModalId, setMovieModalId] = useState<number | undefined>();
-  const movieModalData = data.find(o => o.movie.id === movieModalId);
+  const [movieModal, setMovieModal] = useState<Movie | undefined>();
   return (
     <Layout title="Oscar Awards">
       <Table>
@@ -45,7 +48,7 @@ export const OscarsTable = () => {
                   <Text bold className="max-w-[300px]">
                     {oscar.movie.title}
                   </Text>
-                  <Text secondary onClick={() => setMovieModalId(oscar.movie.id)}>
+                  <Text secondary onClick={() => setMovieModal(oscar.movie)}>
                     See description
                   </Text>
                 </Crate>
@@ -82,12 +85,14 @@ export const OscarsTable = () => {
           ))}
         </Table.Body>
       </Table>
-      {movieModalData && (
-        <MovieSpotlightModal
-          {...movieModalData.movie}
-          isOpen={!!movieModalId}
-          onClose={() => setMovieModalId(undefined)}
-        />
+      {!!movieModal && (
+        <Modal isOpen={!!movieModal} onClose={() => setMovieModal(undefined)}>
+          <Spotlight
+            description={movieModal.overview}
+            image={movieModal.poster_path}
+            name={movieModal.title}
+          />
+        </Modal>
       )}
     </Layout>
   );

@@ -1,67 +1,56 @@
 import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
+import { AppEnums } from '~/utils/enums';
+import { titleCase } from '~/utils/format';
 import { bookends } from '~/utils/object';
 import { useMovieMode } from '~/utils/use-movie-mode';
-import { PersonPoster, TheaterBackground } from '../images';
 import { Crate } from '../ui/box';
+import { Spotlight } from '../ui/spotlight';
 import { Text } from '../ui/text';
 
 type ActorCardSidebar = {
   actorId: number;
+  field: AppEnums['topCategory'];
   onClose: () => void;
   onSelectMovie: (movieId: number) => void;
 };
 
-export const ActorCardSidebar = ({ actorId, onClose, onSelectMovie }: ActorCardSidebar) => {
+export const ActorCardSidebar = ({ actorId, field, onClose, onSelectMovie }: ActorCardSidebar) => {
   const filter = useMovieMode();
-  const { data: actor } = trpc.getActor.useQuery({ filter, id: actorId });
+  const { data: actor } = trpc.getActor.useQuery({ field, filter, id: actorId });
 
   if (!actor) return null;
-  const [firstYear, lastYear] = bookends(actor.movies).map(m => m.year);
+
   const handleClick = (params: { movieId: number }) => () => onSelectMovie(params.movieId);
+  const [firstYear, lastYear] = bookends(actor.movies).map(m => Number(m.year));
+  const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
-      <Crate gap={1} column alignCenter my={3}>
-        <Text bold size="xl">
-          {actor.name}
-        </Text>
-        <TheaterBackground>
-          <PersonPoster name={actor.name} poster_path={actor.profilePath} variant="card" />
-        </TheaterBackground>
-        <Sidebar.StarBar>
-          <Text bold>
-            Movie Run: {firstYear} to {lastYear}
-          </Text>
-        </Sidebar.StarBar>
+      <Crate my={3} className="w-full">
+        <Spotlight
+          image={actor.image!}
+          name={actor.name}
+          variant="person"
+          tagline={`${runLength} year run with ${actor.movies.length} movies`}
+        />
       </Crate>
       <Crate column gap={2} mb={6}>
         {actor.movies.map(movie => (
-          <Crate key={movie.character + movie.movieId}>
-            <Text {...listItem}>
-              {movie.character} in <Movie {...movie} onClick={handleClick(movie)} />
+          <Crate key={movie.character + movie.movieId} column my={1}>
+            <Text bold onClick={handleClick(movie)} tag="span">
+              {movie.title} ({movie.year})
             </Text>
-          </Crate>
-        ))}
-        {actor.crewMovies.length > 0 && <Sidebar.Separator />}
-        {actor.crewMovies.map(movie => (
-          <Crate key={movie.job + movie.movieId}>
-            <Text {...listItem}>
-              {movie.job} on <Movie {...movie} onClick={handleClick(movie)} />
-            </Text>
+            <Text>{movie.character}</Text>
+            {movie.oscar && (
+              <Text secondary>
+                Best {titleCase(movie.oscar.award)} ({movie.oscar.won ? 'Won' : 'Nominated'})
+              </Text>
+            )}
           </Crate>
         ))}
       </Crate>
     </Sidebar>
   );
 };
-
-const listItem = { noWrap: false, flex: false };
-
-type MovieProps = { title: string; year: string; onClick: () => void };
-const Movie = ({ title, onClick, year }: MovieProps) => (
-  <Text {...listItem} bold onClick={onClick} tag="span">
-    {title} ({year})
-  </Text>
-);

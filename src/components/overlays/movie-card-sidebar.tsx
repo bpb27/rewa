@@ -3,8 +3,8 @@ import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
 import { formatDate } from '~/utils/format';
 import { useMovieMode } from '~/utils/use-movie-mode';
-import { MoviePoster, TheaterBackground } from '../images';
 import { Crate } from '../ui/box';
+import { Spotlight } from '../ui/spotlight';
 import { Text } from '../ui/text';
 
 type MovieCardSidebar = {
@@ -16,30 +16,23 @@ type MovieCardSidebar = {
 export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const movieMode = useMovieMode();
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
-  const { data: actor } = trpc.getActor.useQuery(
-    { id: actorId!, filter: movieMode },
-    { enabled: !!actorId }
-  );
-  const role = actor?.movies.find(m => m.movieId === movieId)?.character;
+  // const { data: actor } = trpc.getActor.useQuery(
+  //   { id: actorId!, filter: movieMode },
+  //   { enabled: !!actorId }
+  // );
+  // const role = actor?.movies.find(m => m.movieId === movieId)?.character;
 
   if (!movie) return null;
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
-      <Crate gap={1} column alignCenter mt={3} mb={6}>
-        <Text bold size="xl">
-          {movie.title}
-        </Text>
-        <TheaterBackground>
-          <MoviePoster {...movie} variant="card" />
-        </TheaterBackground>
-        {movie.tagline && <Text secondary>{movie.tagline}</Text>}
-        {role && (
-          <Sidebar.StarBar>
-            <Text bold>{role}</Text>
-          </Sidebar.StarBar>
-        )}
-        <Text>{movie.overview}</Text>
+      <Crate mt={3} mb={6}>
+        <Spotlight
+          description={movie.overview}
+          image={movie.poster_path}
+          name={movie.title}
+          tagline={movie.tagline}
+        />
       </Crate>
       <Crate mb={5} column>
         {movieMode === 'rewa' && movie.episode && (
