@@ -1,12 +1,11 @@
 import { Prisma as PrismaBaseType } from '@prisma/client';
-import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { crewJobs } from '~/data/crew-jobs';
 import { movieFilters } from '~/data/movie-search-conditions';
 import { parsedQpSchema } from '~/data/query-params';
 import { Prisma } from '~/prisma';
 import { appEnums } from '~/utils/enums';
-import { smartSort } from '~/utils/sorting';
+import { sortLeaderboard, sortMovies } from '~/utils/sorting';
 
 type Params = z.infer<typeof getLeaderboardParams>;
 type MovieSelect = Pick<PrismaBaseType.moviesFindManyArgs, 'select'>;
@@ -23,6 +22,7 @@ type Person = {
     image: string;
     award?: { category: string; won: boolean };
     character?: string;
+    releaseDate: string;
   }[];
 };
 
@@ -75,18 +75,18 @@ const getTopActors: GetTop = async ({ params }) => {
     id: p.id,
     name: p.name,
     image: p.profile_path,
-    movies: uniqBy(
+    movies: sortMovies(
       p.actors_on_movies.map(aom => ({
         character: aom.character,
         id: aom.movies.id,
         image: aom.movies.poster_path,
         title: aom.movies.title,
-      })),
-      m => m.id
+        releaseDate: aom.movies.release_date,
+      }))
     ),
   }));
 
-  return smartSort(mapped, p => p.movies.length, 'desc');
+  return sortLeaderboard(mapped);
 };
 
 const getTopCrew: GetTop = async ({ field, params }) => {
@@ -122,17 +122,17 @@ const getTopCrew: GetTop = async ({ field, params }) => {
     id: p.id,
     name: p.name,
     image: p.profile_path,
-    movies: uniqBy(
+    movies: sortMovies(
       p.crew_on_movies.map(om => ({
         id: om.movies.id,
         image: om.movies.poster_path,
         title: om.movies.title,
-      })),
-      m => m.id
+        releaseDate: om.movies.release_date,
+      }))
     ),
   }));
 
-  return smartSort(mapped, p => p.movies.length, 'desc');
+  return sortLeaderboard(mapped);
 };
 
 const getTopOscarActors: GetTop = async ({ params }) => {
@@ -180,6 +180,7 @@ const getTopOscarActors: GetTop = async ({ params }) => {
       character: item.oscars_nominations.movie.actors_on_movies.find(
         aom => aom.actor_id === actor.id
       )?.character,
+      releaseDate: item.oscars_nominations.movie.release_date,
       award: {
         category: item.oscars_nominations.award.oscars_categories.name,
         won: item.oscars_nominations.won,
@@ -195,11 +196,8 @@ const getTopOscarActors: GetTop = async ({ params }) => {
     return hash;
   }, {} as Record<number, Person>);
 
-  return smartSort(
-    Object.values(mapped).map(a => ({ ...a, movies: uniqBy(a.movies, m => m.id) })),
-    a => a.movies.length,
-    'desc'
-  );
+  const list = Object.values(mapped).map(a => ({ ...a, movies: sortMovies(a.movies) }));
+  return sortLeaderboard(list);
 };
 
 const getTopOscarDirectors: GetTop = async ({ params }) => {
@@ -245,6 +243,7 @@ const getTopOscarDirectors: GetTop = async ({ params }) => {
       id: item.oscars_nominations.movie.id,
       title: item.oscars_nominations.movie.title,
       image: item.oscars_nominations.movie.poster_path,
+      releaseDate: item.oscars_nominations.movie.release_date,
       award: {
         category: item.oscars_nominations.award.oscars_categories.name,
         won: item.oscars_nominations.won,
@@ -260,9 +259,6 @@ const getTopOscarDirectors: GetTop = async ({ params }) => {
     return hash;
   }, {} as Record<number, Person>);
 
-  return smartSort(
-    Object.values(mapped).map(c => ({ ...c, movies: uniqBy(c.movies, m => m.id) })),
-    a => a.movies.length,
-    'desc'
-  );
+  const list = Object.values(mapped).map(a => ({ ...a, movies: sortMovies(a.movies) }));
+  return sortLeaderboard(list);
 };

@@ -1,3 +1,4 @@
+import { uniqBy } from 'remeda';
 import { Token } from '~/data/tokens';
 import { AppEnums } from './enums';
 
@@ -62,3 +63,13 @@ const crewOrder = ['director', 'writer', 'cinematographer', 'producer'];
 export const sortCrew = (a: Token, b: Token) => {
   return crewOrder.indexOf(a.type) - crewOrder.indexOf(b.type);
 };
+
+export const sortMovies = <T extends { id: number; releaseDate: string }>(movies: T[]) =>
+  smartSort(
+    uniqBy(movies, m => m.id),
+    m => m.releaseDate,
+    'asc'
+  );
+
+export const sortLeaderboard = <T extends { movies: any[] }>(leaderboard: T[]) =>
+  smartSort(leaderboard, l => l.movies.length, 'desc');

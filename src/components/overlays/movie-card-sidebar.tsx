@@ -26,7 +26,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
   return (
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
-      <Crate mt={3} mb={6}>
+      <Crate my={3}>
         <Spotlight
           description={movie.overview}
           image={movie.poster_path}
