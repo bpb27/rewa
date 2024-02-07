@@ -4,7 +4,7 @@ import { Icon } from './icons';
 
 export const Sidebar = ({ children }: PropsWithChildren<{}>) => {
   return (
-    <div className="fixed right-0 top-8 z-10 mb-4 h-full w-3/4 animate-enterFromRight overflow-y-scroll border-l-4 bg-slate-100 p-5 pb-8 text-center md:w-1/2 lg:w-1/3">
+    <div className="fixed right-0 top-8 z-10 mb-4 h-full w-3/4 animate-enterFromRight overflow-y-scroll border-l-4 bg-slate-100 p-5 pb-8 text-center shadow-xl md:w-1/2 lg:w-1/3">
       {children}
     </div>
   );

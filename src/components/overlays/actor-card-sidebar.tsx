@@ -39,7 +39,7 @@ export const ActorCardSidebar = ({ actorId, field, onClose, onSelectMovie }: Act
       <Crate column gap={2} mb={6}>
         {actor.movies.map(movie => (
           <Crate key={movie.character + movie.movieId} column my={1}>
-            <Text bold onClick={handleClick(movie)} tag="span">
+            <Text bold onClick={handleClick(movie)} tag="span" icon="FilmStrip">
               {movie.title} ({movie.year})
             </Text>
             <Text>{movie.character}</Text>

@@ -16,11 +16,11 @@ type MovieCardSidebar = {
 export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const movieMode = useMovieMode();
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
-  // const { data: actor } = trpc.getActor.useQuery(
-  //   { id: actorId!, filter: movieMode },
-  //   { enabled: !!actorId }
-  // );
-  // const role = actor?.movies.find(m => m.movieId === movieId)?.character;
+  const { data: actor } = trpc.getActor.useQuery(
+    { id: actorId!, filter: movieMode },
+    { enabled: !!actorId }
+  );
+  const role = actor?.movies.find(m => m.movieId === movieId)?.character;
 
   if (!movie) return null;
   return (
@@ -34,56 +34,66 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
           tagline={movie.tagline}
         />
       </Crate>
-      <Crate mb={5} column>
+      <Crate mb={5} column gap={2}>
+        {role && (
+          <Crate column>
+            <Text bold icon="Star">
+              Role
+            </Text>
+            <Text>{role}</Text>
+          </Crate>
+        )}
         {movieMode === 'rewa' && movie.episode && (
-          <>
-            {movie.hosts.map(({ id, name }) => (
-              <Text icon="Mic" key={id}>
-                {name}
-              </Text>
-            ))}
-            <Sidebar.Separator />
-          </>
+          <Crate column>
+            <Text bold icon="Mic">
+              Hosts
+            </Text>
+            <Text>{movie.hosts.map(h => h.name).join(', ')}</Text>
+          </Crate>
         )}
-        {movie.directors.map(({ id, name }) => (
-          <Text icon="Video" key={id}>
-            {name}
+        <Crate column>
+          <Text bold icon="Actor">
+            Cast
           </Text>
-        ))}
-        {movie.actors.map(({ id, name }) => (
-          <Text icon="Star" key={id}>
-            {name}
+          <Text>{movie.actors.map(a => a.name).join(', ')}</Text>
+        </Crate>
+        <Crate column>
+          <Text bold icon="Video">
+            Director
           </Text>
-        ))}
-        {movie.streamers.length > 0 && (
-          <>
-            <Sidebar.Separator />
-            {movie.streamers.map(({ id, name }) => (
-              <Text icon="Tv" key={id}>
-                {name}
-              </Text>
-            ))}
-          </>
+          <Text>{movie.directors.map(a => a.name).join(', ')}</Text>
+        </Crate>
+        {movie.oscars.noms > 0 && (
+          <Crate column>
+            <Text bold icon="Trophy">
+              Oscars
+            </Text>
+            <Text>
+              {movie.oscars.noms} noms, {movie.oscars.wins} wins
+            </Text>
+          </Crate>
         )}
-        <Sidebar.Separator />
-        <Text icon="Calendar">{formatDate(movie.release_date)}</Text>
-        <Text icon="Clock">{movie.runtime.name}</Text>
-        <Text icon="Dollar">
-          {movie.budget.name} / {movie.revenue.name}
-        </Text>
-        <Sidebar.Separator />
-        <Text icon="Link">
-          <ImdbLink id={movie.imdb_id} className="mx-1 hover:underline">
-            IMDB
-          </ImdbLink>
-        </Text>
-        {movie.episode && (
-          <Text icon="Link">
-            <SpotifyLink url={movie.episode.spotify_url} className="mx-1 hover:underline">
-              Spotify
-            </SpotifyLink>
+        <Crate column>
+          <Text bold icon="Clock">
+            Release Date
           </Text>
-        )}
+          <Text>{formatDate(movie.release_date)}</Text>
+        </Crate>
+        <Crate column>
+          <Text bold icon="Link">
+            External Links
+          </Text>
+          <Crate gap={1}>
+            <ImdbLink id={movie.imdb_id} className="hover:underline">
+              IMDB{movie.episode ? ',' : ''}
+            </ImdbLink>
+            {movie.episode && (
+              <SpotifyLink url={movie.episode.spotify_url} className="hover:underline">
+                Spotify
+              </SpotifyLink>
+            )}
+          </Crate>
+        </Crate>
       </Crate>
     </Sidebar>
   );

@@ -21,10 +21,6 @@
 - refactor filter to just take children
 - might need another machine, or make the machine generic (it's mostly there to manage children and some list but it doesn't care about the list contents) - can make two setup functions, change movie references to results
 
-- sidebar needs to be better - spacing inconsistent
-- a title + poster + tagline + description component would be useful (spotlight and sidebar)
-- actor sidebar looks bad in mobile - new lines for character + movie
-- actor sidebar actor nom spot
 - add a crew sidebar
 
 - may be time to switch to postgres
