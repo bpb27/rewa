@@ -17,9 +17,19 @@
 
 # TODO
 
-- top page should have a filter overlay (or sidebar)
-- refactor filter to just take children
-- might need another machine, or make the machine generic (it's mostly there to manage children and some list but it doesn't care about the list contents) - can make two setup functions, change movie references to results
+add more view fields
+
+- isRewa
+- isOscar
+- isActorNominated
+- isDirectorNominated
+- rename to movies_view
+
+- implement filters on top page (ready to go, just need to figure out how to present)
+
+- try trpcServerSide helpers thing
+
+- movieMode === 'oscar' but route === 'oscars'
 
 - add a crew sidebar
 
@@ -28,8 +38,7 @@
 - free hobby PG via vercel, or can look for other cheap options
 - could use prisma accelerate and use edge functions
 
-- more views - annoying going thru join tables in prisma every time
-- example oscar view: won, name, category, crew, actors, movie
+- try out other ORMs
 
 - look for name extraction lib to get oscar links for writers and others
 

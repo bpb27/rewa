@@ -1,20 +1,27 @@
 import { Token } from '~/data/tokens';
+import { AppEnums } from '~/utils/enums';
 import { Button } from './ui/button';
 import { Icon } from './ui/icons';
 
 type TokenBarProps = {
-  clear: () => void;
-  mode: 'and' | 'or';
+  clearTokens: () => void;
+  searchMode: AppEnums['searchMode'];
   toggleSearchMode: () => void;
-  toggleToken: (token: Token) => void;
+  removeToken: (token: Token) => void;
   tokens: Token[];
 };
 
-export const TokenBar = ({ clear, mode, tokens, toggleSearchMode, toggleToken }: TokenBarProps) => {
+export const TokenBar = ({
+  clearTokens,
+  searchMode,
+  tokens,
+  toggleSearchMode,
+  removeToken,
+}: TokenBarProps) => {
   return (
     <>
       {tokens.length > 0 && (
-        <Button onClick={clear} variant="token">
+        <Button onClick={clearTokens} variant="token">
           <Icon.Close className="mr-2" />
           Clear ({tokens.length})
         </Button>
@@ -22,14 +29,14 @@ export const TokenBar = ({ clear, mode, tokens, toggleSearchMode, toggleToken }:
       {tokens.length > 1 && (
         <Button className="flex" variant="token" onClick={toggleSearchMode}>
           <Icon.Filter className="mr-2" />
-          {mode === 'and' ? 'And' : 'Or'}
+          {searchMode === 'and' ? 'And' : 'Or'}
         </Button>
       )}
       {tokens.map(token => (
         <Button
           className="flex gap-1"
           key={`${token.id}-${token.type}`}
-          onClick={() => toggleToken(token)}
+          onClick={() => removeToken(token)}
           variant="token"
         >
           {icon(token.type)}

@@ -33,11 +33,18 @@ export const getLeaderboardParams = z.object({
   params: parsedQpSchema,
 });
 
-export const getLeaderboard: GetTop = async params => {
-  if (params.field === 'actor') return getTopActors(params);
-  if (params.field === 'actorNoms') return getTopOscarActors(params);
-  if (params.field === 'directorNoms') return getTopOscarDirectors(params);
-  return getTopCrew(params);
+const callback = (people: Person[]) => ({
+  hasNext: false,
+  page: 0,
+  results: people,
+  total: people.length,
+});
+
+export const getLeaderboard = async (params: Params) => {
+  if (params.field === 'actor') return getTopActors(params).then(callback);
+  if (params.field === 'actorNoms') return getTopOscarActors(params).then(callback);
+  if (params.field === 'directorNoms') return getTopOscarDirectors(params).then(callback);
+  return getTopCrew(params).then(callback);
 };
 
 const select = {
@@ -197,7 +204,7 @@ const getTopOscarActors: GetTop = async ({ params }) => {
   }, {} as Record<number, Person>);
 
   const list = Object.values(mapped).map(a => ({ ...a, movies: sortMovies(a.movies) }));
-  return sortLeaderboard(list);
+  return sortLeaderboard(list).slice(0, 100);
 };
 
 const getTopOscarDirectors: GetTop = async ({ params }) => {
@@ -260,5 +267,5 @@ const getTopOscarDirectors: GetTop = async ({ params }) => {
   }, {} as Record<number, Person>);
 
   const list = Object.values(mapped).map(a => ({ ...a, movies: sortMovies(a.movies) }));
-  return sortLeaderboard(list);
+  return sortLeaderboard(list).slice(0, 100);
 };

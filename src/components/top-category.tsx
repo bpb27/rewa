@@ -4,6 +4,7 @@ import Layout from '~/components/layout';
 import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
+import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { AppEnums } from '~/utils/enums';
 import { rankByTotalMovies } from '~/utils/ranking';
@@ -14,25 +15,31 @@ type TopCategoryProps = {
   field: keyof typeof titles;
   movieMode: AppEnums['movieMode'];
   hideProfileImage?: boolean;
-  people: ApiResponses['getLeaderboard']['people'];
+  preloaded: { data: ApiResponses['getLeaderboard']; url: string };
 };
 
-export const TopCategory = ({ field, hideProfileImage, movieMode, people }: TopCategoryProps) => {
+type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
+
+export const TopCategory = ({
+  field,
+  hideProfileImage,
+  movieMode,
+  preloaded,
+}: TopCategoryProps) => {
   const isActor = useMemo(() => field === 'actor' || field === 'actorNoms', [field]);
-  const { heading, tab } = titles[field];
-  type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
   const [selected, select] = useState<Selected | undefined>(undefined);
+  const { data, actions } = useQueryParamsMachine({ id: field, preloaded, variant: 'leaderboard' });
 
   return (
-    <Layout title={tab}>
+    <Layout title={titles[field].tab}>
       {movieMode === 'oscar' && (
         <Crate mb={3} px={2} pt={3} pb={2} column alignCenter>
           <Text size="lg" bold>
-            {heading}
+            {titles[field].heading}
           </Text>
         </Crate>
       )}
-      {rankByTotalMovies(people).map(person => (
+      {rankByTotalMovies(data.results).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>

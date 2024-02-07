@@ -1,6 +1,4 @@
-import { useMachine } from '@xstate/react';
-import { useRouter } from 'next/router';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import Layout from '~/components/layout';
 import { MoviesTable } from '~/components/movies-table';
 import { SearchBar } from '~/components/search-bar';
@@ -10,10 +8,9 @@ import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
 import { Select } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
-import { movieTableActions, movieTableData, movieTableMachine } from '~/data/movie-data-machine';
+import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
-import { useUrlChange } from '~/utils/use-url-change';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-modal';
@@ -27,35 +24,17 @@ type MoviesPageProps = {
 };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
-  const router = useRouter();
-
-  const [state, send] = useMachine(movieTableMachine, {
-    input: {
-      preloaded,
-      url: router.asPath,
-      push: url => router.replace(url, undefined, { shallow: true, scroll: false }),
-    },
-  });
-
-  const data = useMemo(() => movieTableData(state), [state]);
-  const actions = useMemo(() => movieTableActions(send), [send]);
+  const { data, actions } = useQueryParamsMachine({ id: 'movies', preloaded, variant: 'movies' });
   const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
   const [movieModal, setMovieModal] = useState<MoviesPageMovie | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
-  useUrlChange(actions.onUrlUpdate);
 
   return (
     <Layout title="All movies">
       <Crate column p={2} mb={1} gap={3}>
         <SearchBar filter={data.movieMode} onSelect={actions.toggleToken} />
         <Crate gap={2} overflowScroll hide={!data.hasTokens}>
-          <TokenBar
-            clear={actions.clearTokens}
-            mode={data.searchMode}
-            toggleSearchMode={actions.toggleSearchMode}
-            toggleToken={actions.removeToken}
-            tokens={data.tokens}
-          />
+          <TokenBar {...data} {...actions} />
         </Crate>
         <Crate alignCenter justifyCenter gap={3}>
           <Text bold icon="Movie" iconOrientation="right" size="lg">
@@ -76,11 +55,11 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
       </Crate>
       <MoviesTable
         mode={data.movieMode}
-        movies={data.movies}
+        movies={data.results}
         onTokenClick={actions.toggleToken}
         onSortClick={actions.sort}
         onOscarYearClick={setOscarsModal}
-        onMovieTitleClick={id => setMovieModal(data.movies.find(m => m.id === id))}
+        onMovieTitleClick={id => setMovieModal(data.results.find(m => m.id === id))}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
       {!!oscarsModal && (

@@ -19,10 +19,10 @@ export const ActorCardSidebar = ({ actorId, field, onClose, onSelectMovie }: Act
   const filter = useMovieMode();
   const { data: actor } = trpc.getActor.useQuery({ field, filter, id: actorId });
 
-  if (!actor) return null;
+  if (!actor || !actor?.movies) return null;
 
   const handleClick = (params: { movieId: number }) => () => onSelectMovie(params.movieId);
-  const [firstYear, lastYear] = bookends(actor.movies).map(m => Number(m.year));
+  const [firstYear, lastYear] = bookends(actor.movies).map(m => (m ? Number(m.year) : 0));
   const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
   return (
@@ -33,7 +33,7 @@ export const ActorCardSidebar = ({ actorId, field, onClose, onSelectMovie }: Act
           image={actor.image!}
           name={actor.name}
           variant="person"
-          tagline={`${runLength} year run with ${actor.movies.length} movies`}
+          tagline={`${runLength || 1} year run with ${actor.movies.length} movies`}
         />
       </Crate>
       <Crate column gap={2} mb={6}>

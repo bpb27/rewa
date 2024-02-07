@@ -23,14 +23,14 @@ export const appRouter = router({
       getLeaderboard(input),
       getTokens(input.params),
     ]);
-    return { people, tokens };
+    return { ...people, tokens };
   }),
   getMovie: procedure.input(getMovieParams).query(async ({ input }) => {
     return getMovie(input);
   }),
   getMovies: procedure.input(parsedQpSchema).query(async ({ input }) => {
-    const [movies, tokens] = await Promise.all([getMovies(input), getTokens(input)]);
-    return { ...movies, ...tokens };
+    const [movies, { tokens }] = await Promise.all([getMovies(input), getTokens(input)]);
+    return { ...movies, tokens };
   }),
   getOscarCategories: procedure.query(async () => {
     return getOscarCategories();
