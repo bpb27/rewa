@@ -3,5 +3,5 @@ export const isInteger = (value: string) => {
 };
 
 export const isYear = (value: string) => {
-  return isInteger(value) && Number(value) > 1900 && Number(value) < 2100;
+  return isInteger(value) && value.length === 4 && Number(value) > 1900 && Number(value) < 2100;
 };

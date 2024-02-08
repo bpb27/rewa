@@ -29,7 +29,12 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
     setShowResults(!!debouncedSearch);
   }, [debouncedSearch, setShowResults]);
 
-  const byCategory = Object.entries(groupBy(data || [], item => item.type));
+  const byCategory = Object.entries(
+    groupBy(data || [], item => {
+      if (item.type === 'yearGte' || item.type === 'yearLte') return 'year';
+      return item.type;
+    })
+  );
 
   return (
     <div className="relative" ref={setResultsContainer}>
@@ -87,7 +92,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   {item.type === 'writer' && <Icon.Pen />}
                   {item.type === 'streamer' && <Icon.Tv />}
                   {item.type === 'keyword' && <Icon.Key />}
-                  {item.type === 'year' && <Icon.Calendar />}
+                  {item.type.includes('year') && <Icon.Calendar />}
                   <span className="ml-2">{item.name}</span>
                 </button>
               ))}

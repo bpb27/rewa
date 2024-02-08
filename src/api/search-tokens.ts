@@ -2,11 +2,11 @@ import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { crewJobs } from '~/data/crew-jobs';
 import { relevantStreamers } from '~/data/streamers';
-import { tokenize, tokenizeYear } from '~/data/tokens';
+import { tokenize, tokenizeYear, tokenizeYearGte, tokenizeYearLte } from '~/data/tokens';
 import { Prisma } from '~/prisma';
 import { appEnums } from '~/utils/enums';
 import { getYear } from '~/utils/format';
-import { isYear } from '~/utils/validate';
+import { isInteger, isYear } from '~/utils/validate';
 
 const prisma = Prisma.getPrisma();
 
@@ -137,7 +137,26 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
     ...keywords.map(item => tokenize('keyword', item)),
   ];
 
-  if (isYear(search)) results.push(tokenizeYear(search));
+  if (isInteger(search) && pickYear(search)) {
+    const year = pickYear(search);
+    results.push(tokenizeYear(year));
+    results.push(tokenizeYearGte(year));
+    results.push(tokenizeYearLte(year));
+  }
 
   return results;
+};
+
+const pickYear = (str: string) => {
+  if (isYear(str)) {
+    return str;
+  } else if (str === '1' || str === '19') {
+    return '1999';
+  } else if (str === '2' || str === '20') {
+    return '2000';
+  } else if (str.length === 3 && !!(str.startsWith('19') || str.startsWith('20'))) {
+    return str + '0';
+  } else {
+    return '';
+  }
 };

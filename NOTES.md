@@ -17,6 +17,8 @@
 
 # TODO
 
+top category should sort ties by lowest cumulative credit order
+
 add more view fields
 
 - isRewa
