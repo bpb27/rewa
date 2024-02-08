@@ -22,6 +22,7 @@ type Results = {
   page: number;
   total: number;
   hasNext: boolean;
+  /** reusable machine can store different result types, specify via useQueryParamsMachine hook */
   results: unknown[];
   tokens: Token[];
 };
@@ -47,6 +48,14 @@ type Event =
   | { type: 'URL_HAS_CHANGED'; url: string };
 
 type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
+
+type Variant = 'movies' | 'leaderboard';
+
+type FetchResponse<T extends Variant> = T extends 'movies'
+  ? ApiResponses['getMovies']['results']
+  : T extends 'leaderboard'
+  ? ApiResponses['getLeaderboard']['results']
+  : never;
 
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
   const newUrl = assembleUrl(context.url, {
@@ -85,6 +94,7 @@ export const machine = createMachine({
     setup: {
       always: [
         {
+          // no query string, use preloaded data
           guard: ({ context }) => urlToQueryString(context.url).length === 0,
           actions: assign(({ context }) => ({
             url: context.preloaded.url,
@@ -94,6 +104,7 @@ export const machine = createMachine({
           target: 'idle',
         },
         {
+          // when a using a shared link with page > 0, all the data won't be there due to inifinite scroll, so just reset page
           guard: ({ context }) => context.queryParams.page > 0 && !context.data.results.length,
           actions: ({ context }) => updateUrl(context, { page: 0 }),
           target: 'idle',
@@ -209,20 +220,13 @@ export const machine = createMachine({
 });
 
 // abstracting machine context structure for easy component consumption
-export const machineData = <TResultType extends 'movies' | 'leaderboard'>(
-  state: StateFrom<typeof machine>
-) => {
-  type Results = TResultType extends 'movies'
-    ? ApiResponses['getMovies']['results']
-    : TResultType extends 'leaderboard'
-    ? ApiResponses['getLeaderboard']['results']
-    : never;
+export const machineData = <T extends Variant>(state: StateFrom<typeof machine>) => {
   const { data, queryParams } = state.context;
   return {
     asc: queryParams.asc,
     hasTokens: data.tokens.length > 0,
     movieMode: queryParams.movieMode,
-    results: data.results as Results,
+    results: data.results as FetchResponse<T>,
     oscarsCategoriesNom: queryParams.oscarsCategoriesNom,
     oscarsCategoriesWon: queryParams.oscarsCategoriesWon,
     searchMode: queryParams.searchMode,
@@ -273,6 +277,7 @@ export const machineActions = (send: (event: Event) => void) => ({
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
   toggleToken: (token: Omit<Token, 'name'>) => {
+    // doesn't make sense to have two different movie id tokens
     if (token.type === 'movie') {
       send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
     } else {
@@ -292,13 +297,10 @@ export const useQueryParamsMachine = <TVariant extends 'movies' | 'leaderboard'>
 }) => {
   const router = useRouter();
 
-  const machineInstance = useMemo(
-    () =>
-      machine.provide({
-        actors: { fetchData: variant === 'movies' ? fetchMovies : fetchLeaderboard },
-      }),
-    [variant]
-  );
+  const machineInstance = useMemo(() => {
+    const fetchData = variant === 'movies' ? fetchMovies : fetchLeaderboard;
+    return machine.provide({ actors: { fetchData } });
+  }, [variant]);
 
   const [state, send] = useMachine(machineInstance, {
     id,
@@ -311,6 +313,7 @@ export const useQueryParamsMachine = <TVariant extends 'movies' | 'leaderboard'>
 
   const data = useMemo(() => machineData<TVariant>(state), [state]);
   const actions = useMemo(() => machineActions(send), [send]);
+
   useUrlChange(actions.onUrlUpdate);
 
   return { data, actions };
