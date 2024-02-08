@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
-import { ActorCardSidebar } from '~/components/overlays/actor-card-sidebar';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
+import { PersonCardSidebar } from '~/components/overlays/person-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
@@ -18,7 +18,7 @@ type TopCategoryProps = {
   preloaded: { data: ApiResponses['getLeaderboard']; url: string };
 };
 
-type Selected = { movieId: number } | { actorId: number } | { movieId: number; actorId: number };
+type Selected = { movieId: number } | { personId: number } | { movieId: number; actorId: number };
 
 export const TopCategory = ({
   field,
@@ -50,7 +50,7 @@ export const TopCategory = ({
             <Text
               size="lg"
               className="ml-1 mt-2"
-              onClick={isActor ? () => select({ actorId: person.id }) : undefined}
+              onClick={() => select({ personId: person.id })}
               flex={false}
               tag="span"
             >
@@ -80,14 +80,18 @@ export const TopCategory = ({
         </Box.Person>
       ))}
       {selected && 'movieId' in selected && (
-        <MovieCardSidebar {...selected} onClose={() => select(undefined)} />
+        <MovieCardSidebar
+          movieId={selected.movieId}
+          actorId={'actorId' in selected ? selected.actorId : undefined}
+          onClose={() => select(undefined)}
+        />
       )}
-      {selected && 'actorId' in selected && !('movieId' in selected) && (
-        <ActorCardSidebar
-          {...selected}
+      {selected && 'personId' in selected && (
+        <PersonCardSidebar
+          personId={selected.personId}
           field={field}
           onClose={() => select(undefined)}
-          onSelectMovie={movieId => select({ actorId: selected.actorId, movieId })}
+          onSelectMovie={movieId => select({ actorId: selected.personId, movieId })}
         />
       )}
     </Layout>

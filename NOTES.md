@@ -31,8 +31,6 @@ add more view fields
 
 - movieMode === 'oscar' but route === 'oscars'
 
-- add a crew sidebar
-
 - may be time to switch to postgres
 - git warnings about 50mb file size, plus it has load in all serverless functions
 - free hobby PG via vercel, or can look for other cheap options

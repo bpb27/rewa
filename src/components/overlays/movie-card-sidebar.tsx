@@ -16,11 +16,11 @@ type MovieCardSidebar = {
 export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const movieMode = useMovieMode();
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
-  const { data: actor } = trpc.getActor.useQuery(
-    { id: actorId!, filter: movieMode },
+  const { data: actor } = trpc.getPerson.useQuery(
+    { id: actorId!, filter: movieMode, field: 'actor' },
     { enabled: !!actorId }
   );
-  const role = actor?.movies.find(m => m.movieId === movieId)?.character;
+  const role = actor?.movies.find(m => m.id === movieId)?.character;
 
   if (!movie) return null;
   return (
