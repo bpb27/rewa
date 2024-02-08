@@ -65,7 +65,7 @@ export const MoviesTable = ({
       <Table.Body>
         {movies.map(m => (
           <Table.Row key={m.id}>
-            <Table.Data>
+            <Table.Data className="p-0">
               <MoviePoster title={m.title} poster_path={m.poster_path} variant="table" />
             </Table.Data>
             <Table.Data sticky>

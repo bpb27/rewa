@@ -38,17 +38,23 @@ const TableRow = ({ children }: PropsWithChildren<{}>) => (
   <Fragment>
     {/* NB: can't add padding or margin to trs - need to use an empty row as a spacer */}
     <tr className="h-4"></tr>
-    <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md [&>td]:px-2">
+    <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md">
       {children}
     </tr>
   </Fragment>
 );
 
-const TableData = ({ children, sticky }: PropsWithChildren<{ sticky?: boolean }>) => (
+const TableData = ({
+  children,
+  className,
+  sticky,
+}: PropsWithChildren<{ className?: string; sticky?: boolean }>) => (
   <td
     className={cn(
+      'px-2',
       sticky &&
-        'sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3'
+        'sticky left-0 max-w-[250px] bg-gradient-to-r from-slate-50 from-90% to-slate-50/90 pl-3',
+      className
     )}
   >
     {children}
