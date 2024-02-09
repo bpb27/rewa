@@ -86,7 +86,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
 
     prisma.hosts.findMany({
       select: { id: true, name: true },
-      orderBy: { name: 'asc' },
+      orderBy: { hosts_on_episodes: { _count: 'desc' } },
       where: { name: { contains: search } },
       take: 3,
     }),
