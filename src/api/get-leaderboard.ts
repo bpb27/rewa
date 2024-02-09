@@ -16,6 +16,7 @@ type Person = {
   id: number;
   name: string;
   image: string | undefined | null;
+  cumulativeCreditOrder?: number;
   movies: {
     id: number;
     title: string;
@@ -73,7 +74,7 @@ const getTopActors: GetTop = async ({ params }) => {
       actors_on_movies: {
         orderBy: { movies: { release_date: 'asc' } },
         where: { movies: movieFilters(params) },
-        select: { character: true, movies: { select: select.movie } },
+        select: { character: true, credit_order: true, movies: { select: select.movie } },
       },
     },
   });
@@ -82,6 +83,7 @@ const getTopActors: GetTop = async ({ params }) => {
     id: p.id,
     name: p.name,
     image: p.profile_path,
+    cumulativeCreditOrder: p.actors_on_movies.reduce((sum, aom) => sum + aom.credit_order, 0),
     movies: sortMovies(
       p.actors_on_movies.map(aom => ({
         character: aom.character,
@@ -164,7 +166,7 @@ const getTopOscarActors: GetTop = async ({ params }) => {
             select: {
               ...select.movie,
               actors_on_movies: {
-                select: { actor_id: true, character: true },
+                select: { actor_id: true, character: true, credit_order: true },
               },
             },
           },

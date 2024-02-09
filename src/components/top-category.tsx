@@ -9,6 +9,8 @@ import { ApiResponses } from '~/trpc/router';
 import { AppEnums } from '~/utils/enums';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
+import { SearchBar } from './search-bar';
+import { TokenBar } from './token-bar';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
@@ -39,6 +41,12 @@ export const TopCategory = ({
           </Text>
         </Crate>
       )}
+      <Crate column mb={4} gap={2}>
+        <SearchBar filter={data.movieMode} onSelect={actions.toggleToken} />
+        <Crate gap={2} overflowScroll hide={!data.hasTokens}>
+          <TokenBar {...data} {...actions} />
+        </Crate>
+      </Crate>
       {rankByTotalMovies(data.results).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
