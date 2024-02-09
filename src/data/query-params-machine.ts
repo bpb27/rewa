@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { StateFrom, assign, createMachine, fromPromise, raise } from 'xstate';
 import { trpcVanilla } from '~/trpc/client';
 import { ApiResponses } from '~/trpc/router';
-import { appEnums, type AppEnums } from '~/utils/enums';
+import { type AppEnums } from '~/utils/enums';
 import { useUrlChange } from '~/utils/use-url-change';
 import {
   QpParsed,
@@ -22,13 +22,13 @@ type Results = {
   page: number;
   total: number;
   hasNext: boolean;
-  /** reusable machine can store different result types, specify via useQueryParamsMachine hook */
-  results: unknown[];
+  results: unknown[]; // use variant generic via hook to type
   tokens: Token[];
 };
 
 type Context = {
   data: Results;
+  fetchParams: object;
   preloaded: { data: Results; url: string };
   push: (url: string) => void;
   queryParams: QpParsed;
@@ -45,9 +45,10 @@ type Event =
   | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
   | { type: 'REPLACE_TOKEN'; name: TokenType; value: number }
   | { type: 'REMOVE_TOKEN'; name: TokenType; value: number }
+  | { type: 'UPDATE_FETCH_PARAMS'; params: object }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
-type Input = Pick<Context, 'push' | 'url' | 'preloaded'>;
+type Input = Pick<Context, 'push' | 'url' | 'preloaded' | 'fetchParams'>;
 
 type Variant = 'movies' | 'leaderboard';
 
@@ -55,6 +56,10 @@ type FetchResponse<T extends Variant> = T extends 'movies'
   ? ApiResponses['getMovies']['results']
   : T extends 'leaderboard'
   ? ApiResponses['getLeaderboard']['results']
+  : never;
+
+type FetchParams<T extends Variant> = T extends 'leaderboard'
+  ? { field: AppEnums['topCategory']; wonOscar?: AppEnums['oscarWon'] }
   : never;
 
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
@@ -67,13 +72,15 @@ const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
 };
 
 const fetchMovies = fromPromise<Results, Context>(async ({ input }) => {
-  return trpcVanilla.getMovies.query(input.queryParams);
+  return trpcVanilla.getMovies.query({ ...input.queryParams, ...input.fetchParams });
 });
 
 const fetchLeaderboard = fromPromise<Results, Context>(async ({ input }) => {
-  // TODO: this is fragile, should find a better way
-  const field = appEnums.topCategory.schema.parse(input.url.split('/')[3].split('?')[0]);
-  return trpcVanilla.getLeaderboard.query({ field, params: input.queryParams });
+  const additional = input.fetchParams as {
+    field: AppEnums['topCategory'];
+    wonOscar?: AppEnums['oscarWon'];
+  };
+  return trpcVanilla.getLeaderboard.query({ params: input.queryParams, ...additional });
 });
 
 export const machine = createMachine({
@@ -85,6 +92,7 @@ export const machine = createMachine({
   },
   context: ({ input }) => ({
     data: { hasNext: false, results: [], page: 0, tokens: [], total: 0 },
+    fetchParams: input.fetchParams,
     preloaded: input.preloaded,
     push: input.push,
     queryParams: urlToParsedParams(input.url, qpSchema),
@@ -188,6 +196,12 @@ export const machine = createMachine({
             updateUrl(context, { [name]: updated.sort() });
           },
         },
+        UPDATE_FETCH_PARAMS: {
+          target: 'fetching',
+          actions: assign(({ event }) => ({
+            fetchParams: event.params,
+          })),
+        },
       },
     },
     fetching: {
@@ -224,6 +238,7 @@ export const machineData = <T extends Variant>(state: StateFrom<typeof machine>)
   const { data, queryParams } = state.context;
   return {
     asc: queryParams.asc,
+    fetchParams: state.context.fetchParams as FetchParams<T>,
     hasTokens: data.tokens.length > 0,
     movieMode: queryParams.movieMode,
     results: data.results as FetchResponse<T>,
@@ -248,7 +263,7 @@ export const machineData = <T extends Variant>(state: StateFrom<typeof machine>)
 };
 
 // abstracting machine events for easy component consumption
-export const machineActions = (send: (event: Event) => void) => ({
+export const machineActions = <T extends Variant>(send: (event: Event) => void) => ({
   clearTokens: () => {
     send({ type: 'CLEAR_ALL_TOKENS' });
   },
@@ -277,23 +292,21 @@ export const machineActions = (send: (event: Event) => void) => ({
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
   toggleToken: (token: Omit<Token, 'name'>) => {
-    // doesn't make sense to have two different movie id tokens
-    if (token.type === 'movie') {
-      send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
-    } else {
-      send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
-    }
+    send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
+  },
+  updateFetchParams: (params: FetchParams<T>) => {
+    send({ type: 'UPDATE_FETCH_PARAMS', params });
   },
 });
 
-export const useQueryParamsMachine = <TVariant extends 'movies' | 'leaderboard'>({
-  id,
+export const useQueryParamsMachine = <T extends Variant>({
+  fetchParams,
   preloaded,
   variant,
 }: {
-  id: string;
+  fetchParams?: FetchParams<T>;
   preloaded: Context['preloaded'];
-  variant: TVariant;
+  variant: T;
 }) => {
   const router = useRouter();
 
@@ -303,16 +316,17 @@ export const useQueryParamsMachine = <TVariant extends 'movies' | 'leaderboard'>
   }, [variant]);
 
   const [state, send] = useMachine(machineInstance, {
-    id,
+    id: fetchParams?.field || variant,
     input: {
+      fetchParams: fetchParams || {},
       preloaded,
       url: router.asPath,
       push: url => router.replace(url, undefined, { shallow: true, scroll: false }),
     },
   });
 
-  const data = useMemo(() => machineData<TVariant>(state), [state]);
-  const actions = useMemo(() => machineActions(send), [send]);
+  const data = useMemo(() => machineData<T>(state), [state]);
+  const actions = useMemo(() => machineActions<T>(send), [send]);
 
   useUrlChange(actions.onUrlUpdate);
 

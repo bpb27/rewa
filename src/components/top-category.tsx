@@ -6,7 +6,8 @@ import { PersonCardSidebar } from '~/components/overlays/person-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
-import { AppEnums } from '~/utils/enums';
+import { AppEnums, appEnums } from '~/utils/enums';
+import { titleCase } from '~/utils/format';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
 import { SearchBar } from './search-bar';
@@ -30,7 +31,11 @@ export const TopCategory = ({
 }: TopCategoryProps) => {
   const isActor = useMemo(() => field === 'actor' || field === 'actorNoms', [field]);
   const [selected, select] = useState<Selected | undefined>(undefined);
-  const { data, actions } = useQueryParamsMachine({ id: field, preloaded, variant: 'leaderboard' });
+  const { data, actions } = useQueryParamsMachine({
+    fetchParams: { field, wonOscar: 'both' },
+    preloaded,
+    variant: 'leaderboard',
+  });
 
   return (
     <Layout title={titles[field].tab}>
@@ -46,6 +51,27 @@ export const TopCategory = ({
         <Crate gap={2} overflowScroll hide={!data.hasTokens}>
           <TokenBar {...data} {...actions} />
         </Crate>
+      </Crate>
+      <Crate>
+        <fieldset id="won">
+          {appEnums.oscarWon.values.map(value => (
+            <>
+              <label
+                htmlFor={value}
+                onClick={() => actions.updateFetchParams({ field, wonOscar: value })}
+              >
+                {titleCase(value)}
+              </label>
+              <input
+                id={value}
+                type="radio"
+                name="group1"
+                checked={data.fetchParams.wonOscar === value}
+                onChange={() => actions.updateFetchParams({ field, wonOscar: value })}
+              />
+            </>
+          ))}
+        </fieldset>
       </Crate>
       {rankByTotalMovies(data.results).map(person => (
         <Box.Person key={person.id}>

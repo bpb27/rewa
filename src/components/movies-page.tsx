@@ -24,7 +24,7 @@ type MoviesPageProps = {
 };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
-  const { data, actions } = useQueryParamsMachine({ id: 'movies', preloaded, variant: 'movies' });
+  const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
   const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
   const [movieModal, setMovieModal] = useState<MoviesPageMovie | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
