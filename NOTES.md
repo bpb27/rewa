@@ -17,12 +17,7 @@
 
 # TODO
 
-missing Born into Brothels doc
-check oscar years to make sure all the winners are there
-figure out how to query for it
-group all by award id, then group by year, then find winner
-
-top category should sort ties by lowest cumulative credit order
+make oscar modal title clickable, bring up spotlight
 
 add more view fields
 
