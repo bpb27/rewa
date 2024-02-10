@@ -6,8 +6,6 @@
 
 - look for name extraction lib to get oscar links for writers and others
 
-- table element text should be selectable for easy copy/pasting
-
 - standalone node server - cold start times aren't great, response time even in the same AZ is not super fast
 
 - search probs with accented characters - probably store normalized string alongside actual

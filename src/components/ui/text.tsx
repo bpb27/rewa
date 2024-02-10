@@ -38,6 +38,7 @@ export const Text = ({
   const text = (
     <span
       className={cn(
+        'select-text',
         flex && 'flex gap-x-2',
         noWrap && 'whitespace-nowrap',
         bold && 'font-bold',
@@ -59,7 +60,12 @@ export const Text = ({
     </span>
   );
   if (hide) return null;
-  if (onClick && tag !== 'span') return <button onClick={onClick}>{text}</button>;
+  if (onClick && tag !== 'span')
+    return (
+      <button className="select-text" onClick={onClick}>
+        {text}
+      </button>
+    );
   return text;
 };
 

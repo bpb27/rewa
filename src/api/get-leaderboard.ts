@@ -213,7 +213,6 @@ const getTopOscarActors: GetTop = async ({ params, wonOscar }) => {
 };
 
 const getTopOscarDirectors: GetTop = async ({ params, wonOscar }) => {
-  console.log(wonOscar);
   const response = await prisma.crew_on_oscars.findMany({
     where: {
       oscars_nominations: {
