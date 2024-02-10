@@ -81,7 +81,7 @@ const parseMovieById = (movie: Movie) => {
         'title',
       ]),
       tmdb_id: movie.id,
-      revenue: movie.revenue / 1000,
+      revenue: movie.revenue / 1000, // NB: stored in DB as / 1000 due to BigInt shit
     },
     genres: movie.genres.map(genre => pick(genre, ['name'])),
     keywords: movie.keywords.keywords.map(keyword => pick(keyword, ['name'])),

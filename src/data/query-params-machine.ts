@@ -238,6 +238,7 @@ export const machineData = <T extends Variant>(state: StateFrom<typeof machine>)
   const { data, queryParams } = state.context;
   return {
     asc: queryParams.asc,
+    isFetching: state.matches('fetching'),
     fetchParams: state.context.fetchParams as FetchParams<T>,
     hasTokens: data.tokens.length > 0,
     movieMode: queryParams.movieMode,

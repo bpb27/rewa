@@ -7,7 +7,8 @@ import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { AppEnums, appEnums } from '~/utils/enums';
-import { titleCase } from '~/utils/format';
+import { getYear, titleCase } from '~/utils/format';
+import { isSameObject } from '~/utils/object';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
 import { SearchBar } from './search-bar';
@@ -15,7 +16,7 @@ import { TokenBar } from './token-bar';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
-  field: keyof typeof titles;
+  field: AppEnums['topCategory'];
   movieMode: AppEnums['movieMode'];
   hideProfileImage?: boolean;
   preloaded: { data: ApiResponses['getLeaderboard']; url: string };
@@ -37,6 +38,10 @@ export const TopCategory = ({
     variant: 'leaderboard',
   });
 
+  const handleSelect = (selection: Selected) => {
+    select(isSameObject(selection, selected || {}) ? undefined : selection);
+  };
+
   return (
     <Layout title={titles[field].tab}>
       {movieMode === 'oscar' && (
@@ -52,7 +57,8 @@ export const TopCategory = ({
           <TokenBar {...data} {...actions} />
         </Crate>
       </Crate>
-      <Crate>
+      {/* TODO: finish this */}
+      <Crate hide={true}>
         <fieldset id="won">
           {appEnums.oscarWon.values.map(value => (
             <>
@@ -73,7 +79,13 @@ export const TopCategory = ({
           ))}
         </fieldset>
       </Crate>
-      {rankByTotalMovies(data.results).map(person => (
+      {rankByTotalMovies(
+        data.results,
+        // TODO: order by credit order or name if there's a tie
+        (a, b) =>
+          Number(getYear(b.movies[a.movies.length - 1].releaseDate)) -
+          Number(getYear(a.movies[a.movies.length - 1].releaseDate))
+      ).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>
@@ -84,7 +96,7 @@ export const TopCategory = ({
             <Text
               size="lg"
               className="ml-1 mt-2"
-              onClick={() => select({ personId: person.id })}
+              onClick={() => handleSelect({ personId: person.id })}
               flex={false}
               tag="span"
             >
@@ -104,7 +116,9 @@ export const TopCategory = ({
                     variant="leaderboard"
                     title={m.title}
                     onClick={() =>
-                      select(isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id })
+                      handleSelect(
+                        isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id }
+                      )
                     }
                   />
                 </Box.MoviePoster>
@@ -125,7 +139,7 @@ export const TopCategory = ({
           personId={selected.personId}
           field={field}
           onClose={() => select(undefined)}
-          onSelectMovie={movieId => select({ actorId: selected.personId, movieId })}
+          onSelectMovie={movieId => handleSelect({ actorId: selected.personId, movieId })}
         />
       )}
     </Layout>
@@ -144,7 +158,6 @@ const Box = {
     </div>
   ),
   ProfilePic: ({ children }) => <div className="hidden shrink-0 sm:block">{children}</div>,
-  HeaderAndMovies: ({ children }) => <div>{children}</div>,
   MovieBar: ({ children }) => (
     <div className="hide-scrollbar flex space-x-2 overflow-y-hidden overflow-x-scroll">
       {children}
