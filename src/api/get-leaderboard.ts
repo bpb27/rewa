@@ -32,6 +32,7 @@ const prisma = Prisma.getPrisma();
 export const getLeaderboardParams = z.object({
   field: appEnums.topCategory.schema,
   params: parsedQpSchema,
+  wonOscar: appEnums.oscarWon.schema.optional(),
 });
 
 const callback = (people: Person[]) => ({
@@ -144,11 +145,13 @@ const getTopCrew: GetTop = async ({ field, params }) => {
   return sortLeaderboard(mapped);
 };
 
-const getTopOscarActors: GetTop = async ({ params }) => {
+const getTopOscarActors: GetTop = async ({ params, wonOscar }) => {
   const response = await prisma.actors_on_oscars.findMany({
     where: {
       oscars_nominations: {
         movie: movieFilters(params),
+        ...(wonOscar === 'won' ? { won: true } : undefined),
+        ...(wonOscar === 'nominated' ? { won: false } : undefined),
       },
     },
     select: {
@@ -209,12 +212,17 @@ const getTopOscarActors: GetTop = async ({ params }) => {
   return sortLeaderboard(list).slice(0, 100);
 };
 
-const getTopOscarDirectors: GetTop = async ({ params }) => {
+const getTopOscarDirectors: GetTop = async ({ params, wonOscar }) => {
+  console.log(wonOscar);
   const response = await prisma.crew_on_oscars.findMany({
     where: {
       oscars_nominations: {
         movie: movieFilters(params),
-        award: { category_id: 8 },
+        ...(wonOscar === 'won' ? { won: true } : undefined),
+        ...(wonOscar === 'nominated' ? { won: false } : undefined),
+        award: {
+          category_id: 8,
+        },
       },
     },
     select: {

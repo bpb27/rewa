@@ -22,6 +22,10 @@ module.exports = {
     },
     extend: {
       keyframes: {
+        pulse: {
+          '0%, 100%': { opacity: 1 },
+          '50%': { opacity: 0.5 },
+        },
         enterFromRight: {
           from: { opacity: 0, transform: 'translateX(200px)' },
           to: { opacity: 1, transform: 'translateX(0)' },
@@ -79,12 +83,14 @@ module.exports = {
       exitToRight: 'exitToRight 250ms ease',
       fadeIn: 'fadeIn 200ms ease',
       fadeOut: 'fadeOut 200ms ease',
+      pulse: 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       scaleIn: 'scaleIn 200ms ease',
       scaleOut: 'scaleOut 200ms ease',
       slideDownAndFade: 'slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       slideLeftAndFade: 'slideLeftAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       slideRightAndFade: 'slideRightAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
       slideUpAndFade: 'slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1)',
+      spinSlow: 'spin 3s linear infinite',
     },
   },
   plugins: [require('tailwindcss-animate')],

@@ -116,24 +116,21 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
     })),
   revenue: revenues =>
     revenues.map(revenue => ({
-      // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
       revenue: {
-        gt: revenue / 1000 - fiveMil / 1000,
-        lt: revenue / 1000 + fiveMil / 1000,
+        gt: revenue - fiveMil / 1000,
+        lt: revenue + fiveMil / 1000,
       },
     })),
   revenueGte: revenues =>
     revenues.map(revenue => ({
-      // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
       revenue: {
-        gte: revenue / 1000,
+        gte: revenue,
       },
     })),
   revenueLte: revenues =>
     revenues.map(revenue => ({
-      // NB: revenues are stored in the DB as revenue / 1000 (big int shit)
       revenue: {
-        lte: revenue / 1000,
+        lte: revenue,
       },
     })),
   runtime: runtimes =>

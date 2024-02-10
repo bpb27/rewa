@@ -28,6 +28,7 @@ type SortableObject = {
   [key: string]: string | number | undefined | null | object | boolean;
 };
 
+// TODO: expose inner methods here so they can be used in a sort function
 export const smartSort = <TEntry extends SortableObject>(
   arr: TEntry[],
   getter: (item: TEntry) => any,

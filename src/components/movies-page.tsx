@@ -11,6 +11,7 @@ import { Text } from '~/components/ui/text';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
+import { cn } from '~/utils/style';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-modal';
@@ -24,7 +25,7 @@ type MoviesPageProps = {
 };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
-  const { data, actions } = useQueryParamsMachine({ id: 'movies', preloaded, variant: 'movies' });
+  const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
   const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
   const [movieModal, setMovieModal] = useState<MoviesPageMovie | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
@@ -37,7 +38,13 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           <TokenBar {...data} {...actions} />
         </Crate>
         <Crate alignCenter justifyCenter gap={3}>
-          <Text bold icon="Movie" iconOrientation="right" size="lg">
+          <Text
+            bold
+            icon="Movie"
+            iconOrientation="right"
+            size="lg"
+            className={cn(data.isFetching && 'animate-pulse')}
+          >
             {data.total}
           </Text>
           <Crate alignCenter gap={1}>

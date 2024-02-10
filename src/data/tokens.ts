@@ -10,7 +10,7 @@ export const tokenize = (
 
 export const tokenizeBudget = (budget: number): Token => ({
   id: budget,
-  name: moneyShort(budget),
+  name: `${moneyShort(budget)}`,
   type: 'budget',
 });
 
@@ -39,20 +39,20 @@ export const tokenizeOscarsCategoriesWon = (id: number, name: string): Token => 
 });
 
 export const tokenizeRevenue = (revenue: number): Token => ({
-  id: revenue * 1000,
-  name: moneyShort(revenue * 1000),
+  id: revenue,
+  name: `${moneyShort(revenue * 1000)}`, // NB: stored in DB as / 1000 due to BigInt shit
   type: 'revenue',
 });
 
 export const tokenizeRevenueGte = (revenue: number): Token => ({
-  id: revenue * 1000,
-  name: `> ${moneyShort(revenue * 1000)} Box Office`,
+  id: revenue,
+  name: `> ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
   type: 'revenueGte',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
-  id: revenue * 1000,
-  name: `< ${moneyShort(revenue * 1000)} Box Office`,
+  id: revenue,
+  name: `< ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
   type: 'revenueLte',
 });
 
