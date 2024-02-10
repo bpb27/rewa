@@ -72,13 +72,13 @@ const psoods: Record<string, string> = {
 // for people that aren't linked on crew but end up string matching
 const ignore = ['Robin Swicord', 'Peter Docter'];
 
-const run = async (i: number) => {
+const run = async (realRun: boolean) => {
   const noms = await prisma.oscars_nominations.findMany({
     include: { movie: true },
     orderBy: { ceremony_year: 'desc' },
     where: {
       award: {
-        category_id: { in: [22, 23] },
+        category_id: { in: [6] },
       },
     },
   });
@@ -161,19 +161,21 @@ const run = async (i: number) => {
 
   const readyToInsert = stuff.flat().filter(n => n.crew_id);
   const skipping = stuff.flat().filter(n => !n.crew_id);
-  hitsForReview.forEach(s => console.log(s));
+  if (!realRun) hitsForReview.forEach(s => console.log(s));
   misses.forEach(s => console.log(s));
   console.log(`Found ${readyToInsert.length}, skipping ${skipping.length}`);
 
-  for (let i = 0; i < readyToInsert.length; i++) {
-    try {
-      await prisma.crew_on_oscars.create({
-        data: readyToInsert[i],
-      });
-    } catch (e) {
-      console.error('Failed', readyToInsert[i]);
+  if (realRun) {
+    for (let i = 0; i < readyToInsert.length; i++) {
+      try {
+        await prisma.crew_on_oscars.create({
+          data: readyToInsert[i],
+        });
+      } catch (e) {
+        console.error('Failed', readyToInsert[i]);
+      }
     }
   }
 };
 
-run(1);
+run(true);
