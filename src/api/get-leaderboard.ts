@@ -239,7 +239,7 @@ const getTopOscarDirectors: GetTop = async ({ params, wonOscar }) => {
             select: {
               ...select.movie,
               crew_on_movies: {
-                select: { crew_id: true, job: true },
+                select: { crew_id: true },
               },
             },
           },
