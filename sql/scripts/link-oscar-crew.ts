@@ -166,9 +166,13 @@ const run = async (i: number) => {
   console.log(`Found ${readyToInsert.length}, skipping ${skipping.length}`);
 
   for (let i = 0; i < readyToInsert.length; i++) {
-    await prisma.crew_on_oscars.create({
-      data: readyToInsert[i],
-    });
+    try {
+      await prisma.crew_on_oscars.create({
+        data: readyToInsert[i],
+      });
+    } catch (e) {
+      console.error('Failed', readyToInsert[i]);
+    }
   }
 };
 
