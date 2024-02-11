@@ -1,10 +1,16 @@
 # feature shit
 
+- oscar top links should be the same as rewa
+- use a radio to toggle between most films, most noms, most wins
+- no toggle on producer
+- should be able to make getDirectorNoms crew reusable
+- need to adjust person sidebar logic a bit
+
 - make oscar modal title clickable, bring up spotlight
+- can't have two modals open at once
+- would be nice to have a back button
 
 - movieMode === 'oscar' but route === 'oscars'
-
-- look for name extraction lib to get oscar links for writers and others
 
 - standalone node server - cold start times aren't great, response time even in the same AZ is not super fast
 
