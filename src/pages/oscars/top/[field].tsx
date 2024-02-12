@@ -15,16 +15,33 @@ export const getStaticPaths = (async () => ({
 export const getStaticProps = (async context => {
   const params: QpSchema = { ...defaultQps, movieMode };
   const field = context.params?.field as AppEnums['topCategory'];
-  const leaderboard = await getLeaderboard({ field, params });
-  const url = assembleUrl(NAV.oscars.top[field], params);
-  const preloaded = { data: { ...leaderboard, tokens: [] }, url };
-  return { props: { field, preloaded } };
+  const subField: AppEnums['topCategorySub'] = field === 'producer' ? 'mostFilms' : 'mostNoms';
+  const leaderboard = await getLeaderboard({ field, subField, params });
+  return {
+    props: {
+      field,
+      subField,
+      preloaded: {
+        data: { ...leaderboard, tokens: [] },
+        url: assembleUrl(NAV.oscars.top[field], params),
+      },
+    },
+  };
 }) satisfies GetStaticProps;
 
 // NB: need to pass a key to trigger component remounting when navigating across pages
 export default function TopActors({
   field,
   preloaded,
+  subField,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  return <TopCategory key={field} preloaded={preloaded} field={field} movieMode={movieMode} />;
+  return (
+    <TopCategory
+      key={field}
+      preloaded={preloaded}
+      field={field}
+      movieMode={movieMode}
+      subField={subField}
+    />
+  );
 }

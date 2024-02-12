@@ -7,6 +7,13 @@ export const crewJobs = {
   writer: ['Screenplay', 'Writer'],
 };
 
+export const crewToOscarCategory = {
+  director: [8],
+  producer: [0],
+  cinematographer: [6],
+  writer: [22, 23],
+};
+
 export const allCrewJobs = Object.values(crewJobs).flat();
 
 export const allNonDirectorCrewJobs = Object.values(omit(crewJobs, ['director'])).flat();

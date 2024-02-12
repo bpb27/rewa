@@ -1,10 +1,6 @@
 # feature shit
 
-- oscar top links should be the same as rewa
-- use a radio to toggle between most films, most noms, most wins
-- no toggle on producer
-- should be able to make getDirectorNoms crew reusable
-- need to adjust person sidebar logic a bit
+- route with /field/subfield - should be able to just make a [...field] directory
 
 - make oscar modal title clickable, bring up spotlight
 - can't have two modals open at once

@@ -81,10 +81,8 @@ export const Navbar = () => {
           {mode === 'oscar' && (
             <Menu
               items={[
-                { href: NAV.oscars.top.actorNoms, text: 'Actors (most noms)' },
-                { href: NAV.oscars.top.actor, text: 'Actors (most films)' },
-                { href: NAV.oscars.top.directorNoms, text: 'Directors (most noms)' },
-                { href: NAV.oscars.top.director, text: 'Directors (most films)' },
+                { href: NAV.oscars.top.actor, text: 'Actors ' },
+                { href: NAV.oscars.top.director, text: 'Directors' },
                 { href: NAV.oscars.top.writer, text: 'Writers' },
                 { href: NAV.oscars.top.cinematographer, text: 'Cinematographers' },
                 { href: NAV.oscars.top.producer, text: 'Producers' },

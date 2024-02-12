@@ -59,7 +59,7 @@ type FetchResponse<T extends Variant> = T extends 'movies'
   : never;
 
 type FetchParams<T extends Variant> = T extends 'leaderboard'
-  ? { field: AppEnums['topCategory']; wonOscar?: AppEnums['oscarWon'] }
+  ? { field: AppEnums['topCategory']; subField: AppEnums['topCategorySub'] }
   : never;
 
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
@@ -76,10 +76,7 @@ const fetchMovies = fromPromise<Results, Context>(async ({ input }) => {
 });
 
 const fetchLeaderboard = fromPromise<Results, Context>(async ({ input }) => {
-  const additional = input.fetchParams as {
-    field: AppEnums['topCategory'];
-    wonOscar?: AppEnums['oscarWon'];
-  };
+  const additional = input.fetchParams as FetchParams<'leaderboard'>;
   return trpcVanilla.getLeaderboard.query({ params: input.queryParams, ...additional });
 });
 
@@ -243,6 +240,7 @@ export const machineData = <T extends Variant>(state: StateFrom<typeof machine>)
     hasTokens: data.tokens.length > 0,
     movieMode: queryParams.movieMode,
     results: data.results as FetchResponse<T>,
+    allQueryParams: queryParams,
     oscarsCategoriesNom: queryParams.oscarsCategoriesNom,
     oscarsCategoriesWon: queryParams.oscarsCategoriesWon,
     searchMode: queryParams.searchMode,
