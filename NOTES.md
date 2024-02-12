@@ -2,8 +2,6 @@
 
 - route with /field/subfield - should be able to just make a [...field] directory
 
-- update screenshot
-
 - oscar actor leaderboard supporting/lead toggle
 
 - make oscar modal title clickable, bring up spotlight

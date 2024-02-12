@@ -2,8 +2,10 @@ import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Sidebar } from '~/components/ui/sidebar';
 import { defaultQps } from '~/data/query-params';
 import { trpc } from '~/trpc/client';
-import { formatDate } from '~/utils/format';
+import { formatDate, titleCase } from '~/utils/format';
+import { smartSort } from '~/utils/sorting';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { useToggle } from '~/utils/use-toggle';
 import { Crate } from '../ui/box';
 import { Spotlight } from '../ui/spotlight';
 import { Text } from '../ui/text';
@@ -16,6 +18,7 @@ type MovieCardSidebar = {
 
 export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
   const movieMode = useMovieMode();
+  const awards = useToggle('hiding', 'showing');
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
   const { data: actor } = trpc.getPerson.useQuery(
     { id: actorId!, field: 'actor', subField: 'mostFilms', params: defaultQps },
@@ -69,9 +72,23 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
             <Text bold icon="Trophy">
               Oscars
             </Text>
-            <Text>
+            <Text
+              tag="button"
+              icon={awards.isShowing ? 'CaretUp' : 'CaretDown'}
+              onClick={awards.toggle}
+              iconOrientation="right"
+            >
               {movie.oscars.noms} noms, {movie.oscars.wins} wins
             </Text>
+            {awards.isShowing && (
+              <Crate my={2} px={2} column className="border-l-2 border-l-slate-600">
+                {smartSort(movie.oscars.awards, a => a.awardCategory).map(a => (
+                  <Text key={a.awardCategoryId + a.recipient}>
+                    {titleCase(a.awardCategory)} {a.won && '- Winner'}
+                  </Text>
+                ))}
+              </Crate>
+            )}
           </Crate>
         )}
         <Crate column>
