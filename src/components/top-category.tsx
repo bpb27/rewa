@@ -184,9 +184,3 @@ const titles = {
   producer: 'Top Producers',
   writer: 'Top Writers',
 };
-
-const radio = {
-  mostFilms: {},
-  mostNoms: {},
-  mostWins: {},
-};

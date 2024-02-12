@@ -28,7 +28,7 @@ const Item = <TValue extends string>({
 }) => {
   const handleClick = () => !disabled && onClick(value);
   return (
-    <Crate>
+    <Crate alignCenter>
       <input
         className={cn('mr-1 cursor-pointer', disabled && 'cursor-not-allowed')}
         id={value}
