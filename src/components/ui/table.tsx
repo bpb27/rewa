@@ -36,11 +36,11 @@ const TableBody = ({ children }: PropsWithChildren<{}>) => <tbody>{children}</tb
 
 const TableRow = ({ children }: PropsWithChildren<{}>) => (
   <Fragment>
-    {/* NB: can't add padding or margin to trs - need to use an empty row as a spacer */}
-    <tr className="h-4"></tr>
     <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md">
       {children}
     </tr>
+    {/* NB: can't add padding or margin to trs - need to use an empty row as a spacer */}
+    <tr className="h-4"></tr>
   </Fragment>
 );
 

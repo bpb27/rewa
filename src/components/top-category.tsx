@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
@@ -6,17 +6,19 @@ import { PersonCardSidebar } from '~/components/overlays/person-card-sidebar';
 import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
-import { AppEnums, appEnums } from '~/utils/enums';
-import { getYear, titleCase } from '~/utils/format';
+import { AppEnums } from '~/utils/enums';
+import { getYear } from '~/utils/format';
 import { isSameObject } from '~/utils/object';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
 import { SearchBar } from './search-bar';
 import { TokenBar } from './token-bar';
+import { Radio } from './ui/radio';
 import { Text } from './ui/text';
 
 type TopCategoryProps = {
   field: AppEnums['topCategory'];
+  subField: AppEnums['topCategorySub'];
   movieMode: AppEnums['movieMode'];
   hideProfileImage?: boolean;
   preloaded: { data: ApiResponses['getLeaderboard']; url: string };
@@ -26,14 +28,15 @@ type Selected = { movieId: number } | { personId: number } | { movieId: number; 
 
 export const TopCategory = ({
   field,
+  subField,
   hideProfileImage,
   movieMode,
   preloaded,
 }: TopCategoryProps) => {
-  const isActor = useMemo(() => field === 'actor' || field === 'actorNoms', [field]);
   const [selected, select] = useState<Selected | undefined>(undefined);
+
   const { data, actions } = useQueryParamsMachine({
-    fetchParams: { field, wonOscar: 'both' },
+    fetchParams: { field, subField },
     preloaded,
     variant: 'leaderboard',
   });
@@ -43,41 +46,45 @@ export const TopCategory = ({
   };
 
   return (
-    <Layout title={titles[field].tab}>
-      {movieMode === 'oscar' && (
-        <Crate mb={3} px={2} pt={3} pb={2} column alignCenter>
-          <Text size="lg" bold>
-            {titles[field].heading}
+    <Layout title={titles[field]}>
+      <Crate column mb={2} gap={3}>
+        <Crate justifyCenter>
+          <Text size="xl" bold>
+            {titles[field]}
           </Text>
         </Crate>
-      )}
-      <Crate column mb={4} gap={2}>
         <SearchBar filter={data.movieMode} onSelect={actions.toggleToken} />
         <Crate gap={2} overflowScroll hide={!data.hasTokens}>
           <TokenBar {...data} {...actions} />
         </Crate>
-      </Crate>
-      {/* TODO: finish this */}
-      <Crate hide={true}>
-        <fieldset id="won">
-          {appEnums.oscarWon.values.map(value => (
-            <>
-              <label
-                htmlFor={value}
-                onClick={() => actions.updateFetchParams({ field, wonOscar: value })}
-              >
-                {titleCase(value)}
-              </label>
-              <input
-                id={value}
-                type="radio"
-                name="group1"
-                checked={data.fetchParams.wonOscar === value}
-                onChange={() => actions.updateFetchParams({ field, wonOscar: value })}
-              />
-            </>
-          ))}
-        </fieldset>
+        {movieMode === 'oscar' && (
+          <Crate justifyCenter>
+            <Radio id="mode" label="Mode">
+              <Crate gap={3}>
+                <Radio.Item
+                  checked={data.fetchParams.subField === 'mostNoms'}
+                  disabled={field === 'producer'}
+                  label="Most nominations"
+                  onClick={subField => actions.updateFetchParams({ field, subField })}
+                  value="mostNoms"
+                />
+                <Radio.Item
+                  checked={data.fetchParams.subField === 'mostWins'}
+                  disabled={field === 'producer'}
+                  label="Most wins"
+                  onClick={subField => actions.updateFetchParams({ field, subField })}
+                  value="mostWins"
+                />
+                <Radio.Item
+                  checked={data.fetchParams.subField === 'mostFilms'}
+                  label="Most films"
+                  onClick={subField => actions.updateFetchParams({ field, subField })}
+                  value="mostFilms"
+                />
+              </Crate>
+            </Radio>
+          </Crate>
+        )}
       </Crate>
       {rankByTotalMovies(
         data.results,
@@ -117,7 +124,9 @@ export const TopCategory = ({
                     title={m.title}
                     onClick={() =>
                       handleSelect(
-                        isActor ? { actorId: person.id, movieId: m.id } : { movieId: m.id }
+                        field === 'actor'
+                          ? { actorId: person.id, movieId: m.id }
+                          : { movieId: m.id }
                       )
                     }
                   />
@@ -138,6 +147,8 @@ export const TopCategory = ({
         <PersonCardSidebar
           personId={selected.personId}
           field={field}
+          subField={data.fetchParams.subField}
+          queryParams={data.allQueryParams}
           onClose={() => select(undefined)}
           onSelectMovie={movieId => handleSelect({ actorId: selected.personId, movieId })}
         />
@@ -150,7 +161,7 @@ const Box = {
   Person: ({ children }) => (
     <div
       className={cn(
-        'mb-3 flex flex-row items-center gap-x-3 p-1',
+        'mb-3 flex flex-row items-center gap-x-3',
         'border-2 border-slate-300 bg-slate-100 shadow-md'
       )}
     >
@@ -166,34 +177,10 @@ const Box = {
   MoviePoster: ({ children }) => <div className="shrink-0">{children}</div>,
 } satisfies Boxes;
 
-const pageTitle = 'the most Oscar-nominated movies';
 const titles = {
-  actor: {
-    tab: 'Top Actors',
-    heading: `Acted in ${pageTitle}`,
-  },
-  actorNoms: {
-    tab: 'Top Actors',
-    heading: `Best Actor and Supporting Actor nominations`,
-  },
-  cinematographer: {
-    tab: 'Top Cinematographers',
-    heading: `Filmed ${pageTitle}`,
-  },
-  director: {
-    tab: 'Top Directors',
-    heading: `Directed ${pageTitle}`,
-  },
-  directorNoms: {
-    tab: 'Top Directors',
-    heading: `Best Director nominations`,
-  },
-  producer: {
-    tab: 'Top Producers',
-    heading: `Produced ${pageTitle}`,
-  },
-  writer: {
-    tab: 'Top Writers',
-    heading: `Wrote ${pageTitle}`,
-  },
+  actor: 'Top Actors',
+  cinematographer: 'Top Cinematographers',
+  director: 'Top Directors',
+  producer: 'Top Producers',
+  writer: 'Top Writers',
 };

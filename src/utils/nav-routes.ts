@@ -14,10 +14,8 @@ export const NAV = {
     movies: '/oscars/movies',
     top: {
       actor: '/oscars/top/actor',
-      actorNoms: '/oscars/top/actorNoms',
       cinematographer: '/oscars/top/cinematographer',
       director: '/oscars/top/director',
-      directorNoms: '/oscars/top/directorNoms',
       producer: '/oscars/top/producer',
       writer: '/oscars/top/writer',
     },
@@ -27,10 +25,8 @@ export const NAV = {
     movies: '/rewa/movies',
     top: {
       actor: '/rewa/top/actor',
-      actorNoms: '/rewa/top/actorNoms',
       cinematographer: '/rewa/top/cinematographer',
       director: '/rewa/top/director',
-      directorNoms: '/rewa/top/directorNoms',
       producer: '/rewa/top/producer',
       writer: '/rewa/top/writer',
     },

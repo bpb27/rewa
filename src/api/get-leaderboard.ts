@@ -31,8 +31,8 @@ const prisma = Prisma.getPrisma();
 
 export const getLeaderboardParams = z.object({
   field: appEnums.topCategory.schema,
+  subField: appEnums.topCategorySub.schema,
   params: parsedQpSchema,
-  wonOscar: appEnums.oscarWon.schema.optional(),
 });
 
 const callback = (people: Person[]) => ({
@@ -43,10 +43,19 @@ const callback = (people: Person[]) => ({
 });
 
 export const getLeaderboard = async (params: Params) => {
-  if (params.field === 'actor') return getTopActors(params).then(callback);
-  if (params.field === 'actorNoms') return getTopOscarActors(params).then(callback);
-  if (params.field === 'directorNoms') return getTopOscarDirectors(params).then(callback);
-  return getTopCrew(params).then(callback);
+  if (params.subField === 'mostFilms') {
+    if (params.field === 'actor') {
+      return getTopActors(params).then(callback);
+    } else {
+      return getTopCrew(params).then(callback);
+    }
+  } else {
+    if (params.field === 'actor') {
+      return getTopOscarActors(params).then(callback);
+    } else {
+      return getTopOscarCrew(params).then(callback);
+    }
+  }
 };
 
 const select = {
@@ -145,13 +154,12 @@ const getTopCrew: GetTop = async ({ field, params }) => {
   return sortLeaderboard(mapped);
 };
 
-const getTopOscarActors: GetTop = async ({ params, wonOscar }) => {
+const getTopOscarActors: GetTop = async ({ params, subField }) => {
   const response = await prisma.actors_on_oscars.findMany({
     where: {
       oscars_nominations: {
         movie: movieFilters(params),
-        ...(wonOscar === 'won' ? { won: true } : undefined),
-        ...(wonOscar === 'nominated' ? { won: false } : undefined),
+        ...(subField === 'mostWins' ? { won: true } : undefined),
       },
     },
     select: {
@@ -212,15 +220,17 @@ const getTopOscarActors: GetTop = async ({ params, wonOscar }) => {
   return sortLeaderboard(list).slice(0, 100);
 };
 
-const getTopOscarDirectors: GetTop = async ({ params, wonOscar }) => {
+const getTopOscarCrew: GetTop = async ({ field, params, subField }) => {
   const response = await prisma.crew_on_oscars.findMany({
     where: {
       oscars_nominations: {
         movie: movieFilters(params),
-        ...(wonOscar === 'won' ? { won: true } : undefined),
-        ...(wonOscar === 'nominated' ? { won: false } : undefined),
+        ...(subField === 'mostWins' ? { won: true } : undefined),
+        // TODO: use category name
         award: {
-          category_id: 8,
+          ...(field === 'cinematographer' && { category_id: 6 }),
+          ...(field === 'director' && { category_id: 8 }),
+          ...(field === 'writer' && { category_id: { in: [22, 23] } }),
         },
       },
     },
@@ -239,7 +249,7 @@ const getTopOscarDirectors: GetTop = async ({ params, wonOscar }) => {
             select: {
               ...select.movie,
               crew_on_movies: {
-                select: { crew_id: true, job: true },
+                select: { crew_id: true },
               },
             },
           },

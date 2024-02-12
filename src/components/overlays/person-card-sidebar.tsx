@@ -1,9 +1,9 @@
 import { Sidebar } from '~/components/ui/sidebar';
+import { QpSchema } from '~/data/query-params';
 import { trpc } from '~/trpc/client';
 import { AppEnums } from '~/utils/enums';
 import { titleCase } from '~/utils/format';
 import { bookends } from '~/utils/object';
-import { useMovieMode } from '~/utils/use-movie-mode';
 import { Crate } from '../ui/box';
 import { Spotlight } from '../ui/spotlight';
 import { Text } from '../ui/text';
@@ -11,6 +11,8 @@ import { Text } from '../ui/text';
 type PersonCardSidebarProps = {
   personId: number;
   field: AppEnums['topCategory'];
+  subField: AppEnums['topCategorySub'];
+  queryParams: QpSchema;
   onClose: () => void;
   onSelectMovie: (movieId: number) => void;
 };
@@ -20,9 +22,15 @@ export const PersonCardSidebar = ({
   field,
   onClose,
   onSelectMovie,
+  queryParams,
+  subField,
 }: PersonCardSidebarProps) => {
-  const filter = useMovieMode();
-  const { data: person } = trpc.getPerson.useQuery({ field, filter, id: personId });
+  const { data: person } = trpc.getPerson.useQuery({
+    field,
+    subField,
+    id: personId,
+    params: queryParams,
+  });
 
   if (!person || !person?.movies) return null;
 
@@ -38,7 +46,11 @@ export const PersonCardSidebar = ({
           image={person.image!}
           name={person.name}
           variant="person"
-          tagline={`${runLength || 1} year run with ${person.movies.length} movies`}
+          tagline={
+            person.movies.length
+              ? `${runLength || 1} year run with ${person.movies.length} movies`
+              : 'Nerp.'
+          }
         />
       </Crate>
       <Crate column gap={2} mb={6}>

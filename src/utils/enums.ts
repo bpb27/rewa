@@ -18,15 +18,9 @@ const sort = z.enum([
   'total_oscar_wins',
 ]);
 
-const topCategory = z.enum([
-  'actor',
-  'actorNoms',
-  'director',
-  'directorNoms',
-  'cinematographer',
-  'producer',
-  'writer',
-]);
+const topCategory = z.enum(['actor', 'director', 'cinematographer', 'producer', 'writer']);
+
+const topCategorySub = z.enum(['mostFilms', 'mostNoms', 'mostWins']);
 
 const oscarWon = z.enum(['both', 'won', 'nominated']);
 
@@ -39,6 +33,7 @@ export const appEnums = {
   searchMode: { schema: searchMode, values: searchMode._def.values },
   sort: { schema: sort, values: sort._def.values },
   topCategory: { schema: topCategory, values: topCategory._def.values },
+  topCategorySub: { schema: topCategorySub, values: topCategorySub._def.values },
 };
 
 export type AppEnums = {
