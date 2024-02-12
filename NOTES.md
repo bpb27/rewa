@@ -2,6 +2,10 @@
 
 - route with /field/subfield - should be able to just make a [...field] directory
 
+- update screenshot
+
+- oscar actor leaderboard supporting/lead toggle
+
 - make oscar modal title clickable, bring up spotlight
 - can't have two modals open at once
 - would be nice to have a back button

@@ -226,6 +226,7 @@ const getTopOscarCrew: GetTop = async ({ field, params, subField }) => {
       oscars_nominations: {
         movie: movieFilters(params),
         ...(subField === 'mostWins' ? { won: true } : undefined),
+        // TODO: use category name
         award: {
           ...(field === 'cinematographer' && { category_id: 6 }),
           ...(field === 'director' && { category_id: 8 }),

@@ -62,12 +62,6 @@ export const TopCategory = ({
             <Radio id="mode" label="Mode">
               <Crate gap={3}>
                 <Radio.Item
-                  checked={data.fetchParams.subField === 'mostFilms'}
-                  label="Most films"
-                  onClick={subField => actions.updateFetchParams({ field, subField })}
-                  value="mostFilms"
-                />
-                <Radio.Item
                   checked={data.fetchParams.subField === 'mostNoms'}
                   disabled={field === 'producer'}
                   label="Most nominations"
@@ -80,6 +74,12 @@ export const TopCategory = ({
                   label="Most wins"
                   onClick={subField => actions.updateFetchParams({ field, subField })}
                   value="mostWins"
+                />
+                <Radio.Item
+                  checked={data.fetchParams.subField === 'mostFilms'}
+                  label="Most films"
+                  onClick={subField => actions.updateFetchParams({ field, subField })}
+                  value="mostFilms"
                 />
               </Crate>
             </Radio>

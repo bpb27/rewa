@@ -1,5 +1,6 @@
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Sidebar } from '~/components/ui/sidebar';
+import { defaultQps } from '~/data/query-params';
 import { trpc } from '~/trpc/client';
 import { formatDate } from '~/utils/format';
 import { useMovieMode } from '~/utils/use-movie-mode';
@@ -17,7 +18,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
   const movieMode = useMovieMode();
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
   const { data: actor } = trpc.getPerson.useQuery(
-    { id: actorId!, filter: movieMode, field: 'actor' },
+    { id: actorId!, field: 'actor', subField: 'mostFilms', params: defaultQps },
     { enabled: !!actorId }
   );
   const role = actor?.movies.find(m => m.id === movieId)?.character;
