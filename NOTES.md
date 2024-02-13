@@ -1,5 +1,7 @@
 # feature shit
 
+- try kysely + turso + cloudflare
+
 - route with /field/subfield - should be able to just make a [...field] directory
 
 - oscar actor leaderboard supporting/lead toggle
