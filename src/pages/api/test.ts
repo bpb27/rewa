@@ -199,10 +199,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // yearGte: [1980],
   };
 
-  let query = kyselyDb
+  const response = await kyselyDb
     .selectFrom('movies')
     .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
-    .orderBy('movies_view.release_date asc')
+    .orderBy('movies_view.release_date desc')
     .limit(25)
     .select([
       'movies.budget',
@@ -224,43 +224,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       selectMovieEpisode(),
       // crew, oscars, streamers
     ])
-    // can move movieMode up here into an and block
     .where(({ eb }) =>
-      eb[params.searchMode]([
-        ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
-        ...params.cinematographer.map(id => crewMovies(id, 'cinematographer')),
-        ...params.director.map(id => crewMovies(id, 'director')),
-        ...params.producer.map(id => crewMovies(id, 'producer')),
-        ...params.writer.map(id => crewMovies(id, 'writer')),
-        ...params.actor.map(actorMovies),
-        ...params.keyword.map(keywordMovies),
-        ...params.streamer.map(streamerMovies),
-        ...params.host.map(hostMovies),
-        ...params.oscarsCategoriesNom.map(id => oscarMovies(id)),
-        ...params.oscarsCategoriesWon.map(id => oscarMovies(id, true)),
-        ...params.year.map(id => yearMovies(id, 'like')),
-        ...params.yearGte.map(id => yearMovies(id, '>=')),
-        ...params.yearLte.map(id => yearMovies(id, '<=')),
-        ...params.runtime.map(id => runtimeMovies(id, '~')),
-        ...params.runtimeGte.map(id => runtimeMovies(id, '>=')),
-        ...params.runtimeLte.map(id => runtimeMovies(id, '<=')),
-        ...params.budget.map(id => budgetMovies(id, '~')),
-        ...params.budgetGte.map(id => budgetMovies(id, '>=')),
-        ...params.budgetLte.map(id => budgetMovies(id, '<=')),
-        ...params.revenue.map(id => revenueMovies(id, '~')),
-        ...params.revenueGte.map(id => revenueMovies(id, '>=')),
-        ...params.revenueLte.map(id => revenueMovies(id, '<=')),
+      eb.and([
+        ...(params.movieMode === 'rewa' ? [hasRewaMovies()] : []),
+        ...(params.movieMode === 'oscar' ? [hasOscarMovies()] : []),
+        eb[params.searchMode]([
+          ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
+          ...params.cinematographer.map(id => crewMovies(id, 'cinematographer')),
+          ...params.director.map(id => crewMovies(id, 'director')),
+          ...params.producer.map(id => crewMovies(id, 'producer')),
+          ...params.writer.map(id => crewMovies(id, 'writer')),
+          ...params.actor.map(actorMovies),
+          ...params.keyword.map(keywordMovies),
+          ...params.streamer.map(streamerMovies),
+          ...params.host.map(hostMovies),
+          ...params.oscarsCategoriesNom.map(id => oscarMovies(id)),
+          ...params.oscarsCategoriesWon.map(id => oscarMovies(id, true)),
+          ...params.year.map(id => yearMovies(id, 'like')),
+          ...params.yearGte.map(id => yearMovies(id, '>=')),
+          ...params.yearLte.map(id => yearMovies(id, '<=')),
+          ...params.runtime.map(id => runtimeMovies(id, '~')),
+          ...params.runtimeGte.map(id => runtimeMovies(id, '>=')),
+          ...params.runtimeLte.map(id => runtimeMovies(id, '<=')),
+          ...params.budget.map(id => budgetMovies(id, '~')),
+          ...params.budgetGte.map(id => budgetMovies(id, '>=')),
+          ...params.budgetLte.map(id => budgetMovies(id, '<=')),
+          ...params.revenue.map(id => revenueMovies(id, '~')),
+          ...params.revenueGte.map(id => revenueMovies(id, '>=')),
+          ...params.revenueLte.map(id => revenueMovies(id, '<=')),
+        ]),
       ])
-    );
+    )
+    .execute();
 
-  if (params.movieMode === 'oscar') {
-    query = query.where(hasOscarMovies());
-  }
-  if (params.movieMode === 'rewa') {
-    query = query.where(hasRewaMovies());
-  }
-
-  const response = await query.execute();
   console.timeEnd('querying');
   res.status(200).json(response);
 }
