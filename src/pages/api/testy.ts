@@ -15,6 +15,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     },
     take: 25,
+    where: {
+      episodes: {
+        some: {},
+      },
+    },
     // where: {
     //   AND: [
     //     { crew_on_movies: { some: { crew_id: 6011, job: 'Director' } } },

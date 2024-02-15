@@ -202,21 +202,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const response = await kyselyDb
     .selectFrom('movies')
     .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
-    .orderBy('movies_view.release_date desc')
+    // .orderBy('movies_view.total_oscar_nominations desc')
     .limit(25)
     .select([
-      'movies.budget',
-      'movies.id',
-      'movies.imdb_id',
-      'movies.overview',
-      'movies.poster_path',
-      'movies.release_date',
-      'movies.revenue',
-      'movies.runtime',
+      // 'movies.budget',
+      // 'movies.id',
+      // 'movies.imdb_id',
+      // 'movies.overview',
+      // 'movies.poster_path',
+      // 'movies.release_date',
+      // 'movies.revenue',
+      // 'movies.runtime',
       'movies.title',
-      'movies.tagline',
-      'movies_view.total_oscar_nominations',
-      'movies_view.total_oscar_wins',
+      // 'movies.tagline',
+      // 'movies_view.total_oscar_nominations',
+      // 'movies_view.total_oscar_wins',
       selectMovieKeywords(),
       selectMovieGenres(),
       selectMovieActors(3),
