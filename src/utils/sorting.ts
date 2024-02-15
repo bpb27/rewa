@@ -10,7 +10,6 @@ export const sortOptions = [
   { value: 'revenue', label: 'Box Office' },
   { value: 'budget', label: 'Budget' },
   { value: 'profit', label: 'Profit %' },
-  { value: 'director', label: 'Director' },
   { value: 'total_oscar_nominations', label: 'Oscar noms' },
   { value: 'total_oscar_wins', label: 'Oscar wins' },
   { value: 'ebert', label: 'Ebert rating' },

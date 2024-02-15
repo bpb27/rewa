@@ -46,7 +46,7 @@ export const MoviesTable = ({
           Title
         </Table.Header>
         <Table.Header onClick={handleHeaderClick('release_date')}>Year</Table.Header>
-        <Table.Header onClick={handleHeaderClick('director')}>Director</Table.Header>
+        <Table.Header>Director</Table.Header>
         <Table.Header>Top Cast</Table.Header>
         <Table.Header>Oscars</Table.Header>
         {showHosts && <Table.Header>Hosts</Table.Header>}

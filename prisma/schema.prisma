@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-kysely"
+  provider        = "prisma-kysely"
   previewFeatures = ["views"]
-  enumFileName = "db-enums.ts"
+  enumFileName    = "db-enums.ts"
 }
 
 datasource db {
@@ -28,6 +28,8 @@ model actors_on_movies {
   credit_order Int
   actors       actors @relation(fields: [actor_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   movies       movies @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([movie_id, credit_id], map: "idx_movie_id_credit_id")
 }
 
 model crew {
@@ -231,17 +233,16 @@ model crew_on_oscars {
 }
 
 view movies_with_computed_fields {
-  movie_id                Int              @unique
+  movie_id                Int     @unique
   budget                  Int
   release_date            String
   revenue                 Int
   runtime                 Int
   title                   String
-  profit_percentage       Int
+  profit_percentage       Float
   episode_order           Int
-  director_name           String
   total_oscar_nominations Int
   total_oscar_wins        Int
-  ebert_rating            Int
-  movie                   movies?          @relation(fields: [movie_id], references: [id])
+  ebert_rating            Float
+  movie                   movies? @relation(fields: [movie_id], references: [id])
 }

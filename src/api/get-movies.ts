@@ -26,7 +26,6 @@ const selectIdAndName = { select: { id: true, name: true } };
 
 const sortMap = {
   budget: 'budget',
-  director: 'director_name',
   ebert: 'ebert_rating',
   episodeNumber: 'episode_order',
   profit: 'profit_percentage',

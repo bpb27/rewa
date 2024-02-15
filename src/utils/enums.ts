@@ -6,7 +6,6 @@ const searchMode = z.enum(['and', 'or']);
 
 const sort = z.enum([
   'budget',
-  'director',
   'ebert',
   'episodeNumber',
   'profit',

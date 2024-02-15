@@ -20,13 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         some: {},
       },
     },
-    // where: {
-    //   AND: [
-    //     { crew_on_movies: { some: { crew_id: 6011, job: 'Director' } } },
-    //     { crew_on_movies: { some: { crew_id: 6011, job: 'Producer' } } },
-    //     { crew_on_movies: { some: { crew_id: 591, job: 'Producer' } } },
-    //   ],
-    // },
   });
   console.timeEnd('querying');
   res.status(200).json(response);

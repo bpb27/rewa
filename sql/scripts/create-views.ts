@@ -5,6 +5,22 @@ import { connectToDb } from '../general';
     npx prisma db pull
     amend prisma schema file manually, add proper type where it says unsupported
     npx prisma generate
+
+    view movies_with_computed_fields {
+        movie_id                Int              @unique
+        budget                  Int
+        release_date            String
+        revenue                 Int
+        runtime                 Int
+        title                   String
+        profit_percentage       Int
+        episode_order           Int
+        total_oscar_nominations Int
+        total_oscar_wins        Int
+        ebert_rating            Int
+        movie                   movies?          @relation(fields: [movie_id], references: [id])
+    }
+
 */
 
 const run = () => {
@@ -19,25 +35,19 @@ const run = () => {
             m.revenue,
             m.runtime,
             m.title,
-            (CASE 
-                WHEN budget != 0 THEN ROUND(((revenue * 1000 - budget) / budget) * 100, 0)
-                ELSE 0
-            END) as profit_percentage,
-            COALESCE(e.episode_order, 0) as episode_order,
-            COALESCE(c.name, 'N/A') as director_name,
-            COALESCE(o.total_nominations, 0) AS total_oscar_nominations,
-            COALESCE(o.total_wins, 0) AS total_oscar_wins,
-            COALESCE(eb.rating, 0) AS ebert_rating
+            CAST(
+                (CASE 
+                    WHEN budget != 0 THEN ROUND(((revenue * 1000 - budget) / budget) * 100, 0)
+                    ELSE 0
+                END) AS FLOAT
+            ) as profit_percentage,
+            CAST(COALESCE(e.episode_order, 0) AS INTEGER) as episode_order,
+            CAST(COALESCE(o.total_nominations, 0) AS INTEGER) AS total_oscar_nominations,
+            CAST(COALESCE(o.total_wins, 0) AS INTEGER) AS total_oscar_wins,
+            CAST(COALESCE(eb.rating, 0) AS FLOAT) AS ebert_rating
         FROM movies m
         LEFT JOIN episodes e ON m.id = e.movie_id
         LEFT JOIN ebert_reviews eb ON m.id = eb.movie_id
-        LEFT JOIN (
-            SELECT com.movie_id, c.name
-            FROM crew_on_movies com
-            JOIN crew c ON com.crew_id = c.id
-            WHERE com.job = 'Director'
-            GROUP BY com.movie_id
-        ) as c ON m.id = c.movie_id
         LEFT JOIN (
             SELECT
             movie_id,
