@@ -190,7 +190,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const params: QpSchema = {
     ...defaultQps,
     searchMode: 'and',
-    movieMode: 'rewa',
+    movieMode: 'oscar',
     // director: [6011],
     // producer: [591, 6011],
     // actor: [13408],
@@ -201,8 +201,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const response = await kyselyDb
     .selectFrom('movies')
-    .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
+    // .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
     // .orderBy('movies_view.total_oscar_nominations desc')
+    // .orderBy('movies.runtime desc')
+    .leftJoin('oscars_nominations', 'oscars_nominations.movie_id', 'movies.id')
     .limit(25)
     .select([
       // 'movies.budget',
@@ -214,6 +216,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // 'movies.revenue',
       // 'movies.runtime',
       'movies.title',
+      eb => eb.fn.count('oscars_nominations.movie_id').as('total_oscar_nominations'),
       // 'movies.tagline',
       // 'movies_view.total_oscar_nominations',
       // 'movies_view.total_oscar_wins',
@@ -224,6 +227,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       selectMovieEpisode(),
       // crew, oscars, streamers
     ])
+    .orderBy('total_oscar_nominations desc')
+    .groupBy('movie_id')
     .where(({ eb }) =>
       eb.and([
         ...(params.movieMode === 'rewa' ? [hasRewaMovies()] : []),
