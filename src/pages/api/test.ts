@@ -1,4 +1,5 @@
 import { expressionBuilder } from 'kysely';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema, defaultQps } from '~/data/query-params';
@@ -69,28 +70,161 @@ function oscarMovies(categoryId: number, won?: boolean) {
   });
 }
 
+function hasOscarMovies() {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return eb('movies.id', 'in', ({ selectFrom }) => {
+    return selectFrom('oscars_nominations as nom')
+      .select(['nom.movie_id'])
+      .where('nom.movie_id', 'is not', null);
+  });
+}
+
+function hasRewaMovies() {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return eb('movies.id', 'in', ({ selectFrom }) => {
+    return selectFrom('episodes as e').select(['e.movie_id']).where('e.movie_id', 'is not', null);
+  });
+}
+
 function yearMovies(year: string | number, comp: 'like' | '>=' | '<=') {
   const eb = expressionBuilder<KyselyDB, 'movies'>();
   return eb('movies.release_date', comp, comp == 'like' ? `${year}%` : String(year));
 }
+
+function runtimeMovies(runtime: number, comp: '~' | '>=' | '<=') {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  if (comp === '~') {
+    return eb.and([
+      eb('movies.runtime', '<=', runtime + 5),
+      eb('movies.runtime', '>=', runtime - 5),
+    ]);
+  } else {
+    return eb('movies.runtime', comp, runtime);
+  }
+}
+
+// TODO: pretty sure this is off
+// TODO: scalar, e.g. 10k should be +-5k, b but 1b should be +-250b
+function budgetMovies(budget: number, comp: '~' | '>=' | '<=') {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  if (comp === '~') {
+    return eb.and([
+      eb('movies.budget', '<=', budget + 5000000),
+      eb('movies.budget', '>=', budget - 5000000),
+    ]);
+  } else {
+    return eb('movies.budget', comp, budget);
+  }
+}
+
+// TODO: scalar, e.g. 10k should be +-5k, b but 1b should be +-250b
+function revenueMovies(revenue: number, comp: '~' | '>=' | '<=') {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  if (comp === '~') {
+    return eb.and([
+      eb('movies.revenue', '<=', revenue + 5000), // NB: Stored as / 1000 due to BigInt shit
+      eb('movies.revenue', '>=', revenue - 5000), // NB: Stored as / 1000 due to BigInt shit
+    ]);
+  } else {
+    return eb('movies.revenue', comp, revenue);
+  }
+}
+
+const selectMovieGenres = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonArrayFrom(
+    eb
+      .selectFrom('genres_on_movies as jt')
+      .leftJoin('genres', 'genres.id', 'jt.genre_id')
+      .select(['genres.id', 'genres.name'])
+      .whereRef('jt.movie_id', '=', 'movies.id')
+  ).as('genres');
+};
+
+const selectMovieActors = (limit: number) => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonArrayFrom(
+    eb
+      .selectFrom('actors_on_movies as jt')
+      .leftJoin('actors', 'actors.id', 'jt.actor_id')
+      .select(['actors.id', 'actors.name', 'actors.profile_path'])
+      .whereRef('jt.movie_id', '=', 'movies.id')
+      .orderBy('jt.credit_id asc')
+      .limit(limit)
+  ).as('actors');
+};
+
+const selectMovieKeywords = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonArrayFrom(
+    eb
+      .selectFrom('keywords_on_movies as jt')
+      .leftJoin('keywords', 'keywords.id', 'jt.keyword_id')
+      .select(['keywords.id', 'keywords.name'])
+      .whereRef('jt.movie_id', '=', 'movies.id')
+  ).as('keywords');
+};
+
+const selectMovieEbertReview = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonObjectFrom(
+    eb
+      .selectFrom('ebert_reviews as er')
+      .select(['er.path', 'er.rating'])
+      .whereRef('er.movie_id', '=', 'movies.id')
+  ).as('ebert_review');
+};
+
+const selectMovieEpisode = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonObjectFrom(
+    eb
+      .selectFrom('episodes as e')
+      .select(['e.spotify_url'])
+      .whereRef('e.movie_id', '=', 'movies.id')
+  ).as('episode');
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.time('querying');
   const params: QpSchema = {
     ...defaultQps,
     searchMode: 'and',
+    movieMode: 'rewa',
     // director: [6011],
     // producer: [591, 6011],
     // actor: [13408],
-    // oscarsCategoriesNom: [5],
+    // oscarsCategoriesWon: [5],
     // movie: [2937, 76],
-    // yearLte: [1980],
+    // yearGte: [1980],
   };
 
   let query = kyselyDb
     .selectFrom('movies')
-    .select(['movies.id', 'movies.title'])
-    .limit(100)
+    .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
+    .orderBy('movies_view.release_date asc')
+    .limit(25)
+    .select([
+      'movies.budget',
+      'movies.id',
+      'movies.imdb_id',
+      'movies.overview',
+      'movies.poster_path',
+      'movies.release_date',
+      'movies.revenue',
+      'movies.runtime',
+      'movies.title',
+      'movies.tagline',
+      'movies_view.total_oscar_nominations',
+      'movies_view.total_oscar_wins',
+      selectMovieKeywords(),
+      selectMovieGenres(),
+      selectMovieActors(3),
+      selectMovieEbertReview(),
+      selectMovieEpisode(),
+      // crew, oscars, streamers
+    ])
+    // can move movieMode up here into an and block
     .where(({ eb }) =>
       eb[params.searchMode]([
         ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
@@ -107,9 +241,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ...params.year.map(id => yearMovies(id, 'like')),
         ...params.yearGte.map(id => yearMovies(id, '>=')),
         ...params.yearLte.map(id => yearMovies(id, '<=')),
-        // revenue, runtime, budget
+        ...params.runtime.map(id => runtimeMovies(id, '~')),
+        ...params.runtimeGte.map(id => runtimeMovies(id, '>=')),
+        ...params.runtimeLte.map(id => runtimeMovies(id, '<=')),
+        ...params.budget.map(id => budgetMovies(id, '~')),
+        ...params.budgetGte.map(id => budgetMovies(id, '>=')),
+        ...params.budgetLte.map(id => budgetMovies(id, '<=')),
+        ...params.revenue.map(id => revenueMovies(id, '~')),
+        ...params.revenueGte.map(id => revenueMovies(id, '>=')),
+        ...params.revenueLte.map(id => revenueMovies(id, '<=')),
       ])
     );
+
+  if (params.movieMode === 'oscar') {
+    query = query.where(hasOscarMovies());
+  }
+  if (params.movieMode === 'rewa') {
+    query = query.where(hasRewaMovies());
+  }
 
   const response = await query.execute();
   console.timeEnd('querying');
