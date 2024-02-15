@@ -2,6 +2,9 @@
 
 - try kysely + turso + cloudflare
 
+- show crew should be a modal w/ image name role, ideally clickable
+- similar for show case
+
 - route with /field/subfield - should be able to just make a [...field] directory
 
 - oscar actor leaderboard supporting/lead toggle

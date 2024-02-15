@@ -9,6 +9,9 @@ const dialect = new SqliteDialect({
   }),
 });
 
+export type KyselyDB = DB;
+
 export const kyselyDb = new Kysely<DB>({
   dialect,
+  log: ['query'],
 });
