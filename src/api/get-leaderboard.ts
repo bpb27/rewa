@@ -109,14 +109,14 @@ const getTopActors: GetTop = async ({ params }) => {
 };
 
 const getTopCrew: GetTop = async ({ field, params }) => {
-  const jobs = crewJobs[field as keyof typeof crewJobs] || [];
+  if (field === 'actor') return [];
 
   const ids = await prisma.crew_on_movies.groupBy({
     by: ['crew_id'],
     _count: { crew_id: true },
     orderBy: { _count: { crew_id: 'desc' } },
     where: {
-      job: { in: jobs },
+      job_id: { in: crewJobs[field] },
       movies: movieFilters(params),
     },
     take: 100,
@@ -128,7 +128,7 @@ const getTopCrew: GetTop = async ({ field, params }) => {
       ...select.crew,
       crew_on_movies: {
         where: {
-          job: { in: jobs },
+          job_id: { in: crewJobs[field] },
           movies: movieFilters(params),
         },
         select: { movies: { select: select.movie } },

@@ -71,12 +71,10 @@ export const getMovies = async (params: QpSchema) => {
             },
             crew_on_movies: {
               where: {
-                job: {
-                  in: Object.values(crewJobs).flat(),
-                },
+                job_id: { in: Object.values(crewJobs).flat() },
               },
               select: {
-                job: true,
+                job_id: true,
                 crew: selectIdAndName,
               },
             },
@@ -137,14 +135,14 @@ export const getMovies = async (params: QpSchema) => {
       budget: tokenizeBudget(movie.budget),
       crew: movie.crew_on_movies
         .filter(jt => jt.crew)
-        .map(({ crew, job }) => {
-          if (crewJobs.director.includes(job)) {
+        .map(({ crew, job_id }) => {
+          if (crewJobs.director.includes(job_id)) {
             return tokenize('director', crew);
-          } else if (crewJobs.producer.includes(job)) {
+          } else if (crewJobs.producer.includes(job_id)) {
             return tokenize('producer', crew);
-          } else if (crewJobs.cinematographer.includes(job)) {
+          } else if (crewJobs.cinematographer.includes(job_id)) {
             return tokenize('cinematographer', crew);
-          } else if (crewJobs.writer.includes(job)) {
+          } else if (crewJobs.writer.includes(job_id)) {
             return tokenize('writer', crew);
           }
         })
@@ -152,7 +150,7 @@ export const getMovies = async (params: QpSchema) => {
         .map(item => item as Token)
         .sort(sortCrew),
       directors: movie.crew_on_movies
-        .filter(jt => jt.job === 'Director')
+        .filter(jt => crewJobs.director.includes(jt.job_id))
         .map(jt => jt.crew!)
         .map(item => tokenize('director', item)),
       ebertReview: movie.ebert_reviews,

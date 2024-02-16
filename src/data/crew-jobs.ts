@@ -1,10 +1,8 @@
-import { omit } from 'remeda';
-
 export const crewJobs = {
-  director: ['Director'],
-  producer: ['Producer'],
-  cinematographer: ['Cinematography', 'Director of Photography'],
-  writer: ['Screenplay', 'Writer'],
+  director: [8],
+  producer: [16],
+  cinematographer: [467, 18],
+  writer: [13, 77],
 };
 
 export const crewToOscarCategory = {
@@ -13,7 +11,3 @@ export const crewToOscarCategory = {
   cinematographer: [6],
   writer: [22, 23],
 };
-
-export const allCrewJobs = Object.values(crewJobs).flat();
-
-export const allNonDirectorCrewJobs = Object.values(omit(crewJobs, ['director'])).flat();

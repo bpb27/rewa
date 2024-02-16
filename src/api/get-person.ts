@@ -96,8 +96,6 @@ export const getActor = async ({ id, subField, params }: GetPersonParams) => {
   };
 };
 
-// TODO: need to change the oscar logic - noms and wins should to be tied to the specific award
-
 export const getCrew = async ({ id, field, subField, params }: GetPersonParams) => {
   if (field === 'actor') throw new Error('No actors allowed');
   const response = await prisma.crew.findFirstOrThrow({
@@ -106,9 +104,10 @@ export const getCrew = async ({ id, field, subField, params }: GetPersonParams) 
       crew_on_movies: {
         where: {
           movies: movieFilters(params),
-          job: { in: crewJobs[field] },
+          job_id: { in: crewJobs[field] },
         },
         include: {
+          crew_jobs: true,
           movies: {
             select: {
               title: true,
@@ -136,7 +135,7 @@ export const getCrew = async ({ id, field, subField, params }: GetPersonParams) 
           crewToOscarCategory[field].includes(nom.award.category_id)
       );
       return {
-        job: role.job,
+        job: role.crew_jobs.job,
         oscar: oscar
           ? {
               award: oscar.award.oscars_categories.name,

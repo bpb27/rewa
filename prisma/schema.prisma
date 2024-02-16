@@ -1,7 +1,11 @@
 generator client {
-  provider        = "prisma-kysely"
+  provider        = "prisma-client-js"
   previewFeatures = ["views"]
   enumFileName    = "db-enums.ts"
+}
+
+generator kysely {
+  provider = "prisma-kysely"
 }
 
 datasource db {
@@ -43,15 +47,14 @@ model crew {
 }
 
 model crew_on_movies {
-  id                   Int    @id @default(autoincrement())
-  movie_id             Int
-  crew_id              Int
-  known_for_department String
-  credit_id            String @unique(map: "sqlite_autoindex_crew_on_movies_1")
-  department           String
-  job                  String
-  crew                 crew   @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  movies               movies @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  id        Int       @id @default(autoincrement())
+  movie_id  Int
+  crew_id   Int
+  job_id    Int
+  credit_id String    @unique(map: "sqlite_autoindex_crew_on_movies_1")
+  crew_jobs crew_jobs @relation(fields: [job_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  crew      crew      @relation(fields: [crew_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  movies    movies    @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model episodes {
@@ -232,17 +235,26 @@ model crew_on_oscars {
   @@unique([oscar_id, crew_id], map: "sqlite_autoindex_crew_on_oscars_1")
 }
 
+model crew_jobs {
+  id             Int              @id @default(autoincrement())
+  job            String
+  department     String
+  crew_on_movies crew_on_movies[]
+
+  @@unique([job, department], map: "sqlite_autoindex_crew_jobs_1")
+}
+
 view movies_with_computed_fields {
-  movie_id                Int     @unique
-  budget                  Int
-  release_date            String
-  revenue                 Int
-  runtime                 Int
-  title                   String
-  profit_percentage       Float
-  episode_order           Int
-  total_oscar_nominations Int
-  total_oscar_wins        Int
-  ebert_rating            Float
-  movie                   movies? @relation(fields: [movie_id], references: [id])
+    movie_id                Int              @unique
+    budget                  Int
+    release_date            String
+    revenue                 Int
+    runtime                 Int
+    title                   String
+    profit_percentage       Int
+    episode_order           Int
+    total_oscar_nominations Int
+    total_oscar_wins        Int
+    ebert_rating            Int
+    movie                   movies?          @relation(fields: [movie_id], references: [id])
 }

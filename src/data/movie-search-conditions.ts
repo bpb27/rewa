@@ -38,7 +38,7 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
     cinematographers.map(id => ({
       crew_on_movies: {
         some: {
-          job: { in: crewJobs.cinematographer },
+          job_id: { in: crewJobs.cinematographer },
           crew_id: id,
         },
       },
@@ -47,7 +47,7 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
     directors.map(id => ({
       crew_on_movies: {
         some: {
-          job: { in: crewJobs.director },
+          job_id: { in: crewJobs.director },
           crew_id: id,
         },
       },
@@ -109,7 +109,7 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
     producers.map(id => ({
       crew_on_movies: {
         some: {
-          job: { in: crewJobs.producer },
+          job_id: { in: crewJobs.producer },
           crew_id: id,
         },
       },
@@ -164,7 +164,7 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
     writers.map(id => ({
       crew_on_movies: {
         some: {
-          job: { in: crewJobs.writer },
+          job_id: { in: crewJobs.writer },
           crew_id: id,
         },
       },

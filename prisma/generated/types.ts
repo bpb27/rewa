@@ -31,14 +31,17 @@ export type crew = {
   name: string;
   profile_path: string | null;
 };
+export type crew_jobs = {
+  id: Generated<number>;
+  job: string;
+  department: string;
+};
 export type crew_on_movies = {
   id: Generated<number>;
   movie_id: number;
   crew_id: number;
-  known_for_department: string;
+  job_id: number;
   credit_id: string;
-  department: string;
-  job: string;
 };
 export type crew_on_oscars = {
   id: Generated<number>;
@@ -108,7 +111,6 @@ export type movies_with_computed_fields = {
   title: string;
   profit_percentage: number;
   episode_order: number;
-  director_name: string;
   total_oscar_nominations: number;
   total_oscar_wins: number;
   ebert_rating: number;
@@ -159,6 +161,7 @@ export type DB = {
   actors_on_movies: actors_on_movies;
   actors_on_oscars: actors_on_oscars;
   crew: crew;
+  crew_jobs: crew_jobs;
   crew_on_movies: crew_on_movies;
   crew_on_oscars: crew_on_oscars;
   ebert_reviews: ebert_reviews;

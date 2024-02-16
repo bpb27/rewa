@@ -11,7 +11,7 @@ function crewMovies(crewId: number, crewKey: keyof typeof crewJobs) {
     selectFrom('crew_on_movies as jt')
       .select(['jt.movie_id'])
       .where('jt.crew_id', '=', crewId)
-      .where('jt.job', 'in', crewJobs[crewKey])
+      .where('jt.job_id', 'in', crewJobs[crewKey])
       .where('jt.movie_id', 'is not', null)
   );
 }
@@ -159,11 +159,11 @@ const selectMovieCrew = () => {
   return jsonArrayFrom(
     eb
       .selectFrom('crew_on_movies as jt')
-      .leftJoin('crew', 'crew.id', 'jt.crew_id')
-      .select(['crew.id', 'crew.name', 'crew.profile_path'])
-      .where('jt.job', 'in', Object.values(crewJobs).flat())
+      .innerJoin('crew', 'crew.id', 'jt.crew_id')
+      .innerJoin('crew_jobs', 'crew_jobs.id', 'jt.job_id')
+      .select(['crew.id', 'crew.name', 'crew.profile_path', 'crew_jobs.job'])
+      .where('jt.job_id', 'in', Object.values(crewJobs).flat())
       .whereRef('jt.movie_id', '=', 'movies.id')
-      .orderBy('jt.credit_id asc')
   ).as('crew');
 };
 
@@ -244,7 +244,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // actor: [13408],
     // oscarsCategoriesWon: [5],
     // movie: [2937, 76],
-    yearGte: [1980],
+    yearGte: [2000],
   };
 
   // NB: can do conditional selects +

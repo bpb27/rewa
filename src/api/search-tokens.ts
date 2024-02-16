@@ -18,7 +18,7 @@ export const searchTokensParams = z.object({
 export const searchTokens = async ({ filter, search }: z.infer<typeof searchTokensParams>) => {
   const filterField = filter === 'rewa' ? ('episodes' as const) : ('oscars_nominations' as const);
 
-  const searchCrew = (jobs: string[], take: number) =>
+  const searchCrew = (jobIds: number[], take: number) =>
     prisma.crew.findMany({
       select: { id: true, name: true },
       orderBy: { crew_on_movies: { _count: 'desc' } },
@@ -28,7 +28,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
           {
             crew_on_movies: {
               some: {
-                job: { in: jobs },
+                job_id: { in: jobIds },
                 movies: { [filterField]: { some: {} } },
               },
             },
