@@ -5,7 +5,7 @@ import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema, defaultQps } from '~/data/query-params';
 import { kyselyDb, type KyselyDB } from '../../../prisma/kysley';
 
-// TODO: group these into objects movies.select, movies.where
+// TODO: group these into objects movies.select, movies.where, movies.sort
 
 function crewMovies(crewId: number, crewKey: keyof typeof crewJobs) {
   const eb = expressionBuilder<KyselyDB, 'movies'>();
