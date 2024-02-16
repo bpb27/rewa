@@ -154,6 +154,19 @@ const selectMovieActors = (limit: number) => {
   ).as('actors');
 };
 
+const selectMovieCrew = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonArrayFrom(
+    eb
+      .selectFrom('crew_on_movies as jt')
+      .leftJoin('crew', 'crew.id', 'jt.crew_id')
+      .select(['crew.id', 'crew.name', 'crew.profile_path'])
+      .where('jt.job', 'in', Object.values(crewJobs).flat())
+      .whereRef('jt.movie_id', '=', 'movies.id')
+      .orderBy('jt.credit_id asc')
+  ).as('crew');
+};
+
 const selectMovieKeywords = () => {
   const eb = expressionBuilder<KyselyDB, 'movies'>();
   return jsonArrayFrom(
@@ -163,6 +176,35 @@ const selectMovieKeywords = () => {
       .select(['keywords.id', 'keywords.name'])
       .whereRef('jt.movie_id', '=', 'movies.id')
   ).as('keywords');
+};
+
+const selectMovieStreamers = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return jsonArrayFrom(
+    eb
+      .selectFrom('streamers_on_movies as jt')
+      .leftJoin('streamers', 'streamers.id', 'jt.streamer_id')
+      .select(['streamers.id', 'streamers.name'])
+      .whereRef('jt.movie_id', '=', 'movies.id')
+  ).as('streamers');
+};
+
+const selectTotalOscarNominations = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return eb
+    .selectFrom('oscars_nominations as on')
+    .select(eb => eb.fn.count('on.id').as('total'))
+    .whereRef('on.movie_id', '=', 'movies.id')
+    .as('total_oscar_nominations');
+};
+
+const selectTotalOscarWins = () => {
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return eb
+    .selectFrom('oscars_nominations as on')
+    .select(eb => eb.fn.count('on.id').filterWhere('on.won', '=', 1).as('total'))
+    .whereRef('on.movie_id', '=', 'movies.id')
+    .as('total_oscar_wins');
 };
 
 const selectMovieEbertReview = () => {
@@ -185,50 +227,53 @@ const selectMovieEpisode = () => {
   ).as('episode');
 };
 
+/*
+  sort by episode, ebert, profit
+  probably not that costly to leftJoin
+  could also try a conditional select + leftJoin depending on the params
+*/
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.time('querying');
   const params: QpSchema = {
     ...defaultQps,
     searchMode: 'and',
-    movieMode: 'oscar',
+    movieMode: 'rewa',
     // director: [6011],
     // producer: [591, 6011],
     // actor: [13408],
     // oscarsCategoriesWon: [5],
     // movie: [2937, 76],
-    // yearGte: [1980],
+    yearGte: [1980],
   };
+
+  // NB: can do conditional selects +
 
   const response = await kyselyDb
     .selectFrom('movies')
-    // .leftJoin('movies_with_computed_fields as movies_view', 'movies_view.movie_id', 'movies.id')
-    // .orderBy('movies_view.total_oscar_nominations desc')
-    // .orderBy('movies.runtime desc')
-    .leftJoin('oscars_nominations', 'oscars_nominations.movie_id', 'movies.id')
     .limit(25)
     .select([
-      // 'movies.budget',
-      // 'movies.id',
-      // 'movies.imdb_id',
-      // 'movies.overview',
-      // 'movies.poster_path',
-      // 'movies.release_date',
-      // 'movies.revenue',
-      // 'movies.runtime',
+      'movies.id',
       'movies.title',
-      eb => eb.fn.count('oscars_nominations.movie_id').as('total_oscar_nominations'),
-      // 'movies.tagline',
-      // 'movies_view.total_oscar_nominations',
-      // 'movies_view.total_oscar_wins',
+      'movies.budget',
+      'movies.imdb_id',
+      'movies.overview',
+      'movies.poster_path',
+      'movies.release_date',
+      'movies.revenue',
+      'movies.runtime',
+      'movies.tagline',
+      selectTotalOscarNominations(),
+      selectTotalOscarWins(),
       selectMovieKeywords(),
       selectMovieGenres(),
       selectMovieActors(3),
       selectMovieEbertReview(),
       selectMovieEpisode(),
-      // crew, oscars, streamers
+      selectMovieCrew(),
+      selectMovieStreamers(),
     ])
-    .orderBy('total_oscar_nominations desc')
-    .groupBy('movie_id')
+    .orderBy('movies.title asc')
     .where(({ eb }) =>
       eb.and([
         ...(params.movieMode === 'rewa' ? [hasRewaMovies()] : []),

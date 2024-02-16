@@ -1,6 +1,7 @@
 # feature shit
 
 - try kysely + turso + cloudflare
+- 855 jobs for 200k crew_on_movies, make into it's own table, drop index
 
 - show crew should be a modal w/ image name role, ideally clickable
 - similar for show case
