@@ -1,9 +1,11 @@
-import { expressionBuilder } from 'kysely';
+import { expressionBuilder, sql } from 'kysely';
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema, defaultQps } from '~/data/query-params';
 import { kyselyDb, type KyselyDB } from '../../../prisma/kysley';
+
+// TODO: group these into objects movies.select, movies.where
 
 function crewMovies(crewId: number, crewKey: keyof typeof crewJobs) {
   const eb = expressionBuilder<KyselyDB, 'movies'>();
@@ -135,7 +137,7 @@ const selectMovieGenres = () => {
   return jsonArrayFrom(
     eb
       .selectFrom('genres_on_movies as jt')
-      .leftJoin('genres', 'genres.id', 'jt.genre_id')
+      .innerJoin('genres', 'genres.id', 'jt.genre_id')
       .select(['genres.id', 'genres.name'])
       .whereRef('jt.movie_id', '=', 'movies.id')
   ).as('genres');
@@ -146,7 +148,7 @@ const selectMovieActors = (limit: number) => {
   return jsonArrayFrom(
     eb
       .selectFrom('actors_on_movies as jt')
-      .leftJoin('actors', 'actors.id', 'jt.actor_id')
+      .innerJoin('actors', 'actors.id', 'jt.actor_id')
       .select(['actors.id', 'actors.name', 'actors.profile_path'])
       .whereRef('jt.movie_id', '=', 'movies.id')
       .orderBy('jt.credit_id asc')
@@ -172,7 +174,7 @@ const selectMovieKeywords = () => {
   return jsonArrayFrom(
     eb
       .selectFrom('keywords_on_movies as jt')
-      .leftJoin('keywords', 'keywords.id', 'jt.keyword_id')
+      .innerJoin('keywords', 'keywords.id', 'jt.keyword_id')
       .select(['keywords.id', 'keywords.name'])
       .whereRef('jt.movie_id', '=', 'movies.id')
   ).as('keywords');
@@ -183,7 +185,7 @@ const selectMovieStreamers = () => {
   return jsonArrayFrom(
     eb
       .selectFrom('streamers_on_movies as jt')
-      .leftJoin('streamers', 'streamers.id', 'jt.streamer_id')
+      .innerJoin('streamers', 'streamers.id', 'jt.streamer_id')
       .select(['streamers.id', 'streamers.name'])
       .whereRef('jt.movie_id', '=', 'movies.id')
   ).as('streamers');
@@ -222,16 +224,10 @@ const selectMovieEpisode = () => {
   return jsonObjectFrom(
     eb
       .selectFrom('episodes as e')
-      .select(['e.spotify_url'])
+      .select(['e.spotify_url', 'e.episode_order'])
       .whereRef('e.movie_id', '=', 'movies.id')
   ).as('episode');
 };
-
-/*
-  sort by episode, ebert, profit
-  probably not that costly to leftJoin
-  could also try a conditional select + leftJoin depending on the params
-*/
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.time('querying');
@@ -239,15 +235,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ...defaultQps,
     searchMode: 'and',
     movieMode: 'rewa',
+    asc: false,
     // director: [6011],
     // producer: [591, 6011],
     // actor: [13408],
     // oscarsCategoriesWon: [5],
     // movie: [2937, 76],
-    yearGte: [2000],
+    // yearGte: [2000],
+    sort: 'profit',
   };
 
-  // NB: can do conditional selects +
+  // TODO: remaining standard sorts - no need for a view praise dios
 
   const response = await kyselyDb
     .selectFrom('movies')
@@ -273,7 +271,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       selectMovieCrew(),
       selectMovieStreamers(),
     ])
-    .orderBy('movies.title asc')
     .where(({ eb }) =>
       eb.and([
         ...(params.movieMode === 'rewa' ? [hasRewaMovies()] : []),
@@ -304,6 +301,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ...params.revenueLte.map(id => revenueMovies(id, '<=')),
         ]),
       ])
+    )
+    .$if(params.sort === 'profit', qb =>
+      qb.orderBy(
+        eb =>
+          eb
+            .case()
+            .when('movies.budget', '=', 0)
+            .then(0)
+            .when('movies.budget', '>', 0)
+            .then(sql<number>`ROUND(((revenue * 1000 - budget) / budget) * 100, 0)`)
+            .end(),
+        params.asc ? 'asc' : 'desc'
+      )
+    )
+    .$if(params.sort === 'episodeNumber', qb =>
+      qb
+        .leftJoin('episodes as e', 'e.movie_id', 'movies.id')
+        .orderBy(params.asc ? 'e.episode_order asc' : 'e.episode_order desc')
+    )
+    .$if(params.sort === 'ebert', qb =>
+      qb
+        .leftJoin('ebert_reviews as er', 'er.movie_id', 'movies.id')
+        .orderBy(params.asc ? 'er.rating asc' : 'er.rating desc')
     )
     .execute();
 

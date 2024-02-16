@@ -1,5 +1,9 @@
 # feature shit
 
+- about w/ a google form or link to github to open an issue
+
+- mix genres into keywords
+
 - try kysely + turso + cloudflare
 - 855 jobs for 200k crew_on_movies, make into it's own table, drop index
 
