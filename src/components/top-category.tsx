@@ -47,7 +47,7 @@ export const TopCategory = ({
 
   return (
     <Layout title={titles[field]}>
-      <Crate column mb={2} gap={3}>
+      <Crate column pt={1} mb={2} gap={3}>
         <Crate justifyCenter>
           <Text size="xl" bold>
             {titles[field]}
@@ -65,6 +65,7 @@ export const TopCategory = ({
                   checked={data.fetchParams.subField === 'mostNoms'}
                   disabled={field === 'producer'}
                   label="Most nominations"
+                  mobileLabel="Noms"
                   onClick={subField => actions.updateFetchParams({ field, subField })}
                   value="mostNoms"
                 />
@@ -72,12 +73,14 @@ export const TopCategory = ({
                   checked={data.fetchParams.subField === 'mostWins'}
                   disabled={field === 'producer'}
                   label="Most wins"
+                  mobileLabel="Wins"
                   onClick={subField => actions.updateFetchParams({ field, subField })}
                   value="mostWins"
                 />
                 <Radio.Item
                   checked={data.fetchParams.subField === 'mostFilms'}
                   label="Most films"
+                  mobileLabel="Films"
                   onClick={subField => actions.updateFetchParams({ field, subField })}
                   value="mostFilms"
                 />

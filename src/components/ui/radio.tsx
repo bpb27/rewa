@@ -17,12 +17,14 @@ const Item = <TValue extends string>({
   checked,
   disabled,
   label,
+  mobileLabel,
   onClick,
   value,
 }: {
   checked: boolean;
   disabled?: boolean;
   label: string;
+  mobileLabel?: string;
   onClick: (value: TValue) => void;
   value: TValue;
 }) => {
@@ -42,7 +44,8 @@ const Item = <TValue extends string>({
         onClick={handleClick}
         className={cn('cursor-pointer', disabled && 'cursor-not-allowed text-slate-500')}
       >
-        {label}
+        <span className="hidden sm:inline">{label}</span>
+        <span className="inline sm:hidden">{mobileLabel || label}</span>
       </label>
     </Crate>
   );
