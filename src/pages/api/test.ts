@@ -235,21 +235,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ...defaultQps,
     searchMode: 'and',
     movieMode: 'rewa',
-    asc: false,
+    asc: true,
     // director: [6011],
     // producer: [591, 6011],
     // actor: [13408],
     // oscarsCategoriesWon: [5],
     // movie: [2937, 76],
     // yearGte: [2000],
-    sort: 'profit',
+    sort: 'runtime',
+    page: 1,
   };
+
+  const sortOrder = params.asc ? ('asc' as const) : ('desc' as const);
+  const offset = 25 * params.page;
 
   // TODO: remaining standard sorts - no need for a view praise dios
 
   const response = await kyselyDb
     .selectFrom('movies')
     .limit(25)
+    .offset(offset)
     .select([
       'movies.id',
       'movies.title',
@@ -302,6 +307,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ]),
       ])
     )
+    .$if(params.sort === 'budget', qb => qb.orderBy('movies.budget', sortOrder))
+    .$if(params.sort === 'revenue', qb => qb.orderBy('movies.revenue', sortOrder))
+    .$if(params.sort === 'release_date', qb => qb.orderBy('movies.release_date', sortOrder))
+    .$if(params.sort === 'runtime', qb => qb.orderBy('movies.runtime', sortOrder))
+    .$if(params.sort === 'title', qb => qb.orderBy('movies.title', sortOrder))
+    .$if(params.sort === 'episodeNumber', qb =>
+      qb.leftJoin('episodes as e', 'e.movie_id', 'movies.id').orderBy('e.episode_order', sortOrder)
+    )
+    .$if(params.sort === 'ebert', qb =>
+      qb.leftJoin('ebert_reviews as er', 'er.movie_id', 'movies.id').orderBy('er.rating', sortOrder)
+    )
     .$if(params.sort === 'profit', qb =>
       qb.orderBy(
         eb =>
@@ -312,20 +328,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .when('movies.budget', '>', 0)
             .then(sql<number>`ROUND(((revenue * 1000 - budget) / budget) * 100, 0)`)
             .end(),
-        params.asc ? 'asc' : 'desc'
+        sortOrder
       )
     )
-    .$if(params.sort === 'episodeNumber', qb =>
-      qb
-        .leftJoin('episodes as e', 'e.movie_id', 'movies.id')
-        .orderBy(params.asc ? 'e.episode_order asc' : 'e.episode_order desc')
-    )
-    .$if(params.sort === 'ebert', qb =>
-      qb
-        .leftJoin('ebert_reviews as er', 'er.movie_id', 'movies.id')
-        .orderBy(params.asc ? 'er.rating asc' : 'er.rating desc')
-    )
     .execute();
+
+  // TODO: $if qb.orderBy isn't picking up on the selected fields, so can't seem to use it
+  // for total_oscar_nominations
+  // can do a regular reassign conditional down here
 
   console.timeEnd('querying');
   res.status(200).json(response);

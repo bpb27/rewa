@@ -1,5 +1,7 @@
 # feature shit
 
+- Fix the add movie script to account for new table
+
 - about w/ a google form or link to github to open an issue
 
 - mix genres into keywords

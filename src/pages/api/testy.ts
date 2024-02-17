@@ -1,26 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getMovies } from '~/apik/get-movies';
+import { defaultQps } from '~/data/query-params';
 import { Prisma } from '~/prisma';
 
 const prisma = Prisma.getPrisma();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.time('querying');
-  const response = await prisma.movies.findMany({
-    select: {
-      title: true,
-      streamers_on_movies: {
-        select: {
-          streamers: { select: { name: true } },
-        },
-      },
-    },
-    take: 25,
-    where: {
-      episodes: {
-        some: {},
-      },
-    },
+  const response = await getMovies({
+    ...defaultQps,
+    sort: 'release_date',
+    keyword: [249],
+    movieMode: 'rewa',
   });
-  console.timeEnd('querying');
   res.status(200).json(response);
 }
