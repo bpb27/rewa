@@ -1,14 +1,21 @@
 import { sql } from 'kysely';
 import { QpSchema } from '~/data/query-params';
+import {
+  tokenize,
+  tokenizeBudget,
+  tokenizeCrew,
+  tokenizeRevenue,
+  tokenizeRuntime,
+} from '~/data/tokens';
 import { kyselyDb } from '../../prisma/kysley';
-import { reusableSQL } from './reusable';
+import { allMovieFilters, reusableSQL } from './reusable';
 
 const { select, where } = reusableSQL;
 
 export const getMovies = async (params: QpSchema) => {
-  console.time('querying');
   const sortOrder = params.asc ? ('asc' as const) : ('desc' as const);
-  const offset = 25 * params.page;
+  const limit = 25;
+  const offset = limit * params.page;
 
   const response = await kyselyDb
     .selectFrom('movies')
@@ -16,7 +23,7 @@ export const getMovies = async (params: QpSchema) => {
     .offset(offset)
     .select([
       'movies.id',
-      'movies.title',
+      'movies.title as name',
       'movies.budget',
       'movies.imdb_id',
       'movies.overview',
@@ -25,15 +32,16 @@ export const getMovies = async (params: QpSchema) => {
       'movies.revenue',
       'movies.runtime',
       'movies.tagline',
-      select.movieTotalOscarNominations(),
-      select.movieTotalOscarWins(),
-      select.movieKeywords(),
-      select.movieGenres(),
       select.movieActors(3),
+      select.movieCrew(),
       select.movieEbertReview(),
       select.movieEpisode(),
-      select.movieCrew(),
+      select.movieGenres(),
+      select.movieKeywords(),
       select.movieStreamers(),
+      select.movieTotalOscarNominations(),
+      select.movieTotalOscarWins(),
+      select.movieOscars(),
     ])
     .where(({ eb }) =>
       eb.and([
@@ -105,7 +113,45 @@ export const getMovies = async (params: QpSchema) => {
     })
     .execute();
 
-  console.timeEnd('querying');
+  const count = await kyselyDb
+    .selectFrom('movies')
+    .select(eb => eb.fn.count('movies.id').as('total'))
+    .where(allMovieFilters(params))
+    .executeTakeFirst();
 
-  return response;
+  const results = response.map(movie => ({
+    actors: movie.actors.map(t => ({ ...tokenize('actor', t), image: t.profile_path })),
+    budget: tokenizeBudget(movie.budget),
+    crew: movie.crew.map(t => ({ ...tokenizeCrew(t), image: t.profile_path })),
+    ebert: movie.ebert_review,
+    episode: movie.episode
+      ? {
+          spotifyUrl: movie.episode.spotify_url,
+          hosts: movie.episode.hosts.map(t => tokenize('host', t)),
+        }
+      : null,
+    id: movie.id,
+    image: movie.poster_path,
+    imdbId: movie.imdb_id,
+    keywords: movie.keywords.map(t => tokenize('keyword', t)),
+    name: movie.name,
+    oscars: movie.oscars,
+    totalOscarNominations: movie.total_oscar_nominations,
+    totalOscarWins: movie.total_oscar_wins,
+    overview: movie.overview,
+    releaseDate: movie.release_date,
+    revenue: tokenizeRevenue(movie.revenue),
+    runtime: tokenizeRuntime(movie.runtime),
+    streamers: movie.streamers.map(t => tokenize('streamer', t)),
+    tagline: movie.tagline,
+  }));
+
+  const total = count?.total ? Number(count.total) : 0;
+
+  return {
+    total,
+    hasNext: offset + limit < total,
+    page: params.page,
+    results,
+  };
 };

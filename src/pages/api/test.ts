@@ -6,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const response = await getMovies({
     ...defaultQps,
     sort: 'release_date',
-    keyword: [249],
+    // keyword: [249],
     movieMode: 'rewa',
   });
   res.status(200).json(response);

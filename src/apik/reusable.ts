@@ -1,6 +1,7 @@
 import { expressionBuilder } from 'kysely';
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
 import { crewJobs } from '~/data/crew-jobs';
+import { QpSchema } from '~/data/query-params';
 import { type KyselyDB } from '../../prisma/kysley';
 
 export const reusableSQL = {
@@ -140,8 +141,7 @@ export const reusableSQL = {
         eb
           .selectFrom('crew_on_movies as jt')
           .innerJoin('crew', 'crew.id', 'jt.crew_id')
-          .innerJoin('crew_jobs', 'crew_jobs.id', 'jt.job_id')
-          .select(['crew.id', 'crew.name', 'crew.profile_path', 'crew_jobs.job'])
+          .select(['crew.id', 'crew.name', 'crew.profile_path', 'jt.job_id'])
           .where('jt.job_id', 'in', Object.values(crewJobs).flat())
           .whereRef('jt.movie_id', '=', 'movies.id')
       ).as('crew');
@@ -151,7 +151,7 @@ export const reusableSQL = {
       return jsonObjectFrom(
         eb
           .selectFrom('ebert_reviews as er')
-          .select(['er.path', 'er.rating'])
+          .select(['er.path as reviewUrl', 'er.rating'])
           .whereRef('er.movie_id', '=', 'movies.id')
       ).as('ebert_review');
     },
@@ -160,9 +160,37 @@ export const reusableSQL = {
       return jsonObjectFrom(
         eb
           .selectFrom('episodes as e')
-          .select(['e.spotify_url', 'e.episode_order'])
+          .select([
+            'e.spotify_url',
+            'e.episode_order',
+            eb =>
+              jsonArrayFrom(
+                eb
+                  .selectFrom('hosts_on_episodes as jt')
+                  .innerJoin('hosts', 'hosts.id', 'jt.host_id')
+                  .select(['hosts.id', 'hosts.name'])
+                  .whereRef('e.id', '=', 'jt.episode_id')
+              ).as('hosts'),
+          ])
           .whereRef('e.movie_id', '=', 'movies.id')
+          .limit(1)
       ).as('episode');
+    },
+    movieOscars: () => {
+      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      return jsonArrayFrom(
+        eb
+          .selectFrom('oscars_nominations')
+          .innerJoin('oscars_awards', 'oscars_awards.id', 'oscars_nominations.award_id')
+          .innerJoin('oscars_categories', 'oscars_categories.id', 'oscars_awards.category_id')
+          .select([
+            'oscars_nominations.won',
+            'oscars_nominations.recipient',
+            'oscars_awards.name as award',
+            'oscars_categories.name as category',
+          ])
+          .whereRef('oscars_nominations.movie_id', '=', 'movies.id')
+      ).as('oscars');
     },
     movieGenres: () => {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
@@ -207,8 +235,43 @@ export const reusableSQL = {
       return eb
         .selectFrom('oscars_nominations as on')
         .select(eb => eb.fn.count('on.id').as('total'))
+        .where('on.won', '=', 1)
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_wins');
     },
   },
+};
+
+export const allMovieFilters = (params: QpSchema) => {
+  const { where } = reusableSQL;
+  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  return eb.and([
+    ...(params.movieMode === 'rewa' ? [where.moviesWithAnyEpisode()] : []),
+    ...(params.movieMode === 'oscar' ? [where.moviesWithAnyOscar()] : []),
+    eb[params.searchMode]([
+      ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
+      ...params.cinematographer.map(id => where.moviesWithCrew(id, 'cinematographer')),
+      ...params.director.map(id => where.moviesWithCrew(id, 'director')),
+      ...params.producer.map(id => where.moviesWithCrew(id, 'producer')),
+      ...params.writer.map(id => where.moviesWithCrew(id, 'writer')),
+      ...params.actor.map(id => where.moviesWithActor(id)),
+      ...params.keyword.map(id => where.moviesWithKeyword(id)),
+      ...params.streamer.map(id => where.moviesWithStreamer(id)),
+      ...params.host.map(id => where.moviesWithHost(id)),
+      ...params.oscarsCategoriesNom.map(id => where.moviesWithOscar(id)),
+      ...params.oscarsCategoriesWon.map(id => where.moviesWithOscar(id, true)),
+      ...params.year.map(id => where.moviesWithYear(id, 'like')),
+      ...params.yearGte.map(id => where.moviesWithYear(id, '>=')),
+      ...params.yearLte.map(id => where.moviesWithYear(id, '<=')),
+      ...params.runtime.map(id => where.moviesWithRuntime(id, '~')),
+      ...params.runtimeGte.map(id => where.moviesWithRuntime(id, '>=')),
+      ...params.runtimeLte.map(id => where.moviesWithRuntime(id, '<=')),
+      ...params.budget.map(id => where.moviesWithBudget(id, '~')),
+      ...params.budgetGte.map(id => where.moviesWithBudget(id, '>=')),
+      ...params.budgetLte.map(id => where.moviesWithBudget(id, '<=')),
+      ...params.revenue.map(id => where.moviesWithRevenue(id, '~')),
+      ...params.revenueGte.map(id => where.moviesWithRevenue(id, '>=')),
+      ...params.revenueLte.map(id => where.moviesWithRevenue(id, '<=')),
+    ]),
+  ]);
 };

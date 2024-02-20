@@ -1,5 +1,6 @@
 import { TokenType } from '~/data/query-params';
 import { getYear, moneyShort, titleCase } from '~/utils/format';
+import { crewIdToJob } from './crew-jobs';
 
 export type Token = { type: TokenType; id: number; name: string };
 
@@ -90,4 +91,10 @@ export const tokenizeYearLte = (date: string): Token => ({
   id: Number(getYear(date)),
   name: `< ${getYear(date)}`,
   type: 'yearLte',
+});
+
+export const tokenizeCrew = (params: { id: number; name: string; job_id: number }): Token => ({
+  id: params.id,
+  name: params.name,
+  type: crewIdToJob[params.job_id],
 });
