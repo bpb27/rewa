@@ -66,11 +66,11 @@ export const MoviesTable = ({
         {movies.map(m => (
           <Table.Row key={m.id}>
             <Table.Data className="p-0">
-              <MoviePoster title={m.title} poster_path={m.poster_path} variant="table" />
+              <MoviePoster title={m.name} poster_path={m.image} variant="table" />
             </Table.Data>
             <Table.Data sticky>
               <Text bold onClick={() => onMovieTitleClick(m.id)}>
-                {m.title}
+                {m.name}
               </Text>
             </Table.Data>
             <Table.Data>
@@ -80,11 +80,13 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                {m.directors.map(d => (
-                  <Text noWrap key={d.id} onClick={() => onTokenClick(d)}>
-                    {d.name}
-                  </Text>
-                ))}
+                {m.crew
+                  .filter(c => c.type === 'director')
+                  .map(d => (
+                    <Text noWrap key={d.id} onClick={() => onTokenClick(d)}>
+                      {d.name}
+                    </Text>
+                  ))}
                 <PopoverMenu content={<CrewPopover tokens={m.crew} onClick={onTokenClick} />}>
                   <Text secondary>Show crew</Text>
                 </PopoverMenu>
@@ -93,7 +95,7 @@ export const MoviesTable = ({
             <Table.Data>
               <Crate column>
                 {m.actors.map(a => (
-                  <ImageTooltip key={a.id} path={a.profile_path} name={a.name}>
+                  <ImageTooltip key={a.id} path={a.image} name={a.name}>
                     <Text noWrap onClick={() => onTokenClick(a)} tag="span">
                       {a.name}
                     </Text>
@@ -103,32 +105,34 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                <Text noWrap>{m.oscars.noms} noms</Text>
-                <Text noWrap>{m.oscars.wins} wins</Text>
+                <Text noWrap>{m.totalOscarNominations} noms</Text>
+                <Text noWrap>{m.totalOscarWins} wins</Text>
                 <Text
                   noWrap
-                  hide={!m.oscars.noms}
-                  onClick={() => onOscarYearClick({ movieId: m.id, year: m.oscars.year })}
+                  hide={!m.totalOscarNominations}
+                  onClick={() =>
+                    onOscarYearClick({ movieId: m.id, year: m.oscars[0].ceremonyYear })
+                  }
                   secondary
                 >
                   Show
                 </Text>
               </Crate>
             </Table.Data>
-            {showHosts && (
+            {showHosts && m.episode && (
               <Table.Data>
                 <Crate column>
-                  {m.hosts.slice(0, 3).map(h => (
+                  {m.episode.hosts.slice(0, 3).map(h => (
                     <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
                       {h.name}
                     </Text>
                   ))}
-                  {m.hosts.length > 3 && (
+                  {m.episode.hosts.length > 3 && (
                     <PopoverMenu
-                      content={<StandardPopover tokens={m.hosts} onClick={onTokenClick} />}
+                      content={<StandardPopover tokens={m.episode.hosts} onClick={onTokenClick} />}
                     >
                       <Text noWrap secondary>
-                        {m.hosts.length - 3} more
+                        {m.episode.hosts.length - 3} more
                       </Text>
                     </PopoverMenu>
                   )}
@@ -150,9 +154,9 @@ export const MoviesTable = ({
                 {m.runtime.name}
               </Text>
             </Table.Data>
-            {showEbert && (
+            {showEbert && m.ebert && (
               <Table.Data>
-                <StarRating value={m.ebertReview?.rating} />
+                <StarRating value={m.ebert?.rating} />
               </Table.Data>
             )}
             <Table.Data>
@@ -184,16 +188,16 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                <ImdbLink id={m.imdb_id} className="text-blue-500 underline">
+                <ImdbLink id={m.imdbId} className="text-blue-500 underline">
                   IMDB
                 </ImdbLink>
                 {!!m.episode && (
-                  <SpotifyLink url={m.episode.spotify_url} className="text-blue-500 underline">
+                  <SpotifyLink url={m.episode.spotifyUrl} className="text-blue-500 underline">
                     Spotify
                   </SpotifyLink>
                 )}
-                {!!m.ebertReview?.path && (
-                  <EbertLink path={m.ebertReview.path} className="text-blue-500 underline">
+                {!!m.ebert?.reviewUrl && (
+                  <EbertLink path={m.ebert.reviewUrl} className="text-blue-500 underline">
                     Ebert
                   </EbertLink>
                 )}

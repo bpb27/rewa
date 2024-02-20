@@ -188,6 +188,7 @@ export const reusableSQL = {
             'oscars_nominations.recipient',
             'oscars_awards.name as award',
             'oscars_categories.name as category',
+            'oscars_nominations.ceremony_year as ceremonyYear',
           ])
           .whereRef('oscars_nominations.movie_id', '=', 'movies.id')
       ).as('oscars');
@@ -226,7 +227,7 @@ export const reusableSQL = {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.count('on.id').as('total'))
+        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_nominations');
     },
@@ -234,7 +235,7 @@ export const reusableSQL = {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.count('on.id').as('total'))
+        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
         .where('on.won', '=', 1)
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_wins');

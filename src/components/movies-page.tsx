@@ -78,12 +78,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
       )}
       {!!movieModal && (
         <Modal isOpen={!!movieModal} onClose={() => setMovieModal(undefined)}>
-          <Spotlight
-            description={movieModal.overview}
-            image={movieModal.poster_path}
-            name={movieModal.title}
-            tagline={movieModal.tagline}
-          />
+          <Spotlight {...movieModal} />
         </Modal>
       )}
       <Button

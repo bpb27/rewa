@@ -6,6 +6,7 @@ import {
   tokenizeCrew,
   tokenizeRevenue,
   tokenizeRuntime,
+  tokenizeYear,
 } from '~/data/tokens';
 import { kyselyDb } from '../../prisma/kysley';
 import { allMovieFilters, reusableSQL } from './reusable';
@@ -26,7 +27,7 @@ export const getMovies = async (params: QpSchema) => {
       'movies.title as name',
       'movies.budget',
       'movies.imdb_id',
-      'movies.overview',
+      'movies.overview as description',
       'movies.poster_path',
       'movies.release_date',
       'movies.revenue',
@@ -136,14 +137,15 @@ export const getMovies = async (params: QpSchema) => {
     keywords: movie.keywords.map(t => tokenize('keyword', t)),
     name: movie.name,
     oscars: movie.oscars,
-    totalOscarNominations: movie.total_oscar_nominations,
-    totalOscarWins: movie.total_oscar_wins,
-    overview: movie.overview,
+    totalOscarNominations: movie.total_oscar_nominations ?? 0,
+    totalOscarWins: movie.total_oscar_wins ?? 0,
+    description: movie.description,
     releaseDate: movie.release_date,
     revenue: tokenizeRevenue(movie.revenue),
     runtime: tokenizeRuntime(movie.runtime),
     streamers: movie.streamers.map(t => tokenize('streamer', t)),
     tagline: movie.tagline,
+    year: tokenizeYear(movie.release_date),
   }));
 
   const total = count?.total ? Number(count.total) : 0;

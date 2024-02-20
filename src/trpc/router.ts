@@ -1,12 +1,12 @@
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { getLeaderboard, getLeaderboardParams } from '~/api/get-leaderboard';
 import { getMovie, getMovieParams } from '~/api/get-movie';
-import { getMovies } from '~/api/get-movies';
 import { getOscarCategories } from '~/api/get-oscar-categories';
 import { getOscarsByYear, getOscarsByYearParams } from '~/api/get-oscars-by-year';
 import { getPerson, getPersonParams } from '~/api/get-person';
 import { getTokens } from '~/api/get-tokens';
 import { searchTokens, searchTokensParams } from '~/api/search-tokens';
+import { getMovies } from '~/apik/get-movies';
 import { parsedQpSchema } from '~/data/query-params';
 import { procedure, router } from './trpc';
 

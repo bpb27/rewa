@@ -1,5 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
-import { getMovies } from '~/api/get-movies';
+import { getMovies } from '~/apik/get-movies';
 import { MoviesPage } from '~/components/movies-page';
 import { assembleUrl, defaultQps, type QpSchema } from '~/data/query-params';
 import { NAV } from '~/utils/nav-routes';
