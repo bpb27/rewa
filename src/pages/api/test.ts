@@ -1,13 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getMovies } from '~/apik/get-movies';
-import { defaultQps } from '~/data/query-params';
+import { searchTokens } from '~/apik/search-tokens';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const response = await getMovies({
-    ...defaultQps,
-    sort: 'release_date',
-    // keyword: [249],
-    movieMode: 'rewa',
-  });
+  const response = await searchTokens('19');
   res.status(200).json(response);
 }

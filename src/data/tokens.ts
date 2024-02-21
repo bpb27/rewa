@@ -4,6 +4,8 @@ import { crewIdToJob } from './crew-jobs';
 
 export type Token = { type: TokenType; id: number; name: string };
 
+// TODO: just one tokenize function that figures out the formatting
+
 export const tokenize = (
   tokenType: TokenType,
   item: { id: number; name: string } | { id: number; title: string }

@@ -7,6 +7,8 @@ export const crewJobs = {
   writer: [13, 77],
 };
 
+export const relevantCrewIds = Object.values(crewJobs).flat();
+
 export const crewIdToJob = Object.entries(crewJobs).reduce((hash, [key, ids]) => {
   return ids.reduce((acc, id) => ({ ...acc, [id]: key as TokenType }), hash);
 }, {} as Record<number, TokenType>);

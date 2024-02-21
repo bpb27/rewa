@@ -5,8 +5,9 @@ import { getOscarCategories } from '~/api/get-oscar-categories';
 import { getOscarsByYear, getOscarsByYearParams } from '~/api/get-oscars-by-year';
 import { getPerson, getPersonParams } from '~/api/get-person';
 import { getTokens } from '~/api/get-tokens';
-import { searchTokens, searchTokensParams } from '~/api/search-tokens';
+import { searchTokensParams } from '~/api/search-tokens';
 import { getMovies } from '~/apik/get-movies';
+import { searchTokens } from '~/apik/search-tokens';
 import { parsedQpSchema } from '~/data/query-params';
 import { procedure, router } from './trpc';
 

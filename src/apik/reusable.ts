@@ -2,6 +2,7 @@ import { expressionBuilder } from 'kysely';
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
+import { AppEnums } from '~/utils/enums';
 import { type KyselyDB } from '../../prisma/kysley';
 
 export const reusableSQL = {
@@ -14,6 +15,24 @@ export const reusableSQL = {
           .where('jt.actor_id', '=', actorId)
           .where('jt.movie_id', 'is not', null)
       );
+    },
+    movieMode: (mode: AppEnums['movieMode']) => {
+      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      if (mode === 'oscar') {
+        return eb('movies.id', 'in', ({ selectFrom }) => {
+          return selectFrom('oscars_nominations as nom')
+            .select(['nom.movie_id'])
+            .where('nom.movie_id', 'is not', null);
+        });
+      } else if (mode === 'rewa') {
+        return eb('movies.id', 'in', ({ selectFrom }) => {
+          return selectFrom('episodes as e')
+            .select(['e.movie_id'])
+            .where('e.movie_id', 'is not', null);
+        });
+      } else {
+        return eb('movies.id', 'is not', null);
+      }
     },
     moviesWithAnyOscar: () => {
       const eb = expressionBuilder<KyselyDB, 'movies'>();

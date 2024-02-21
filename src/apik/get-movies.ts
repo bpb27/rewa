@@ -46,8 +46,7 @@ export const getMovies = async (params: QpSchema) => {
     ])
     .where(({ eb }) =>
       eb.and([
-        ...(params.movieMode === 'rewa' ? [where.moviesWithAnyEpisode()] : []),
-        ...(params.movieMode === 'oscar' ? [where.moviesWithAnyOscar()] : []),
+        where.movieMode(params.movieMode),
         eb[params.searchMode]([
           ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
           ...params.cinematographer.map(id => where.moviesWithCrew(id, 'cinematographer')),
