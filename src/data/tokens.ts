@@ -4,12 +4,13 @@ import { crewIdToJob } from './crew-jobs';
 
 export type Token = { type: TokenType; id: number; name: string };
 
-// TODO: just one tokenize function that figures out the formatting
+// get rid of most of this, just need a brand function
 
-export const tokenize = (
-  tokenType: TokenType,
-  item: { id: number; name: string } | { id: number; title: string }
-): Token => ({ type: tokenType, id: item.id, name: 'name' in item ? item.name : item.title });
+export const tokenize = (tokenType: TokenType, item: { id: number; name: string }): Token => ({
+  type: tokenType,
+  id: item.id,
+  name: item.name,
+});
 
 export const tokenizeBudget = (budget: number): Token => ({
   id: budget,

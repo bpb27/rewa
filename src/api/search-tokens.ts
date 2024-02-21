@@ -125,7 +125,7 @@ export const searchTokens = async ({ filter, search }: z.infer<typeof searchToke
   const results = [
     ...uniqBy([...exactMovies, ...movies], m => m.id)
       .slice(0, 3)
-      .map(item => ({ ...item, title: `${item.title} (${getYear(item.release_date)})` }))
+      .map(item => ({ ...item, name: `${item.title} (${getYear(item.release_date)})` }))
       .map(item => tokenize('movie', item)),
     ...(filter === 'rewa' ? hosts : []).map(item => tokenize('host', item)),
     ...actors.map(item => tokenize('actor', item)),

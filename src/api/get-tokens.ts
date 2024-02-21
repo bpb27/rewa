@@ -32,9 +32,8 @@ export const getTokens = async (params: QpSchema) => {
         select: { id: true, name: true },
       };
 
-      const callback = (
-        results: ({ id: number; name: string } | { id: number; title: string })[]
-      ) => results.map(item => tokenize(key, item));
+      const callback = (results: { id: number; name: string }[]) =>
+        results.map(item => tokenize(key, item));
 
       if (key === 'budget') return ids.map(tokenizeBudget);
       if (key === 'budgetGte') return ids.map(tokenizeBudgetGte);
@@ -68,7 +67,7 @@ export const getTokens = async (params: QpSchema) => {
       if (key === 'movie') {
         return prisma.movies
           .findMany({ where: { id: { in: ids } }, select: { title: true, id: true } })
-          .then(callback);
+          .then(movs => callback(movs.map(m => ({ ...m, name: m.title }))));
       }
       // TODO: exhaustive check, maybe switch
     })
