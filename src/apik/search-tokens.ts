@@ -78,11 +78,21 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .limit(3)
       .execute(),
     kyselyDb
-      .selectFrom('keywords')
-      .innerJoin('keywords_on_movies as jt', 'jt.keyword_id', 'keywords.id')
-      .select(['keywords.id', 'keywords.name', eb => eb.fn.count('jt.movie_id').as('count')])
+      .selectFrom('keywords_on_movies')
+      .innerJoin('keywords', 'keywords.id', 'keywords_on_movies.id')
+      .innerJoin('movies', 'movies.id', 'keywords_on_movies.movie_id')
+      .select([
+        'keywords.id',
+        'keywords.name',
+        eb => eb.fn.count('keywords_on_movies.movie_id').as('count'),
+      ])
       .where(sql.raw('lower(keywords.name)'), 'like', search)
+      .where(movieMode)
       .groupBy('keywords.id')
+      .orderBy(
+        eb => eb.case().when(sql.raw('lower(title)'), '=', params.search).then(0).else(1).end(),
+        'asc'
+      )
       .orderBy('count desc')
       .limit(3)
       .execute(),
