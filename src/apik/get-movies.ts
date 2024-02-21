@@ -95,7 +95,7 @@ export const getMovies = async (params: QpSchema) => {
     imdbId: movie.imdb_id,
     keywords: movie.keywords,
     name: movie.title,
-    oscars: movie.oscars,
+    oscars: movie.oscars.map(o => ({ ...o, won: !!o.won })), // TODO: cast in sql (maybe not possible w/ sqlite?)
     totalOscarNominations: movie.total_oscar_nominations ?? 0,
     totalOscarWins: movie.total_oscar_wins ?? 0,
     description: movie.overview,

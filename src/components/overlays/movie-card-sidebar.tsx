@@ -31,12 +31,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
     <Sidebar>
       <Sidebar.CloseButton onClose={onClose} />
       <Crate my={3}>
-        <Spotlight
-          description={movie.overview}
-          image={movie.poster_path}
-          name={movie.title}
-          tagline={movie.tagline}
-        />
+        <Spotlight {...movie} />
       </Crate>
       <Crate mb={5} column gap={2}>
         {role && (
@@ -52,7 +47,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
             <Text bold icon="Mic">
               Hosts
             </Text>
-            <Text>{movie.hosts.map(h => h.name).join(', ')}</Text>
+            <Text>{movie.episode.hosts.map(h => h.name).join(', ')}</Text>
           </Crate>
         )}
         <Crate column>
@@ -65,9 +60,14 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
           <Text bold icon="Video">
             Director
           </Text>
-          <Text>{movie.directors.map(a => a.name).join(', ')}</Text>
+          <Text>
+            {movie.crew
+              .filter(c => c.job === 'director')
+              .map(a => a.name)
+              .join(', ')}
+          </Text>
         </Crate>
-        {movie.oscars.noms > 0 && (
+        {movie.totalOscarNominations > 0 && (
           <Crate column>
             <Text bold icon="Trophy">
               Oscars
@@ -78,13 +78,13 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
               onClick={awards.toggle}
               iconOrientation="right"
             >
-              {movie.oscars.noms} noms, {movie.oscars.wins} wins
+              {movie.totalOscarNominations} noms, {movie.totalOscarWins} wins
             </Text>
             {awards.isShowing && (
               <Crate my={2} px={2} column className="border-l-2 border-l-slate-600">
-                {smartSort(movie.oscars.awards, a => a.awardCategory).map(a => (
-                  <Text key={a.awardCategoryId + a.recipient}>
-                    {titleCase(a.awardCategory)} {a.won && '- Winner'}
+                {smartSort(movie.oscars, a => a.category).map(a => (
+                  <Text key={a.category + a.recipient}>
+                    {titleCase(a.category)} {a.won && '- Winner'}
                   </Text>
                 ))}
               </Crate>
@@ -95,18 +95,18 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
           <Text bold icon="Clock">
             Release Date
           </Text>
-          <Text>{formatDate(movie.release_date)}</Text>
+          <Text>{formatDate(movie.releaseDate)}</Text>
         </Crate>
         <Crate column>
           <Text bold icon="Link">
             External Links
           </Text>
           <Crate gap={1}>
-            <ImdbLink id={movie.imdb_id} className="hover:underline">
+            <ImdbLink id={movie.imdbId} className="hover:underline">
               IMDB{movie.episode ? ',' : ''}
             </ImdbLink>
             {movie.episode && (
-              <SpotifyLink url={movie.episode.spotify_url} className="hover:underline">
+              <SpotifyLink url={movie.episode.spotifyUrl} className="hover:underline">
                 Spotify
               </SpotifyLink>
             )}

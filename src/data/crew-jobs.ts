@@ -10,8 +10,8 @@ export const crewJobs = {
 export const relevantCrewIds = Object.values(crewJobs).flat();
 
 export const crewIdToJob = Object.entries(crewJobs).reduce((hash, [key, ids]) => {
-  return ids.reduce((acc, id) => ({ ...acc, [id]: key as AppEnums['token'] }), hash);
-}, {} as Record<number, AppEnums['token']>);
+  return ids.reduce((acc, id) => ({ ...acc, [id]: key as AppEnums['tokenCrew'] }), hash);
+}, {} as Record<number, AppEnums['tokenCrew']>);
 
 export const crewToOscarCategory = {
   director: [8],

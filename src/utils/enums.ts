@@ -52,6 +52,8 @@ const token = z.enum([
   'yearLte',
 ]);
 
+const tokenCrew = token.extract(['director', 'cinematographer', 'writer', 'producer']);
+
 export const appEnums = {
   movieMode: { schema: movieMode, values: movieMode._def.values },
   oscarActorAward: { schema: actorNomAward, values: actorNomAward._def.values },
@@ -59,6 +61,7 @@ export const appEnums = {
   searchMode: { schema: searchMode, values: searchMode._def.values },
   sort: { schema: sort, values: sort._def.values },
   token: { schema: token, values: token._def.values },
+  tokenCrew: { schema: tokenCrew, values: tokenCrew._def.values },
   topCategory: { schema: topCategory, values: topCategory._def.values },
   topCategorySub: { schema: topCategorySub, values: topCategorySub._def.values },
 };

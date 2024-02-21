@@ -219,17 +219,16 @@ export const MoviesTable = ({
   );
 };
 
-// TODO: cast in API instead
 const CrewPopover = ({
   items,
   onClick,
 }: {
-  items: { id: number; name: string; job: string }[];
+  items: { id: number; name: string; job: AppEnums['tokenCrew'] }[];
   onClick: (tokenType: AppEnums['token'], tokenId: number) => void;
 }) => (
   <Crate column>
     {smartSort(items, i => i.job).map(c => (
-      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job as AppEnums['token'], c.id)}>
+      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job, c.id)}>
         <b>{capitalize(c.job)}:</b> {c.name}
       </Text>
     ))}
