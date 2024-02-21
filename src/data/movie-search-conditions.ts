@@ -1,12 +1,13 @@
 import { type Prisma as PrismaBaseType } from '@prisma/client';
-import { tokenKeys, type QpSchema, type TokenType } from '~/data/query-params';
+import { type QpSchema } from '~/data/query-params';
+import { AppEnums, appEnums } from '~/utils/enums';
 import { crewJobs } from './crew-jobs';
 
 type MovieWhere = PrismaBaseType.moviesWhereInput;
 type AndOr = MovieWhere['OR'] | MovieWhere['AND'];
 const fiveMil = 5000000;
 
-const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
+const searchMap: Record<AppEnums['token'], (list: number[]) => AndOr> = {
   actor: actors =>
     actors.map(id => ({
       actors_on_movies: {
@@ -190,7 +191,7 @@ const searchMap: Record<TokenType, (list: number[]) => AndOr> = {
 };
 
 export const movieFilters = (params: QpSchema): MovieWhere => {
-  const tokenFilters = tokenKeys
+  const tokenFilters = appEnums.token.values
     .filter(token => params[token].length)
     .map(token => searchMap[token](params[token]))
     .map(condition => ({ [params.searchMode.toUpperCase()]: condition }));

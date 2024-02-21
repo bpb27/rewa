@@ -1,12 +1,15 @@
-import { TokenType } from '~/data/query-params';
+import { AppEnums } from '~/utils/enums';
 import { getYear, moneyShort, titleCase } from '~/utils/format';
 import { crewIdToJob } from './crew-jobs';
 
-export type Token = { type: TokenType; id: number; name: string };
+// TODO: can remove most of this
 
-// get rid of most of this, just need a brand function
+export type Token = { type: AppEnums['token']; id: number; name: string };
 
-export const tokenize = (tokenType: TokenType, item: { id: number; name: string }): Token => ({
+export const tokenize = (
+  tokenType: AppEnums['token'],
+  item: { id: number; name: string }
+): Token => ({
   type: tokenType,
   id: item.id,
   name: item.name,

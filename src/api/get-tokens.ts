@@ -1,5 +1,5 @@
 import { isDefined } from 'remeda';
-import { QpSchema, tokenKeys } from '~/data/query-params';
+import { QpSchema } from '~/data/query-params';
 import {
   tokenize,
   tokenizeBudget,
@@ -18,12 +18,13 @@ import {
   tokenizeYearLte,
 } from '~/data/tokens';
 import { Prisma } from '~/prisma';
+import { appEnums } from '~/utils/enums';
 
 const prisma = Prisma.getPrisma();
 
 export const getTokens = async (params: QpSchema) => {
   const response = await Promise.all(
-    tokenKeys.map(key => {
+    appEnums.token.values.map(key => {
       const ids = params[key] || [];
       if (!ids.length) return undefined;
 

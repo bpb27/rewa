@@ -1,4 +1,3 @@
-import { TokenType } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 import { AppEnums } from '~/utils/enums';
 import { Button } from './ui/button';
@@ -8,7 +7,7 @@ type TokenBarProps = {
   clearTokens: () => void;
   searchMode: AppEnums['searchMode'];
   toggleSearchMode: () => void;
-  removeToken: (tokenType: TokenType, id: number) => void;
+  removeToken: (tokenType: AppEnums['token'], id: number) => void;
   tokens: Token[];
 };
 
@@ -48,7 +47,7 @@ export const TokenBar = ({
   );
 };
 
-const icon = (tokenType: Token['type']) => {
+const icon = (tokenType: AppEnums['token']) => {
   switch (tokenType) {
     case 'director':
       return <Icon.Movie />;

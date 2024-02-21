@@ -2,7 +2,6 @@ import { parse as qsParse, stringify as qsStringify } from 'qs';
 import { omitBy } from 'remeda';
 import { z } from 'zod';
 import { appEnums } from '~/utils/enums';
-import { keys } from '~/utils/object';
 import { boolean, integer, integerList } from '~/utils/zschema';
 
 export const urlToQueryString = (url: string) => url.split('?')[1] || '';
@@ -31,7 +30,6 @@ export const assembleUrl = (
 
 export type QpSchema = z.infer<typeof qpSchema>;
 export type QpParsed = z.infer<typeof parsedQpSchema>;
-export type TokenType = keyof z.infer<typeof tokenSchema>;
 
 // transforms query param string values into proper types
 export const qpSchema = z.object({
@@ -101,37 +99,3 @@ export const parsedQpSchema = z.object({
 });
 
 export const defaultQps: QpParsed = qpSchema.parse({});
-
-/*
-  adding a new token?
-  - update data/movie-search-conditions.ts with the proper prisma logic
-  - update api/get-tokens.ts so they'll display
-*/
-const tokenSchema = qpSchema.pick({
-  actor: true,
-  budget: true,
-  budgetGte: true,
-  budgetLte: true,
-  cinematographer: true,
-  director: true,
-  genre: true,
-  host: true,
-  keyword: true,
-  movie: true,
-  oscarsCategoriesNom: true,
-  oscarsCategoriesWon: true,
-  producer: true,
-  revenue: true,
-  revenueGte: true,
-  revenueLte: true,
-  runtime: true,
-  runtimeGte: true,
-  runtimeLte: true,
-  streamer: true,
-  writer: true,
-  year: true,
-  yearGte: true,
-  yearLte: true,
-});
-
-export const tokenKeys = keys(tokenSchema.shape);

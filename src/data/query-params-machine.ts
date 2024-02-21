@@ -4,15 +4,13 @@ import { useMemo } from 'react';
 import { StateFrom, assign, createMachine, fromPromise, raise } from 'xstate';
 import { trpcVanilla } from '~/trpc/client';
 import { ApiResponses } from '~/trpc/router';
-import { type AppEnums } from '~/utils/enums';
+import { appEnums, type AppEnums } from '~/utils/enums';
 import { useUrlChange } from '~/utils/use-url-change';
 import {
   QpParsed,
   QpSchema,
-  TokenType,
   assembleUrl,
   qpSchema,
-  tokenKeys,
   urlToParsedParams,
   urlToQueryString,
 } from './query-params';
@@ -37,14 +35,14 @@ type Context = {
 
 type Event =
   | { type: 'CLEAR_ALL_TOKENS' }
-  | { type: 'CLEAR_BY_TOKEN_TYPE'; tokenType: TokenType }
+  | { type: 'CLEAR_BY_TOKEN_TYPE'; tokenType: AppEnums['token'] }
   | { type: 'GET_NEXT_PAGE' }
   | { type: 'SORT'; field: AppEnums['sort'] }
   | { type: 'TOGGLE_SEARCH_MODE' }
   | { type: 'TOGGLE_SORT_ORDER' }
-  | { type: 'TOGGLE_TOKEN'; tokenType: TokenType; tokenId: number }
-  | { type: 'REPLACE_TOKEN'; tokenType: TokenType; tokenId: number }
-  | { type: 'REMOVE_TOKEN'; tokenType: TokenType; tokenId: number }
+  | { type: 'TOGGLE_TOKEN'; tokenType: AppEnums['token']; tokenId: number }
+  | { type: 'REPLACE_TOKEN'; tokenType: AppEnums['token']; tokenId: number }
+  | { type: 'REMOVE_TOKEN'; tokenType: AppEnums['token']; tokenId: number }
   | { type: 'UPDATE_FETCH_PARAMS'; params: object }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
@@ -129,7 +127,7 @@ export const machine = createMachine({
         },
         CLEAR_ALL_TOKENS: {
           actions: ({ context }) => {
-            const cleared = tokenKeys.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
+            const cleared = appEnums.token.values.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
             updateUrl(context, cleared);
           },
         },
@@ -262,7 +260,7 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
   clearTokens: () => {
     send({ type: 'CLEAR_ALL_TOKENS' });
   },
-  clearTokenType: (tokenType: TokenType) => {
+  clearTokenType: (tokenType: AppEnums['token']) => {
     send({ type: 'CLEAR_BY_TOKEN_TYPE', tokenType });
   },
   nextPage: () => {
@@ -271,10 +269,10 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
   },
-  removeToken: (tokenType: TokenType, tokenId: number) => {
+  removeToken: (tokenType: AppEnums['token'], tokenId: number) => {
     send({ type: 'REMOVE_TOKEN', tokenType, tokenId });
   },
-  replaceToken: (tokenType: TokenType, tokenId: number) => {
+  replaceToken: (tokenType: AppEnums['token'], tokenId: number) => {
     send({ type: 'REPLACE_TOKEN', tokenType, tokenId });
   },
   sort: (field: AppEnums['sort']) => {
@@ -286,7 +284,7 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
   toggleSortOrder: () => {
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
-  toggleToken: (tokenType: TokenType, tokenId: number) => {
+  toggleToken: (tokenType: AppEnums['token'], tokenId: number) => {
     send({ type: 'TOGGLE_TOKEN', tokenType, tokenId });
   },
   updateFetchParams: (params: FetchParams<T>) => {

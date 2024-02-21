@@ -2,9 +2,8 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
-import { TokenType } from '~/data/query-params';
-import { Token } from '~/data/tokens';
 import { trpc } from '~/trpc/client';
+import { AppEnums } from '~/utils/enums';
 import { titleCase } from '~/utils/format';
 import { keys } from '~/utils/object';
 import { cn } from '~/utils/style';
@@ -18,9 +17,9 @@ type MovieFiltersDialogProps = {
   ranges: InitialState;
   oscarsCategoriesNom: number[];
   oscarsCategoriesWon: number[];
-  clearTokenType: (tokenType: TokenType) => void;
-  replaceToken: (tokenType: TokenType, id: number) => void;
-  toggleToken: (tokenType: TokenType, id: number) => void;
+  clearTokenType: (tokenType: AppEnums['token']) => void;
+  replaceToken: (tokenType: AppEnums['token'], id: number) => void;
+  toggleToken: (tokenType: AppEnums['token'], id: number) => void;
 };
 
 type InitialState = typeof initialState;
@@ -33,7 +32,7 @@ const initialState = {
   runtimeLte: '',
   yearGte: '',
   yearLte: '',
-} satisfies Partial<Record<Token['type'], string>>;
+} satisfies Partial<Record<AppEnums['token'], string>>;
 
 type EventParams = { name: keyof InitialState; value: string };
 

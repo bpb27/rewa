@@ -1,4 +1,4 @@
-import { TokenType } from './query-params';
+import { AppEnums } from '~/utils/enums';
 
 export const crewJobs = {
   director: [8],
@@ -10,8 +10,8 @@ export const crewJobs = {
 export const relevantCrewIds = Object.values(crewJobs).flat();
 
 export const crewIdToJob = Object.entries(crewJobs).reduce((hash, [key, ids]) => {
-  return ids.reduce((acc, id) => ({ ...acc, [id]: key as TokenType }), hash);
-}, {} as Record<number, TokenType>);
+  return ids.reduce((acc, id) => ({ ...acc, [id]: key as AppEnums['token'] }), hash);
+}, {} as Record<number, AppEnums['token']>);
 
 export const crewToOscarCategory = {
   director: [8],

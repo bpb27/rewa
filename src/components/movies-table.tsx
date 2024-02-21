@@ -3,7 +3,6 @@ import { useCallback, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
-import { TokenType } from '~/data/query-params';
 import { streamerShortName } from '~/data/streamers';
 import { AppEnums } from '~/utils/enums';
 import { capitalize, formatRuntime, moneyShort } from '~/utils/format';
@@ -19,7 +18,7 @@ type MoviesTableProps = {
   mode: AppEnums['movieMode'];
   movies: MoviesPageMovie[];
   onSortClick: (sort: AppEnums['sort']) => void;
-  onTokenClick: (tokenType: TokenType, tokenId: number) => void;
+  onTokenClick: (tokenType: AppEnums['token'], tokenId: number) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
   onMovieTitleClick: (id: number) => void;
 };
@@ -220,16 +219,17 @@ export const MoviesTable = ({
   );
 };
 
+// TODO: cast in API instead
 const CrewPopover = ({
   items,
   onClick,
 }: {
   items: { id: number; name: string; job: string }[];
-  onClick: (tokenType: TokenType, tokenId: number) => void;
+  onClick: (tokenType: AppEnums['token'], tokenId: number) => void;
 }) => (
   <Crate column>
     {smartSort(items, i => i.job).map(c => (
-      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job as TokenType, c.id)}>
+      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job as AppEnums['token'], c.id)}>
         <b>{capitalize(c.job)}:</b> {c.name}
       </Text>
     ))}
