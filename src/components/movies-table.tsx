@@ -154,7 +154,7 @@ export const MoviesTable = ({
                 {m.runtime.name}
               </Text>
             </Table.Data>
-            {showEbert && m.ebert && (
+            {showEbert && (
               <Table.Data>
                 <StarRating value={m.ebert?.rating} />
               </Table.Data>
