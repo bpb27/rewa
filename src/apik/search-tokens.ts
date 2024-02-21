@@ -27,8 +27,8 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
     kyselyDb
       .selectFrom('movies')
       .select(['id', 'title as name', 'release_date'])
-      .where(movieMode)
       .where(sql.raw('lower(title)'), 'like', search)
+      .where(movieMode)
       .orderBy(
         eb => eb.case().when(sql.raw('lower(title)'), '=', params.search).then(0).else(1).end(),
         'asc'
@@ -36,23 +36,34 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .orderBy('release_date desc')
       .limit(3)
       .execute(),
-    // TODO: movie mode (won't work as is, needs movies table)
     kyselyDb
-      .selectFrom('actors')
-      .leftJoin('actors_on_oscars as jt', 'jt.actor_id', 'actors.id')
-      .select(['actors.id', 'actors.name', eb => eb.fn.count('jt.actor_id').as('count')])
-      .where(sql.raw('lower(name)'), 'like', search)
+      .selectFrom('actors_on_movies')
+      .innerJoin('actors', 'actors.id', 'actors_on_movies.actor_id')
+      .innerJoin('movies', 'movies.id', 'actors_on_movies.movie_id')
+      .select([
+        'actors.id',
+        'actors.name',
+        eb => eb.fn.count('actors_on_movies.actor_id').as('count'),
+      ])
+      .where(sql.raw('lower(actors.name)'), 'like', search)
+      .where(movieMode)
       .groupBy('actors.id')
       .orderBy('count desc')
       .limit(3)
       .execute(),
-    // TODO: movie mode (won't work as is, needs movies table)
     kyselyDb
-      .selectFrom('crew')
-      .innerJoin('crew_on_movies as jt', 'jt.crew_id', 'crew.id')
-      .select(['crew.id', 'crew.name', 'jt.job_id', eb => eb.fn.count('jt.crew_id').as('count')])
-      .where('jt.job_id', 'in', relevantCrewIds)
-      .where(sql.raw('lower(name)'), 'like', search)
+      .selectFrom('crew_on_movies')
+      .innerJoin('crew', 'crew.id', 'crew_on_movies.crew_id')
+      .innerJoin('movies', 'movies.id', 'crew_on_movies.movie_id')
+      .select([
+        'crew.id',
+        'crew.name',
+        'crew_on_movies.job_id',
+        eb => eb.fn.count('crew_on_movies.crew_id').as('count'),
+      ])
+      .where('crew_on_movies.job_id', 'in', relevantCrewIds)
+      .where(sql.raw('lower(crew.name)'), 'like', search)
+      .where(movieMode)
       .groupBy('crew.id')
       .orderBy('count desc')
       .limit(3)
@@ -61,7 +72,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('hosts')
       .innerJoin('hosts_on_episodes as jt', 'jt.host_id', 'hosts.id')
       .select(['hosts.id', 'hosts.name', eb => eb.fn.count('jt.episode_id').as('count')])
-      .where(sql.raw('lower(name)'), 'like', search)
+      .where(sql.raw('lower(hosts.name)'), 'like', search)
       .groupBy('hosts.id')
       .orderBy('count desc')
       .limit(3)
@@ -70,7 +81,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('keywords')
       .innerJoin('keywords_on_movies as jt', 'jt.keyword_id', 'keywords.id')
       .select(['keywords.id', 'keywords.name', eb => eb.fn.count('jt.movie_id').as('count')])
-      .where(sql.raw('lower(name)'), 'like', search)
+      .where(sql.raw('lower(keywords.name)'), 'like', search)
       .groupBy('keywords.id')
       .orderBy('count desc')
       .limit(3)
@@ -79,7 +90,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('streamers')
       .select(['streamers.id', 'streamers.name'])
       .where('name', 'in', relevantStreamers)
-      .where(sql.raw('lower(name)'), 'like', search)
+      .where(sql.raw('lower(streamers.name)'), 'like', search)
       .limit(3)
       .execute(),
   ]);
@@ -95,8 +106,8 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
     ...streamers.map(t => tokenize('streamer', t)),
   ];
 
-  if (isInteger(search) && pickYear(search)) {
-    const year = pickYear(search);
+  if (isInteger(params.search) && pickYear(params.search)) {
+    const year = pickYear(params.search);
     results.push(tokenizeYear(year));
     results.push(tokenizeYearGte(year));
     results.push(tokenizeYearLte(year));

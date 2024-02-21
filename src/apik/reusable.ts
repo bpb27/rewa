@@ -1,4 +1,4 @@
-import { expressionBuilder } from 'kysely';
+import { expressionBuilder, sql } from 'kysely';
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
@@ -139,6 +139,11 @@ export const reusableSQL = {
     moviesWithYear: (year: string | number, comp: 'like' | '>=' | '<=') => {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
       return eb('movies.release_date', comp, comp == 'like' ? `${year}%` : String(year));
+    },
+    // TODO: make this more typesafe - unclear if it works
+    textMatch: (column: string, search: string) => {
+      const eb = expressionBuilder<KyselyDB, any>();
+      return eb(sql.raw(`lower(${column})`), 'like', `%${search.toLowerCase()}%`);
     },
   },
   select: {
