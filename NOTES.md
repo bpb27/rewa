@@ -1,5 +1,7 @@
 # feature shit
 
+- consider further result filtering when sort is ebert or oscars or budget or box office
+
 - Fix the add movie script to account for new table
 
 - about w/ a google form or link to github to open an issue

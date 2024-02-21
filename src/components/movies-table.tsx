@@ -3,10 +3,10 @@ import { useCallback, type PropsWithChildren } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
+import { TokenType } from '~/data/query-params';
 import { streamerShortName } from '~/data/streamers';
-import { type Token } from '~/data/tokens';
 import { AppEnums } from '~/utils/enums';
-import { capitalize } from '~/utils/format';
+import { capitalize, formatRuntime, moneyShort } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { MoviePoster, PersonPoster } from './images';
 import { Crate } from './ui/box';
@@ -19,7 +19,7 @@ type MoviesTableProps = {
   mode: AppEnums['movieMode'];
   movies: MoviesPageMovie[];
   onSortClick: (sort: AppEnums['sort']) => void;
-  onTokenClick: (token: Token) => void;
+  onTokenClick: (tokenType: TokenType, tokenId: number) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
   onMovieTitleClick: (id: number) => void;
 };
@@ -74,20 +74,20 @@ export const MoviesTable = ({
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick(m.year)}>
-                {m.year.name}
+              <Text noWrap onClick={() => onTokenClick('year', m.year)}>
+                {m.year}
               </Text>
             </Table.Data>
             <Table.Data>
               <Crate column>
                 {m.crew
-                  .filter(c => c.type === 'director')
+                  .filter(c => c.job === 'director')
                   .map(d => (
-                    <Text noWrap key={d.id} onClick={() => onTokenClick(d)}>
+                    <Text noWrap key={d.id} onClick={() => onTokenClick('director', d.id)}>
                       {d.name}
                     </Text>
                   ))}
-                <PopoverMenu content={<CrewPopover tokens={m.crew} onClick={onTokenClick} />}>
+                <PopoverMenu content={<CrewPopover items={m.crew} onClick={onTokenClick} />}>
                   <Text secondary>Show crew</Text>
                 </PopoverMenu>
               </Crate>
@@ -96,7 +96,7 @@ export const MoviesTable = ({
               <Crate column>
                 {m.actors.map(a => (
                   <ImageTooltip key={a.id} path={a.image} name={a.name}>
-                    <Text noWrap onClick={() => onTokenClick(a)} tag="span">
+                    <Text noWrap onClick={() => onTokenClick('actor', a.id)} tag="span">
                       {a.name}
                     </Text>
                   </ImageTooltip>
@@ -123,13 +123,18 @@ export const MoviesTable = ({
               <Table.Data>
                 <Crate column>
                   {m.episode.hosts.slice(0, 3).map(h => (
-                    <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
+                    <Text noWrap key={h.id} onClick={() => onTokenClick('host', h.id)}>
                       {h.name}
                     </Text>
                   ))}
                   {m.episode.hosts.length > 3 && (
                     <PopoverMenu
-                      content={<StandardPopover tokens={m.episode.hosts} onClick={onTokenClick} />}
+                      content={
+                        <StandardPopover
+                          items={m.episode.hosts}
+                          onClick={id => onTokenClick('host', id)}
+                        />
+                      }
                     >
                       <Text noWrap secondary>
                         {m.episode.hosts.length - 3} more
@@ -140,18 +145,18 @@ export const MoviesTable = ({
               </Table.Data>
             )}
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick(m.budget)}>
-                {m.budget.name}
+              <Text noWrap onClick={() => onTokenClick('budget', m.budget)}>
+                {moneyShort(m.budget)}
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick(m.revenue)}>
-                {m.revenue.name}
+              <Text noWrap onClick={() => onTokenClick('revenue', m.revenue)}>
+                {moneyShort(m.revenue * 1000)}
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick(m.runtime)}>
-                {m.runtime.name}
+              <Text noWrap onClick={() => onTokenClick('runtime', m.runtime)}>
+                {formatRuntime(m.runtime)}
               </Text>
             </Table.Data>
             {showEbert && (
@@ -161,14 +166,19 @@ export const MoviesTable = ({
             )}
             <Table.Data>
               <Crate column>
-                {m.keywords.slice(0, 3).map(h => (
-                  <Text noWrap key={h.id} onClick={() => onTokenClick(h)}>
-                    {h.name}
+                {m.keywords.slice(0, 3).map(k => (
+                  <Text noWrap key={k.id} onClick={() => onTokenClick('keyword', k.id)}>
+                    {k.name}
                   </Text>
                 ))}
                 {m.keywords.length > 3 && (
                   <PopoverMenu
-                    content={<StandardPopover tokens={m.keywords} onClick={onTokenClick} />}
+                    content={
+                      <StandardPopover
+                        items={m.keywords}
+                        onClick={id => onTokenClick('keyword', id)}
+                      />
+                    }
                   >
                     <Text noWrap secondary>
                       {m.keywords.length - 3} more
@@ -180,7 +190,7 @@ export const MoviesTable = ({
             <Table.Data>
               <Crate column>
                 {m.streamers.map(s => (
-                  <Text noWrap key={s.id} onClick={() => onTokenClick(s)}>
+                  <Text noWrap key={s.id} onClick={() => onTokenClick('streamer', s.id)}>
                     {streamerShortName(s.name)}
                   </Text>
                 ))}
@@ -210,25 +220,32 @@ export const MoviesTable = ({
   );
 };
 
-type PopoverProps = {
-  tokens: Token[];
-  onClick: MoviesTableProps['onTokenClick'];
-};
-
-const CrewPopover = ({ tokens, onClick }: PopoverProps) => (
+const CrewPopover = ({
+  items,
+  onClick,
+}: {
+  items: { id: number; name: string; job: string }[];
+  onClick: (tokenType: TokenType, tokenId: number) => void;
+}) => (
   <Crate column>
-    {tokens.map(c => (
-      <Text noWrap key={c.id + c.type} onClick={() => onClick(c)}>
-        <b>{capitalize(c.type)}:</b> {c.name}
+    {smartSort(items, i => i.job).map(c => (
+      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job as TokenType, c.id)}>
+        <b>{capitalize(c.job)}:</b> {c.name}
       </Text>
     ))}
   </Crate>
 );
 
-const StandardPopover = ({ tokens, onClick }: PopoverProps) => (
+const StandardPopover = ({
+  items,
+  onClick,
+}: {
+  items: { id: number; name: string }[];
+  onClick: (id: number) => void;
+}) => (
   <Crate column>
-    {smartSort(tokens, t => t.name).map(t => (
-      <Text noWrap key={t.id} onClick={() => onClick(t)}>
+    {smartSort(items, t => t.name).map(t => (
+      <Text noWrap key={t.id} onClick={() => onClick(t.id)}>
         {t.name}
       </Text>
     ))}

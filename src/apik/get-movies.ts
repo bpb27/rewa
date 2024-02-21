@@ -1,13 +1,7 @@
 import { sql } from 'kysely';
+import { crewIdToJob } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
-import {
-  tokenize,
-  tokenizeBudget,
-  tokenizeCrew,
-  tokenizeRevenue,
-  tokenizeRuntime,
-  tokenizeYear,
-} from '~/data/tokens';
+import { getYear } from '~/utils/format';
 import { kyselyDb } from '../../prisma/kysley';
 import { allMovieFilters, reusableSQL } from './reusable';
 
@@ -24,10 +18,10 @@ export const getMovies = async (params: QpSchema) => {
     .offset(offset)
     .select([
       'movies.id',
-      'movies.title as name',
+      'movies.title',
       'movies.budget',
       'movies.imdb_id',
-      'movies.overview as description',
+      'movies.overview',
       'movies.poster_path',
       'movies.release_date',
       sql<number>`round(movies.revenue, 0)`.as('revenue'),
@@ -91,31 +85,26 @@ export const getMovies = async (params: QpSchema) => {
     .executeTakeFirst();
 
   const results = response.map(movie => ({
-    actors: movie.actors.map(t => ({ ...tokenize('actor', t), image: t.profile_path })),
-    budget: tokenizeBudget(movie.budget),
-    crew: movie.crew.map(t => ({ ...tokenizeCrew(t), image: t.profile_path })),
+    actors: movie.actors,
+    budget: movie.budget,
+    crew: movie.crew.map(c => ({ ...c, job: crewIdToJob[c.job_id] })),
     ebert: movie.ebert_review,
-    episode: movie.episode
-      ? {
-          spotifyUrl: movie.episode.spotify_url,
-          hosts: movie.episode.hosts.map(t => tokenize('host', t)),
-        }
-      : null,
+    episode: movie.episode,
     id: movie.id,
     image: movie.poster_path,
     imdbId: movie.imdb_id,
-    keywords: movie.keywords.map(t => tokenize('keyword', t)),
-    name: movie.name,
+    keywords: movie.keywords,
+    name: movie.title,
     oscars: movie.oscars,
     totalOscarNominations: movie.total_oscar_nominations ?? 0,
     totalOscarWins: movie.total_oscar_wins ?? 0,
-    description: movie.description,
+    description: movie.overview,
     releaseDate: movie.release_date,
-    revenue: tokenizeRevenue(movie.revenue),
-    runtime: tokenizeRuntime(movie.runtime),
-    streamers: movie.streamers.map(t => tokenize('streamer', t)),
+    revenue: movie.revenue,
+    runtime: movie.runtime,
+    streamers: movie.streamers,
     tagline: movie.tagline,
-    year: tokenizeYear(movie.release_date),
+    year: Number(getYear(movie.release_date)),
   }));
 
   const total = count?.total ? Number(count.total) : 0;

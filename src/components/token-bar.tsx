@@ -1,3 +1,4 @@
+import { TokenType } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 import { AppEnums } from '~/utils/enums';
 import { Button } from './ui/button';
@@ -7,7 +8,7 @@ type TokenBarProps = {
   clearTokens: () => void;
   searchMode: AppEnums['searchMode'];
   toggleSearchMode: () => void;
-  removeToken: (token: Token) => void;
+  removeToken: (tokenType: TokenType, id: number) => void;
   tokens: Token[];
 };
 
@@ -36,7 +37,7 @@ export const TokenBar = ({
         <Button
           className="flex gap-1"
           key={`${token.id}-${token.type}`}
-          onClick={() => removeToken(token)}
+          onClick={() => removeToken(token.type, token.id)}
           variant="token"
         >
           {icon(token.type)}

@@ -37,14 +37,14 @@ type Context = {
 
 type Event =
   | { type: 'CLEAR_ALL_TOKENS' }
-  | { type: 'CLEAR_BY_TOKEN_TYPE'; name: TokenType }
+  | { type: 'CLEAR_BY_TOKEN_TYPE'; tokenType: TokenType }
   | { type: 'GET_NEXT_PAGE' }
   | { type: 'SORT'; field: AppEnums['sort'] }
   | { type: 'TOGGLE_SEARCH_MODE' }
   | { type: 'TOGGLE_SORT_ORDER' }
-  | { type: 'TOGGLE_TOKEN'; name: TokenType; value: number }
-  | { type: 'REPLACE_TOKEN'; name: TokenType; value: number }
-  | { type: 'REMOVE_TOKEN'; name: TokenType; value: number }
+  | { type: 'TOGGLE_TOKEN'; tokenType: TokenType; tokenId: number }
+  | { type: 'REPLACE_TOKEN'; tokenType: TokenType; tokenId: number }
+  | { type: 'REMOVE_TOKEN'; tokenType: TokenType; tokenId: number }
   | { type: 'UPDATE_FETCH_PARAMS'; params: object }
   | { type: 'URL_HAS_CHANGED'; url: string };
 
@@ -135,8 +135,7 @@ export const machine = createMachine({
         },
         CLEAR_BY_TOKEN_TYPE: {
           actions: ({ context, event }) => {
-            const { name } = event;
-            updateUrl(context, { [name]: [] });
+            updateUrl(context, { [event.tokenType]: [] });
           },
         },
         GET_NEXT_PAGE: {
@@ -148,16 +147,14 @@ export const machine = createMachine({
         },
         REPLACE_TOKEN: {
           actions: ({ context, event }) => {
-            const { name, value } = event;
-            updateUrl(context, { [name]: [value] });
+            updateUrl(context, { [event.tokenType]: [event.tokenId] });
           },
         },
         REMOVE_TOKEN: {
           actions: ({ context, event }) => {
-            const { name, value } = event;
-            const current = context.queryParams[name];
-            const updated = current.filter(v => v !== value);
-            updateUrl(context, { [name]: updated });
+            const current = context.queryParams[event.tokenType];
+            const updated = current.filter(id => id !== event.tokenId);
+            updateUrl(context, { [event.tokenType]: updated });
           },
         },
         SORT: {
@@ -185,12 +182,11 @@ export const machine = createMachine({
         },
         TOGGLE_TOKEN: {
           actions: ({ context, event }) => {
-            const { name, value } = event;
-            const current = context.queryParams[name];
-            const updated = current.includes(value)
-              ? current.filter(v => v !== value)
-              : [...current, value];
-            updateUrl(context, { [name]: updated.sort() });
+            const current = context.queryParams[event.tokenType];
+            const updated = current.includes(event.tokenId)
+              ? current.filter(id => id !== event.tokenId)
+              : [...current, event.tokenId];
+            updateUrl(context, { [event.tokenType]: updated.sort() });
           },
         },
         UPDATE_FETCH_PARAMS: {
@@ -267,7 +263,7 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
     send({ type: 'CLEAR_ALL_TOKENS' });
   },
   clearTokenType: (tokenType: TokenType) => {
-    send({ type: 'CLEAR_BY_TOKEN_TYPE', name: tokenType });
+    send({ type: 'CLEAR_BY_TOKEN_TYPE', tokenType });
   },
   nextPage: () => {
     send({ type: 'GET_NEXT_PAGE' });
@@ -275,11 +271,11 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
   onUrlUpdate: (url: string) => {
     send({ type: 'URL_HAS_CHANGED', url });
   },
-  removeToken: (token: Omit<Token, 'name'>) => {
-    send({ type: 'REMOVE_TOKEN', name: token.type, value: token.id });
+  removeToken: (tokenType: TokenType, tokenId: number) => {
+    send({ type: 'REMOVE_TOKEN', tokenType, tokenId });
   },
-  replaceToken: (token: Omit<Token, 'name'>) => {
-    send({ type: 'REPLACE_TOKEN', name: token.type, value: token.id });
+  replaceToken: (tokenType: TokenType, tokenId: number) => {
+    send({ type: 'REPLACE_TOKEN', tokenType, tokenId });
   },
   sort: (field: AppEnums['sort']) => {
     send({ type: 'SORT', field });
@@ -290,8 +286,8 @@ export const machineActions = <T extends Variant>(send: (event: Event) => void) 
   toggleSortOrder: () => {
     send({ type: 'TOGGLE_SORT_ORDER' });
   },
-  toggleToken: (token: Omit<Token, 'name'>) => {
-    send({ type: 'TOGGLE_TOKEN', name: token.type, value: token.id });
+  toggleToken: (tokenType: TokenType, tokenId: number) => {
+    send({ type: 'TOGGLE_TOKEN', tokenType, tokenId });
   },
   updateFetchParams: (params: FetchParams<T>) => {
     send({ type: 'UPDATE_FETCH_PARAMS', params });

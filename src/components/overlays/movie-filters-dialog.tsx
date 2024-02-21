@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
+import { TokenType } from '~/data/query-params';
 import { Token } from '~/data/tokens';
 import { trpc } from '~/trpc/client';
 import { titleCase } from '~/utils/format';
@@ -17,9 +18,9 @@ type MovieFiltersDialogProps = {
   ranges: InitialState;
   oscarsCategoriesNom: number[];
   oscarsCategoriesWon: number[];
-  clearTokenType: (tokenType: Token['type']) => void;
-  replaceToken: (token: Omit<Token, 'name'>) => void;
-  toggleToken: (token: Omit<Token, 'name'>) => void;
+  clearTokenType: (tokenType: TokenType) => void;
+  replaceToken: (tokenType: TokenType, id: number) => void;
+  toggleToken: (tokenType: TokenType, id: number) => void;
 };
 
 type InitialState = typeof initialState;
@@ -74,7 +75,7 @@ export const MovieFiltersDialog = ({
         clearTokenType(name);
       } else {
         if (name.includes('year') && !isYear(value)) return;
-        replaceToken({ type: name, id: Number(value) });
+        replaceToken(name, Number(value));
       }
     },
     [clearTokenType, replaceToken]
@@ -112,13 +113,13 @@ export const MovieFiltersDialog = ({
                   checked={oscarsCategoriesNom.includes(id)}
                   id={id}
                   label=""
-                  onCheck={() => toggleToken({ type: 'oscarsCategoriesNom', id })}
+                  onCheck={() => toggleToken('oscarsCategoriesNom', id)}
                 />
                 <Checkbox
                   checked={oscarsCategoriesWon.includes(id)}
                   id={id}
                   label={titleCase(name)}
-                  onCheck={() => toggleToken({ type: 'oscarsCategoriesWon', id })}
+                  onCheck={() => toggleToken('oscarsCategoriesWon', id)}
                 />
               </Crate>
             ))}

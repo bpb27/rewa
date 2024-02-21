@@ -3,7 +3,7 @@ import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { DialogOverlay } from '~/components/ui/dialog';
 import { Icon } from '~/components/ui/icons';
-import { type Token } from '~/data/tokens';
+import { TokenType } from '~/data/query-params';
 import { trpc } from '~/trpc/client';
 import { type AppEnums } from '~/utils/enums';
 import { capitalize } from '~/utils/format';
@@ -11,7 +11,7 @@ import { useDebounce } from '~/utils/use-debounce';
 
 type SearchBarProps = {
   filter: AppEnums['movieMode'];
-  onSelect: (selection: Token) => void;
+  onSelect: (tokenType: TokenType, id: number) => void;
 };
 
 export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
@@ -79,7 +79,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   className="flex text-left hover:underline"
                   key={[item.id, item.type].join('-')}
                   onClick={() => {
-                    onSelect(item);
+                    onSelect(item.type, item.id);
                     setSearch('');
                   }}
                 >

@@ -153,7 +153,7 @@ export const reusableSQL = {
         eb
           .selectFrom('actors_on_movies as jt')
           .innerJoin('actors', 'actors.id', 'jt.actor_id')
-          .select(['actors.id', 'actors.name', 'actors.profile_path'])
+          .select(['actors.id', 'actors.name', 'actors.profile_path as image'])
           .whereRef('jt.movie_id', '=', 'movies.id')
           .orderBy('jt.credit_id asc')
           .limit(limit)
@@ -165,7 +165,7 @@ export const reusableSQL = {
         eb
           .selectFrom('crew_on_movies as jt')
           .innerJoin('crew', 'crew.id', 'jt.crew_id')
-          .select(['crew.id', 'crew.name', 'crew.profile_path', 'jt.job_id'])
+          .select(['crew.id', 'crew.name', 'crew.profile_path as image', 'jt.job_id'])
           .where('jt.job_id', 'in', Object.values(crewJobs).flat())
           .whereRef('jt.movie_id', '=', 'movies.id')
       ).as('crew');
@@ -185,8 +185,8 @@ export const reusableSQL = {
         eb
           .selectFrom('episodes as e')
           .select([
-            'e.spotify_url',
-            'e.episode_order',
+            'e.spotify_url as spotifyUrl',
+            'e.episode_order as episodeOrder',
             eb =>
               jsonArrayFrom(
                 eb
@@ -194,6 +194,7 @@ export const reusableSQL = {
                   .innerJoin('hosts', 'hosts.id', 'jt.host_id')
                   .select(['hosts.id', 'hosts.name'])
                   .whereRef('e.id', '=', 'jt.episode_id')
+                  .orderBy('hosts.name asc')
               ).as('hosts'),
           ])
           .whereRef('e.movie_id', '=', 'movies.id')
@@ -235,6 +236,7 @@ export const reusableSQL = {
           .innerJoin('keywords', 'keywords.id', 'jt.keyword_id')
           .select(['keywords.id', 'keywords.name'])
           .whereRef('jt.movie_id', '=', 'movies.id')
+          .orderBy('keywords.name asc')
       ).as('keywords');
     },
     movieStreamers: () => {
@@ -245,6 +247,7 @@ export const reusableSQL = {
           .innerJoin('streamers', 'streamers.id', 'jt.streamer_id')
           .select(['streamers.id', 'streamers.name'])
           .whereRef('jt.movie_id', '=', 'movies.id')
+          .orderBy('streamers.name asc')
       ).as('streamers');
     },
     movieTotalOscarNominations: () => {

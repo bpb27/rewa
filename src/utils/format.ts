@@ -27,3 +27,5 @@ export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(ca
 export const getYear = (d: string) => {
   return d.length === 4 ? d : d.split('-')[0];
 };
+
+export const formatRuntime = (mins: number) => `${mins} mins`;
