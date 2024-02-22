@@ -80,7 +80,7 @@ export const getMovies = async (params: QpSchema) => {
 
   const count = await kyselyDb
     .selectFrom('movies')
-    .select(eb => eb.fn.count('movies.id').as('total'))
+    .select(eb => eb.fn.count<number>('movies.id').as('total'))
     .where(allMovieFilters(params))
     .executeTakeFirst();
 
@@ -107,7 +107,7 @@ export const getMovies = async (params: QpSchema) => {
     year: Number(getYear(movie.release_date)),
   }));
 
-  const total = count?.total ? Number(count.total) : 0;
+  const total = count?.total ?? 0;
 
   return {
     total,
