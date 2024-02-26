@@ -1,5 +1,7 @@
 # feature shit
 
+- trigger api even w/ preloaded to wake up lambas
+
 - consider further result filtering when sort is ebert or oscars or budget or box office
 
 - Fix the add movie script to account for new table

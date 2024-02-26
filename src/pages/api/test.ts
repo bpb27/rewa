@@ -5,7 +5,7 @@ import { defaultQps } from '~/data/query-params';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const response = await getLeaderboard({
     field: 'actor',
-    subField: 'mostNoms',
+    subField: 'mostFilms',
     params: { ...defaultQps, movieMode: 'oscar' },
   });
   res.status(200).json(response);

@@ -14,6 +14,29 @@ export const getLeaderboardParams = z.object({
   params: parsedQpSchema,
 });
 
+type GetLeaderboardResponse = {
+  id: number;
+  image: string | null;
+  name: string;
+  total: number;
+  movies: {
+    character?: string | null;
+    id: number;
+    image: string;
+    oscarCategory?: string;
+    oscarWon?: number;
+    releaseDate: string;
+    title: string;
+  }[];
+}[];
+
+const addPagination = (response: GetLeaderboardResponse) => ({
+  hasNext: false,
+  page: 0,
+  results: response.filter(p => p.total),
+  total: response.filter(p => p.total).length,
+});
+
 export const getLeaderboard = async ({
   field,
   subField,
@@ -21,12 +44,12 @@ export const getLeaderboard = async ({
 }: z.infer<typeof getLeaderboardParams>) => {
   if (field === 'actor') {
     return subField === 'mostFilms'
-      ? getTopActors(params)
-      : getTopOscarActors(params, subField === 'mostWins');
+      ? getTopActors(params).then(addPagination)
+      : getTopOscarActors(params, subField === 'mostWins').then(addPagination);
   } else {
     return subField === 'mostFilms'
-      ? getTopCrew(params, crewJobs[field])
-      : getTopOscarCrew(params, subField === 'mostWins', field);
+      ? getTopCrew(params, crewJobs[field]).then(addPagination)
+      : getTopOscarCrew(params, subField === 'mostWins', field).then(addPagination);
   }
 };
 
@@ -38,15 +61,23 @@ const getTopActors = (params: QpSchema) =>
     .select([
       'actors.id',
       'actors.name',
+      'actors.profile_path as image',
       eb => eb.fn.count<number>('actors_on_movies.actor_id').as('total'),
       eb =>
         jsonArrayFrom(
           eb
             .selectFrom('actors_on_movies as jt')
             .innerJoin('movies', 'movies.id', 'jt.movie_id')
-            .select(['movies.id', 'movies.title', 'jt.character'])
+            .select([
+              'movies.id',
+              'movies.title',
+              'movies.release_date as releaseDate',
+              'movies.poster_path as image',
+              'jt.character',
+            ])
             .where(allMovieFilters(params))
             .whereRef('jt.actor_id', '=', 'actors.id')
+            .groupBy('movies.id')
             .orderBy('movies.release_date asc')
         ).as('movies'),
     ])
@@ -64,13 +95,19 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
     .select([
       'crew.id',
       'crew.name',
+      'crew.profile_path as image',
       eb => eb.fn.count<number>('crew_on_movies.crew_id').as('total'),
       eb =>
         jsonArrayFrom(
           eb
             .selectFrom('crew_on_movies as jt')
             .innerJoin('movies', 'movies.id', 'jt.movie_id')
-            .select(['movies.id', 'movies.title'])
+            .select([
+              'movies.id',
+              'movies.title',
+              'movies.release_date as releaseDate',
+              'movies.poster_path as image',
+            ])
             .where('crew_on_movies.job_id', 'in', jobIds)
             .where(allMovieFilters(params))
             .whereRef('jt.crew_id', '=', 'crew.id')
@@ -94,6 +131,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
     .select([
       'actors.name',
       'actors.id',
+      'actors.profile_path as image',
       eb => {
         let total = eb.fn.count<number>('oscars_nominations.id');
         if (wins) {
@@ -112,8 +150,10 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
             .select([
               'movies.id',
               'movies.title',
-              'oscars_nominations.won',
-              'oscars_categories.name',
+              'movies.release_date as releaseDate',
+              'movies.poster_path as image',
+              'oscars_nominations.won as oscarWon',
+              'oscars_categories.name as oscarCategory',
               eb =>
                 eb
                   .selectFrom('actors_on_movies')
@@ -148,6 +188,7 @@ const getTopOscarCrew = (
     .select([
       'crew.name',
       'crew.id',
+      'crew.profile_path as image',
       eb => {
         let total = eb.fn.count<number>('oscars_nominations.id');
         if (wins) {
@@ -166,8 +207,10 @@ const getTopOscarCrew = (
             .select([
               'movies.id',
               'movies.title',
-              'oscars_nominations.won',
-              'oscars_categories.name',
+              'movies.release_date as releaseDate',
+              'movies.poster_path as image',
+              'oscars_nominations.won as oscarWon',
+              'oscars_categories.name as oscarCategory',
             ])
             .where('oscars_awards.category_id', 'in', crewToOscarCategory[field])
             .where(allMovieFilters(params))

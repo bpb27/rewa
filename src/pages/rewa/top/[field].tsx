@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import { getLeaderboard } from '~/api/get-leaderboard';
+import { getLeaderboard } from '~/apik/get-leaderboard';
 import { TopCategory } from '~/components/top-category';
 import { QpSchema, assembleUrl, defaultQps } from '~/data/query-params';
 import { AppEnums, appEnums } from '~/utils/enums';

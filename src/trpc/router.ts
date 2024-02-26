@@ -1,8 +1,8 @@
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { z } from 'zod';
-import { getLeaderboard, getLeaderboardParams } from '~/api/get-leaderboard';
 import { getOscarsByYear, getOscarsByYearParams } from '~/api/get-oscars-by-year';
 import { getPerson, getPersonParams } from '~/api/get-person';
+import { getLeaderboard, getLeaderboardParams } from '~/apik/get-leaderboard';
 import { getMovies } from '~/apik/get-movies';
 import { getOscarCategories } from '~/apik/get-oscar-categories';
 import { getTokens } from '~/apik/get-tokens';
