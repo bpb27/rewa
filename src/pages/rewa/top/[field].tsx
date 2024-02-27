@@ -23,14 +23,14 @@ export const getStaticProps = (async context => {
       subField,
       preloaded: {
         data: { ...leaderboard, tokens: [] },
-        url: assembleUrl(NAV.oscars.top[field], params),
+        url: assembleUrl(NAV.rewa.top[field], params),
       },
     },
   };
 }) satisfies GetStaticProps;
 
 // NB: need to pass a key to trigger component remounting when navigating across pages
-export default function TopActors({
+export default function Top({
   field,
   preloaded,
   subField,

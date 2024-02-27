@@ -30,7 +30,7 @@ export const getStaticProps = (async context => {
 }) satisfies GetStaticProps;
 
 // NB: need to pass a key to trigger component remounting when navigating across pages
-export default function TopActors({
+export default function Top({
   field,
   preloaded,
   subField,
