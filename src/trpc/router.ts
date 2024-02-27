@@ -1,10 +1,10 @@
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { z } from 'zod';
-import { getOscarsByYear, getOscarsByYearParams } from '~/api/get-oscars-by-year';
 import { getActorRole, getActorRoleParams } from '~/apik/get-actor-role';
 import { getLeaderboard, getLeaderboardParams } from '~/apik/get-leaderboard';
 import { getMovies } from '~/apik/get-movies';
 import { getOscarCategories } from '~/apik/get-oscar-categories';
+import { getOscarsByYear, getOscarsByYearParams } from '~/apik/get-oscars-by-year';
 import { getTokens } from '~/apik/get-tokens';
 import { searchTokens, searchTokensParams } from '~/apik/search-tokens';
 import { defaultQps, parsedQpSchema } from '~/data/query-params';

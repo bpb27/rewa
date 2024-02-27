@@ -20,7 +20,13 @@ export const formatDate = (d: string) => {
   return `${split[1]}/${split[2]}/${split[0]}`;
 };
 
-export const capitalize = (s: string) => s[0].toUpperCase() + s.toLowerCase().slice(1);
+export const capitalize = (s: string) => {
+  if (s[0] === '(') {
+    return '(' + s[1].toUpperCase() + s.toLowerCase().slice(2);
+  } else {
+    return s[0].toUpperCase() + s.toLowerCase().slice(1);
+  }
+};
 
 export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(capitalize).join(' ');
 

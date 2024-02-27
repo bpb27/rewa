@@ -82,7 +82,8 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
               <Crate my={2} px={2} column className="border-l-2 border-l-slate-600">
                 {smartSort(movie.oscars, a => a.category).map(a => (
                   <Text key={a.category + a.recipient}>
-                    {titleCase(a.category)} {a.won && '- Winner'}
+                    {titleCase(a.category)} {a.won && '- Winner'}{' '}
+                    {a.category.includes('actor') && `- ${a.recipient}`}
                   </Text>
                 ))}
               </Crate>

@@ -1,12 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getLeaderboard } from '~/apik/get-leaderboard';
-import { defaultQps } from '~/data/query-params';
+import { getOscarsByYear } from '~/apik/get-oscars-by-year';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const response = await getLeaderboard({
-    field: 'actor',
-    subField: 'mostFilms',
-    params: { ...defaultQps, movieMode: 'oscar' },
-  });
+  const response = await getOscarsByYear({ year: 1999 });
   res.status(200).json(response);
 }
