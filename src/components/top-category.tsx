@@ -24,7 +24,10 @@ type TopCategoryProps = {
   preloaded: { data: ApiResponses['getLeaderboard']; url: string };
 };
 
-type Selected = { movieId: number } | { personId: number } | { movieId: number; actorId: number };
+type Selected =
+  | { movieId: number }
+  | { movieId: number; actorId: number }
+  | ApiResponses['getLeaderboard']['results'][number];
 
 export const TopCategory = ({
   field,
@@ -106,7 +109,7 @@ export const TopCategory = ({
             <Text
               size="lg"
               className="ml-1 mt-2"
-              onClick={() => handleSelect({ personId: person.id })}
+              onClick={() => handleSelect(person)}
               flex={false}
               tag="span"
             >
@@ -146,14 +149,17 @@ export const TopCategory = ({
           onClose={() => select(undefined)}
         />
       )}
-      {selected && 'personId' in selected && (
+      {selected && 'movies' in selected && (
         <PersonCardSidebar
-          personId={selected.personId}
-          field={field}
-          subField={data.fetchParams.subField}
-          queryParams={data.allQueryParams}
+          person={selected}
           onClose={() => select(undefined)}
-          onSelectMovie={movieId => handleSelect({ actorId: selected.personId, movieId })}
+          onSelectMovie={movieId => {
+            if (field === 'actor') {
+              handleSelect({ actorId: selected.id, movieId });
+            } else {
+              handleSelect({ movieId });
+            }
+          }}
         />
       )}
     </Layout>

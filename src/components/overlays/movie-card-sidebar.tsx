@@ -1,6 +1,5 @@
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Sidebar } from '~/components/ui/sidebar';
-import { defaultQps } from '~/data/query-params';
 import { trpc } from '~/trpc/client';
 import { formatDate, titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
@@ -20,11 +19,10 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
   const movieMode = useMovieMode();
   const awards = useToggle('hiding', 'showing');
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
-  const { data: actor } = trpc.getPerson.useQuery(
-    { id: actorId!, field: 'actor', subField: 'mostFilms', params: defaultQps },
+  const { data: actor } = trpc.getActorRole.useQuery(
+    { actorId: actorId!, movieId },
     { enabled: !!actorId }
   );
-  const role = actor?.movies.find(m => m.id === movieId)?.character;
 
   if (!movie) return null;
   return (
@@ -34,12 +32,12 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
         <Spotlight {...movie} />
       </Crate>
       <Crate mb={5} column gap={2}>
-        {role && (
+        {actor && (
           <Crate column>
             <Text bold icon="Star">
               Role
             </Text>
-            <Text>{role}</Text>
+            <Text>{actor.character}</Text>
           </Crate>
         )}
         {movieMode === 'rewa' && movie.episode && (
