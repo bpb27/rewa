@@ -1,6 +1,11 @@
 import Database from 'better-sqlite3';
+import fs from 'fs';
 import { Kysely, ParseJSONResultsPlugin, SqliteDialect } from 'kysely';
+import path from 'path';
 import { type DB } from './generated/types';
+
+// needed so vercel includes sqlite file in the lambas
+const files = fs.readdirSync(path.join(process.cwd(), 'prisma'));
 
 const dialect = new SqliteDialect({
   database: new Database('./prisma/db.sqlite', {
