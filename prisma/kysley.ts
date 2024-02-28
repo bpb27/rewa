@@ -6,7 +6,6 @@ import { type DB } from './generated/types';
 
 // needed so vercel includes sqlite file in the lambas
 const _files = fs.readdirSync(path.join(process.cwd(), 'prisma'));
-// _files.forEach(f => console.log(f));
 
 const dialect = new SqliteDialect({
   database: new Database('./prisma/db.sqlite', {
@@ -19,6 +18,6 @@ export type KyselyDB = DB;
 
 export const kyselyDb = new Kysely<DB>({
   dialect,
-  log: ['query'],
+  // log: ['query'],
   plugins: [new ParseJSONResultsPlugin()],
 });
