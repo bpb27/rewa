@@ -1,11 +1,17 @@
-import { omit } from 'remeda';
+import { AppEnums } from '~/utils/enums';
 
 export const crewJobs = {
-  director: ['Director'],
-  producer: ['Producer'],
-  cinematographer: ['Cinematography', 'Director of Photography'],
-  writer: ['Screenplay', 'Writer'],
+  director: [8],
+  producer: [16],
+  cinematographer: [467, 18],
+  writer: [13, 77],
 };
+
+export const relevantCrewIds = Object.values(crewJobs).flat();
+
+export const crewIdToJob = Object.entries(crewJobs).reduce((hash, [key, ids]) => {
+  return ids.reduce((acc, id) => ({ ...acc, [id]: key as AppEnums['tokenCrew'] }), hash);
+}, {} as Record<number, AppEnums['tokenCrew']>);
 
 export const crewToOscarCategory = {
   director: [8],
@@ -13,7 +19,3 @@ export const crewToOscarCategory = {
   cinematographer: [6],
   writer: [22, 23],
 };
-
-export const allCrewJobs = Object.values(crewJobs).flat();
-
-export const allNonDirectorCrewJobs = Object.values(omit(crewJobs, ['director'])).flat();

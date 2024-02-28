@@ -5,6 +5,7 @@ import { Icon } from '~/components/ui/icons';
 import { Modal, type ModalProps } from '~/components/ui/modal';
 import { Text } from '~/components/ui/text';
 import { trpc } from '~/trpc/client';
+import { titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { Crate } from '../ui/box';
@@ -20,7 +21,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
-  const movieSpotlight = data.filter(a => a.movie.id === movieId);
+  const movieSpotlight = data.filter(a => a.movieId === movieId);
   return (
     <Modal {...modalProps} className="p-3">
       <div className="my-8 flex items-center justify-between" ref={containerRef}>
@@ -46,9 +47,9 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
         {movieSpotlight.length > 0 && (
           <AwardCategory
             key={movieSpotlight[0].id}
-            name={movieSpotlight[0].movie.title.toUpperCase()}
+            name={movieSpotlight[0].title.toUpperCase()}
             items={movieSpotlight.map(a => ({
-              movie: a.awardName,
+              movie: titleCase(a.category),
               recipient: a.recipient,
               won: a.won,
             }))}
@@ -56,14 +57,14 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
         )}
       </div>
       <div>
-        {Object.values(groupBy(data, item => item.awardId))
-          .filter(group => (limitAwards ? group.every(e => e.categoryRelevance === 'high') : true))
+        {Object.values(groupBy(data, item => item.award))
+          .filter(group => (limitAwards ? group.every(e => e.relevance === 'high') : true))
           .map(group => (
             <AwardCategory
               key={group[0].id}
-              name={group[0].awardName}
-              items={smartSort(group, i => i.movie.title).map(a => ({
-                movie: a.movie.title,
+              name={titleCase(group[0].award)}
+              items={smartSort(group, i => i.title).map(a => ({
+                movie: a.title,
                 recipient: a.recipient,
                 won: a.won,
               }))}
@@ -85,14 +86,14 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
 };
 
 type AwardCategoryProps = {
-  items: { movie: string; recipient: string; won: boolean }[];
+  items: { movie: string; recipient: string; won: number | boolean }[];
   key: number | string;
   name: string;
 };
 
 const AwardCategory = ({ items, key, name }: AwardCategoryProps) => (
   <div key={key} className="my-4 rounded-md border-2 border-slate-300 bg-white p-4 shadow-lg">
-    <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{name}</h3>
+    <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{titleCase(name)}</h3>
     {items.map(({ movie, recipient, won }) => (
       <div
         key={movie + recipient}
@@ -102,7 +103,7 @@ const AwardCategory = ({ items, key, name }: AwardCategoryProps) => (
           <Text bold>{movie}</Text>
           <Text>{recipient}</Text>
         </Crate>
-        {won && <Icon.Trophy className="flex-shrink-0" />}
+        {!!won && <Icon.Trophy className="flex-shrink-0" />}
       </div>
     ))}
   </div>

@@ -1,12 +1,19 @@
-import { TokenType } from '~/data/query-params';
+import { AppEnums } from '~/utils/enums';
 import { getYear, moneyShort, titleCase } from '~/utils/format';
+import { crewIdToJob } from './crew-jobs';
 
-export type Token = { type: TokenType; id: number; name: string };
+// TODO: can remove most of this
+
+export type Token = { type: AppEnums['token']; id: number; name: string };
 
 export const tokenize = (
-  tokenType: TokenType,
-  item: { id: number; name: string } | { id: number; title: string }
-): Token => ({ type: tokenType, id: item.id, name: 'name' in item ? item.name : item.title });
+  tokenType: AppEnums['token'],
+  item: { id: number; name: string }
+): Token => ({
+  type: tokenType,
+  id: item.id,
+  name: item.name,
+});
 
 export const tokenizeBudget = (budget: number): Token => ({
   id: budget,
@@ -90,4 +97,10 @@ export const tokenizeYearLte = (date: string): Token => ({
   id: Number(getYear(date)),
   name: `< ${getYear(date)}`,
   type: 'yearLte',
+});
+
+export const tokenizeCrew = (params: { id: number; name: string; job_id: number }): Token => ({
+  id: params.id,
+  name: params.name,
+  type: crewIdToJob[params.job_id],
 });

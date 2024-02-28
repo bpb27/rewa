@@ -7,7 +7,7 @@ type TokenBarProps = {
   clearTokens: () => void;
   searchMode: AppEnums['searchMode'];
   toggleSearchMode: () => void;
-  removeToken: (token: Token) => void;
+  removeToken: (tokenType: AppEnums['token'], id: number) => void;
   tokens: Token[];
 };
 
@@ -36,7 +36,7 @@ export const TokenBar = ({
         <Button
           className="flex gap-1"
           key={`${token.id}-${token.type}`}
-          onClick={() => removeToken(token)}
+          onClick={() => removeToken(token.type, token.id)}
           variant="token"
         >
           {icon(token.type)}
@@ -47,7 +47,7 @@ export const TokenBar = ({
   );
 };
 
-const icon = (tokenType: Token['type']) => {
+const icon = (tokenType: AppEnums['token']) => {
   switch (tokenType) {
     case 'director':
       return <Icon.Movie />;

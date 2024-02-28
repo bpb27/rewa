@@ -1,5 +1,21 @@
 # feature shit
 
+- trigger api even w/ preloaded to wake up lambas
+
+- consider further result filtering when sort is ebert or oscars or budget or box office
+
+- Fix the add movie script to account for new table
+
+- about w/ a google form or link to github to open an issue
+
+- mix genres into keywords
+
+- try kysely + turso + cloudflare
+- 855 jobs for 200k crew_on_movies, make into it's own table, drop index
+
+- show crew should be a modal w/ image name role, ideally clickable
+- similar for show case
+
 - route with /field/subfield - should be able to just make a [...field] directory
 
 - oscar actor leaderboard supporting/lead toggle
