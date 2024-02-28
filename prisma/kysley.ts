@@ -4,21 +4,6 @@ import { Kysely, SqliteDialect } from 'kysely';
 import { ParseJSONResultsPlugin } from '../src/utils/kysely-json-plugin';
 import { type DB } from './generated/types';
 
-// NB: node_modules/kysely/dist/esm/plugin/parse-json-results/parse-json-results-plugin.js
-/*
-  function parseObject(obj) {
-    const newObj = {};
-    for (const key in obj) {
-    }
-    return newObj;
-}
-*/
-
-/*
-  surprisingly slow against turso
-  confirmed indexes are all present
-*/
-
 const local = new SqliteDialect({
   database: new Database('./prisma/db.sqlite', {
     readonly: false,

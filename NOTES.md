@@ -61,6 +61,8 @@
 
 - `turso db create rewa-test-3 --from-file prisma/db.sqlite`
 - https://vercel.com/bpb27/rewa/settings/environment-variables
+- to include sqlite file in vercel
+  - `const _files = fs.readdirSync(path.join(process.cwd(), 'prisma'));`
 
 ## Add a new table
 
