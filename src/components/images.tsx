@@ -56,19 +56,19 @@ const MOVIE_POSTER_VARIANT_SIZES = {
 export const MoviePoster = ({
   className,
   onClick,
-  poster_path,
+  image,
   title,
   variant,
 }: {
   className?: string;
   onClick?: () => void;
-  poster_path: string;
+  image: string;
   title: string;
   variant: keyof typeof MOVIE_POSTER_VARIANT_SIZES;
 }) => {
   const imageProps = movieImage({
     name: title,
-    path: poster_path,
+    path: image,
     size: MOVIE_POSTER_VARIANT_SIZES[variant],
   });
   return (
@@ -92,18 +92,18 @@ export const PersonPoster = ({
   className,
   name,
   onClick,
-  poster_path,
+  image,
   variant,
 }: {
   className?: string;
   name: string;
   onClick?: () => void;
-  poster_path: string | null | undefined;
+  image: string | null | undefined;
   variant: keyof typeof PERSON_POSTER_VARIANT_SIZES;
 }) => {
   const imageProps = personImage({
     name,
-    path: poster_path ?? undefined,
+    path: image ?? undefined,
     size: PERSON_POSTER_VARIANT_SIZES[variant],
   });
   return (

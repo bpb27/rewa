@@ -32,7 +32,7 @@ export default function Layout({ children, title }: PropsWithChildren<{ title: s
       </Head>
       <div>
         <Navbar />
-        <div className="mx-2 mt-12">{children}</div>
+        <div className="mt-12">{children}</div>
       </div>
     </>
   );

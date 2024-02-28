@@ -65,7 +65,7 @@ export const MoviesTable = ({
         {movies.map(m => (
           <Table.Row key={m.id}>
             <Table.Data className="p-0">
-              <MoviePoster title={m.name} poster_path={m.image} variant="table" />
+              <MoviePoster title={m.name} image={m.image} variant="table" />
             </Table.Data>
             <Table.Data sticky>
               <Text bold onClick={() => onMovieTitleClick(m.id)}>
@@ -264,7 +264,7 @@ const ImageTooltip = ({
         <Tooltip.Portal>
           <Tooltip.Content sideOffset={5}>
             <div className="rounded shadow-xl">
-              <PersonPoster name={name} poster_path={path} variant="tooltip" />
+              <PersonPoster name={name} image={path} variant="tooltip" />
             </div>
             <Tooltip.Arrow className="fill-black" />
           </Tooltip.Content>

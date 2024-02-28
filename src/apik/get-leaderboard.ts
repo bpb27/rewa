@@ -19,6 +19,7 @@ type GetLeaderboardResponse = {
   image: string | null;
   name: string;
   total: number;
+  bestCreditOrder?: number;
   movies: {
     character?: string | null;
     id: number;
@@ -63,6 +64,7 @@ const getTopActors = (params: QpSchema) =>
       'actors.name',
       'actors.profile_path as image',
       eb => eb.fn.count<number>('actors_on_movies.actor_id').as('total'),
+      eb => eb.fn.min<number>('actors_on_movies.credit_order').as('bestCreditOrder'),
       eb =>
         jsonArrayFrom(
           eb
@@ -85,6 +87,7 @@ const getTopActors = (params: QpSchema) =>
     .groupBy('actors_on_movies.actor_id')
     .limit(LIMIT)
     .orderBy('total desc')
+    .orderBy('bestCreditOrder asc')
     .execute();
 
 const getTopCrew = (params: QpSchema, jobIds: number[]) =>

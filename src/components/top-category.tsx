@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { isNumber } from 'remeda';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
@@ -50,7 +51,7 @@ export const TopCategory = ({
 
   return (
     <Layout title={titles[field]}>
-      <Crate column pt={1} mb={2} gap={3}>
+      <Crate column pt={1} mb={2} gap={3} px={2}>
         <Crate justifyCenter>
           <Text size="xl" bold>
             {titles[field]}
@@ -92,17 +93,20 @@ export const TopCategory = ({
           </Crate>
         )}
       </Crate>
-      {rankByTotalMovies(
-        data.results,
-        // TODO: order by credit order or name if there's a tie
-        (a, b) =>
-          Number(getYear(b.movies[a.movies.length - 1].releaseDate)) -
-          Number(getYear(a.movies[a.movies.length - 1].releaseDate))
-      ).map(person => (
+      {rankByTotalMovies(data.results, (a, b) => {
+        if (isNumber(a.bestCreditOrder) && isNumber(b.bestCreditOrder)) {
+          return a.bestCreditOrder - b.bestCreditOrder;
+        } else {
+          return (
+            Number(getYear(b.movies[a.movies.length - 1].releaseDate)) -
+            Number(getYear(a.movies[a.movies.length - 1].releaseDate))
+          );
+        }
+      }).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>
-              <PersonPoster name={person.name} poster_path={person.image} variant="leaderboard" />
+              <PersonPoster name={person.name} image={person.image} variant="leaderboard" />
             </Box.ProfilePic>
           )}
           <Crate gap={3} column>
@@ -125,7 +129,7 @@ export const TopCategory = ({
                 <Box.MoviePoster key={m.id}>
                   <MoviePoster
                     className="cursor-pointer hover:scale-110 hover:drop-shadow-xl"
-                    poster_path={m.image}
+                    image={m.image}
                     variant="leaderboard"
                     title={m.title}
                     onClick={() =>

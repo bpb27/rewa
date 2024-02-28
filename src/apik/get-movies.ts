@@ -5,7 +5,7 @@ import { getYear } from '~/utils/format';
 import { kyselyDb } from '../../prisma/kysley';
 import { allMovieFilters, reusableSQL } from './reusable';
 
-const { select, where } = reusableSQL;
+const { select } = reusableSQL;
 
 export const getMovies = async (params: QpSchema) => {
   const sortOrder = params.asc ? ('asc' as const) : ('desc' as const);

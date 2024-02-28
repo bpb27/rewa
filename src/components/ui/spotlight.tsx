@@ -32,8 +32,8 @@ export const Spotlight = ({
       {name}
     </Text>
     <div className="flex w-full justify-center rounded-xl border-2 border-solid border-slate-900 bg-gradient-to-r from-slate-500 via-slate-900 to-slate-500">
-      {variant === 'movie' && <MoviePoster poster_path={image} title={name} variant="card" />}
-      {variant === 'person' && <PersonPoster poster_path={image} name={name} variant="card" />}
+      {variant === 'movie' && <MoviePoster image={image} title={name} variant="card" />}
+      {variant === 'person' && <PersonPoster image={image} name={name} variant="card" />}
     </div>
     {tagline && (
       <Text secondary textAlign="center">
