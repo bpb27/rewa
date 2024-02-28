@@ -1,15 +1,14 @@
 import { LibsqlDialect } from '@libsql/kysely-libsql';
-import Database from 'better-sqlite3';
-import { Kysely, SqliteDialect } from 'kysely';
+import { Kysely } from 'kysely';
 import { ParseJSONResultsPlugin } from '../src/utils/kysely-json-plugin';
 import { type DB } from './generated/types';
 
-const local = new SqliteDialect({
-  database: new Database('./prisma/db.sqlite', {
-    readonly: false,
-    timeout: 5000,
-  }),
-});
+// const local = new SqliteDialect({
+//   database: new Database('./prisma/db.sqlite', {
+//     readonly: false,
+//     timeout: 5000,
+//   }),
+// });
 
 const remote = new LibsqlDialect({
   url: 'libsql://rewa-test-3-bpb27.turso.io',
