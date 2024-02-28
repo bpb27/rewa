@@ -1,6 +1,7 @@
 import { LibsqlDialect } from '@libsql/kysely-libsql';
 import Database from 'better-sqlite3';
-import { Kysely, ParseJSONResultsPlugin, SqliteDialect } from 'kysely';
+import { Kysely, SqliteDialect } from 'kysely';
+import { ParseJSONResultsPlugin } from '../src/utils/kysely-json-plugin';
 import { type DB } from './generated/types';
 
 // NB: node_modules/kysely/dist/esm/plugin/parse-json-results/parse-json-results-plugin.js
@@ -8,7 +9,6 @@ import { type DB } from './generated/types';
   function parseObject(obj) {
     const newObj = {};
     for (const key in obj) {
-        newObj[key] = parse(obj[key]);
     }
     return newObj;
 }
@@ -27,15 +27,14 @@ const local = new SqliteDialect({
 });
 
 const remote = new LibsqlDialect({
-  url: 'libsql://rewa-test-2ky-bpb27.turso.io',
-  authToken:
-    'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDgxODc3ODAsImlkIjoiODYwMzRhNGItY2RiMi0xMWVlLThmMWItNmU5NzQxNjJlYjhkIn0.AvxQBDiceeXJCGkFvnU9WinHjNa4d5s5vg7K5XdlFzs_r0Zx2O-6VGsis2OJnuodUYgU76piT9mH_9PvKe4xCw',
+  url: 'libsql://rewa-test-3-bpb27.turso.io',
+  authToken: process.env.TURSO_TOKEN,
 });
 
 export type KyselyDB = DB;
 
 export const kyselyDb = new Kysely<DB>({
-  dialect: local,
+  dialect: remote,
   log: ['query'],
   plugins: [new ParseJSONResultsPlugin()],
 });

@@ -10,9 +10,6 @@
 
 - mix genres into keywords
 
-- try kysely + turso + cloudflare
-- 855 jobs for 200k crew_on_movies, make into it's own table, drop index
-
 - show crew should be a modal w/ image name role, ideally clickable
 - similar for show case
 
@@ -59,6 +56,11 @@
 - try out other ORMs
 
 - more table views - isRewa, isOscar, hasActingOscar, hasDirectorOscar
+
+## Infra shit
+
+- `turso db create rewa-test-3 --from-file prisma/db.sqlite`
+- https://vercel.com/bpb27/rewa/settings/environment-variables
 
 ## Add a new table
 
