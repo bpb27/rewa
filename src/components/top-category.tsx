@@ -44,6 +44,8 @@ export const TopCategory = ({
     variant: 'leaderboard',
   });
 
+  console.log(data?.results[0]);
+
   const handleSelect = (selection: Selected) => {
     select(isSameObject(selection, selected || {}) ? undefined : selection);
   };

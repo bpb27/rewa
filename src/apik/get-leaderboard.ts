@@ -108,7 +108,7 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
               'movies.release_date as releaseDate',
               'movies.poster_path as image',
             ])
-            .where('crew_on_movies.job_id', 'in', jobIds)
+            .where('jt.job_id', 'in', jobIds)
             .where(allMovieFilters(params))
             .whereRef('jt.crew_id', '=', 'crew.id')
             .groupBy('movies.id')
