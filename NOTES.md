@@ -1,3 +1,12 @@
+# postgres shit
+
+- data migrations are set
+- need indexes next
+- some numbers will need mapping
+- lots of broken things
+  - leaderboard
+  - ebert review sort
+
 # feature shit
 
 - trigger api even w/ preloaded to wake up lambas

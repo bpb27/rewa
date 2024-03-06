@@ -1,3 +1,5 @@
+import { isDate } from 'remeda';
+
 export const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
@@ -30,7 +32,8 @@ export const capitalize = (s: string) => {
 
 export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(capitalize).join(' ');
 
-export const getYear = (d: string) => {
+export const getYear = (d: string | Date) => {
+  if (isDate(d)) return d.getFullYear().toString();
   return d.length === 4 ? d : d.split('-')[0];
 };
 

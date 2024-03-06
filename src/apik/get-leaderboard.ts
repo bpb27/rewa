@@ -1,4 +1,4 @@
-import { jsonArrayFrom } from 'kysely/helpers/sqlite';
+import { jsonArrayFrom } from 'kysely/helpers/postgres';
 import { z } from 'zod';
 import { crewJobs, crewToOscarCategory } from '~/data/crew-jobs';
 import { QpSchema, parsedQpSchema } from '~/data/query-params';
@@ -18,7 +18,7 @@ type GetLeaderboardResponse = {
   id: number;
   image: string | null;
   name: string;
-  total: number;
+  total: string | number | bigint;
   bestCreditOrder?: number;
   movies: {
     character?: string | null;
@@ -63,8 +63,8 @@ const getTopActors = (params: QpSchema) =>
       'actors.id',
       'actors.name',
       'actors.profile_path as image',
-      eb => eb.fn.count<number>('actors_on_movies.actor_id').as('total'),
-      eb => eb.fn.min<number>('actors_on_movies.credit_order').as('bestCreditOrder'),
+      eb => eb.fn.count('actors_on_movies.actor_id').as('total'),
+      eb => eb.fn.min('actors_on_movies.credit_order').as('bestCreditOrder'),
       eb =>
         jsonArrayFrom(
           eb
@@ -99,7 +99,7 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
       'crew.id',
       'crew.name',
       'crew.profile_path as image',
-      eb => eb.fn.count<number>('crew_on_movies.crew_id').as('total'),
+      eb => eb.fn.count('crew_on_movies.crew_id').as('total'),
       eb =>
         jsonArrayFrom(
           eb
@@ -136,7 +136,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
       'actors.id',
       'actors.profile_path as image',
       eb => {
-        let total = eb.fn.count<number>('oscars_nominations.id');
+        let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
           total = total.filterWhere('oscars_nominations.won', '=', 1);
         }
@@ -193,7 +193,7 @@ const getTopOscarCrew = (
       'crew.id',
       'crew.profile_path as image',
       eb => {
-        let total = eb.fn.count<number>('oscars_nominations.id');
+        let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
           total = total.filterWhere('oscars_nominations.won', '=', 1);
         }

@@ -24,7 +24,7 @@ export const getMovies = async (params: QpSchema) => {
       'movies.overview',
       'movies.poster_path',
       'movies.release_date',
-      sql<number>`round(movies.revenue, 0)`.as('revenue'),
+      sql`round(movies.revenue, 0)`.as('revenue'),
       'movies.runtime',
       'movies.tagline',
       select.movieActors(3),
@@ -67,7 +67,7 @@ export const getMovies = async (params: QpSchema) => {
                 .when('movies.budget', '=', 0)
                 .then(0)
                 .when('movies.budget', '>', 0)
-                .then(sql<number>`ROUND(((revenue * 1000 - budget) / budget) * 100, 0)`)
+                .then(sql`ROUND(((revenue * 1000 - budget) / budget) * 100, 0)`)
                 .end(),
             sortOrder
           );
@@ -80,7 +80,7 @@ export const getMovies = async (params: QpSchema) => {
 
   const count = await kyselyDb
     .selectFrom('movies')
-    .select(eb => eb.fn.count<number>('movies.id').as('total'))
+    .select(eb => eb.fn.count('movies.id').as('total'))
     .where(allMovieFilters(params))
     .executeTakeFirst();
 
@@ -95,11 +95,11 @@ export const getMovies = async (params: QpSchema) => {
     imdbId: movie.imdb_id,
     keywords: movie.keywords,
     name: movie.title,
-    oscars: movie.oscars.map(o => ({ ...o, won: !!o.won })), // TODO: cast in sql (maybe not possible w/ sqlite?)
+    oscars: movie.oscars.map(o => ({ ...o, won: !!o.won })), // TODO: cast in sql
     totalOscarNominations: movie.total_oscar_nominations ?? 0,
     totalOscarWins: movie.total_oscar_wins ?? 0,
     description: movie.overview,
-    releaseDate: movie.release_date,
+    releaseDate: new Date(movie.release_date).toISOString() as string, // ?? TS self-referential error w/out casting
     revenue: movie.revenue,
     runtime: movie.runtime,
     streamers: movie.streamers,
@@ -107,7 +107,7 @@ export const getMovies = async (params: QpSchema) => {
     year: Number(getYear(movie.release_date)),
   }));
 
-  const total = count?.total ?? 0;
+  const total = Number(count?.total ?? 0);
 
   return {
     total,

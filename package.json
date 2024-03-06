@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "migration:generate": "tsx ./pg/generate-migration.ts",
     "postinstall": "prisma generate",
     "movie": "node -r esbuild-register -r dotenv/config ./sql/scripts/insert-movie.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./sql/scripts/update-streamers.ts",
@@ -49,6 +50,7 @@
     "kysely": "^0.27.2",
     "lucide-react": "^0.259.0",
     "next": "13.2.4",
+    "pg": "^8.11.3",
     "prisma": "^5.9.1",
     "prisma-kysely": "^1.7.1",
     "qs": "^6.11.2",
@@ -65,6 +67,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "@types/pg": "^8.11.2",
     "@types/qs": "^6.9.8",
     "autoprefixer": "^10.4.14",
     "cheerio": "^1.0.0-rc.12",

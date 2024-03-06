@@ -1,5 +1,5 @@
 import { expressionBuilder, sql } from 'kysely';
-import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
 import { AppEnums } from '~/utils/enums';
@@ -254,7 +254,7 @@ export const reusableSQL = {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
+        .select(eb => eb.fn.countAll().as('total'))
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_nominations');
     },
@@ -262,7 +262,7 @@ export const reusableSQL = {
       const eb = expressionBuilder<KyselyDB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
+        .select(eb => eb.fn.countAll().as('total'))
         .where('on.won', '=', 1)
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_wins');

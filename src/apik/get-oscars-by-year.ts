@@ -1,4 +1,4 @@
-import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { z } from 'zod';
 import { kyselyDb } from '../../prisma/kysley';
 
