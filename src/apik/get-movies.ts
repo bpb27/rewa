@@ -2,7 +2,7 @@ import { sql } from 'kysely';
 import { crewIdToJob } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
 import { getYear } from '~/utils/format';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 import { allMovieFilters, reusableSQL } from './reusable';
 
 const { select } = reusableSQL;

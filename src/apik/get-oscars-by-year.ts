@@ -1,6 +1,6 @@
 import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { z } from 'zod';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 
 export const getOscarsByYearParams = z.object({
   year: z.number().int().min(1900).max(2100),

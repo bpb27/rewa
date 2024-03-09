@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import { FileMigrationProvider, Migrator } from 'kysely';
 import * as path from 'path';
-import { kyselyDb } from '../prisma/kysley';
+import { kyselyDb } from './db';
 
 // migration name should be prefixed with this (add script)
 // new Date().toISOString().replace(/[\D]/g, '')

@@ -150,7 +150,7 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Text noWrap onClick={() => onTokenClick('revenue', m.revenue)}>
-                {moneyShort(m.revenue * 1000)}
+                {moneyShort(m.revenue)}
               </Text>
             </Table.Data>
             <Table.Data>

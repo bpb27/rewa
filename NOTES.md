@@ -3,11 +3,20 @@
 - data migrations are set
 - need indexes next
 - some numbers will need mapping
-- lots of broken things
-  - leaderboard
-  - ebert review sort
+- remove git lfs
+
+Bugs:
+
+- budget and revenue columns are returned as strings
+  - mixes up token id representation (a number from getTokens)
+  - messes with toggling
+- ebert sort doesn't work
 
 # feature shit
+
+- some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
+
+- scalar budget comps
 
 - trigger api even w/ preloaded to wake up lambas
 

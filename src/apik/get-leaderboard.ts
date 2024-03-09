@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { crewJobs, crewToOscarCategory } from '~/data/crew-jobs';
 import { QpSchema, parsedQpSchema } from '~/data/query-params';
 import { AppEnums, appEnums } from '~/utils/enums';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 import { allMovieFilters } from './reusable';
 
 const LIMIT = 100;
@@ -25,18 +25,21 @@ type GetLeaderboardResponse = {
     id: number;
     image: string;
     oscarCategory?: string;
-    oscarWon?: number;
+    oscarWon?: boolean;
     releaseDate: string;
     title: string;
   }[];
 }[];
 
-const addPagination = (response: GetLeaderboardResponse) => ({
-  hasNext: false,
-  page: 0,
-  results: response.filter(p => p.total),
-  total: response.filter(p => p.total).length,
-});
+const addPagination = (response: GetLeaderboardResponse) => {
+  const results = response.map(p => ({ ...p, total: Number(p.total) })).filter(p => p.total > 0);
+  return {
+    hasNext: false,
+    page: 0,
+    results,
+    total: results.length,
+  };
+};
 
 export const getLeaderboard = async ({
   field,
@@ -79,12 +82,12 @@ const getTopActors = (params: QpSchema) =>
             ])
             .where(allMovieFilters(params))
             .whereRef('jt.actor_id', '=', 'actors.id')
-            .groupBy('movies.id')
+            // .groupBy(['movies.id', 'jt.character'])
             .orderBy('movies.release_date asc')
         ).as('movies'),
     ])
     .where(allMovieFilters(params))
-    .groupBy('actors_on_movies.actor_id')
+    .groupBy('actors.id')
     .limit(LIMIT)
     .orderBy('total desc')
     .orderBy('bestCreditOrder asc')
@@ -114,13 +117,13 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
             .where('jt.job_id', 'in', jobIds)
             .where(allMovieFilters(params))
             .whereRef('jt.crew_id', '=', 'crew.id')
-            .groupBy('movies.id')
+            // .groupBy('movies.id')
             .orderBy('movies.release_date asc')
         ).as('movies'),
     ])
     .where('crew_on_movies.job_id', 'in', jobIds)
     .where(allMovieFilters(params))
-    .groupBy('crew_on_movies.crew_id')
+    .groupBy('crew.id')
     .limit(LIMIT)
     .orderBy('total desc')
     .execute();
@@ -172,7 +175,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
         ).as('movies'),
     ])
     .where(allMovieFilters(params))
-    .groupBy('actors_on_oscars.actor_id')
+    .groupBy('actors.id')
     .limit(LIMIT)
     .orderBy('total desc')
     .execute();
@@ -219,13 +222,13 @@ const getTopOscarCrew = (
             .where(allMovieFilters(params))
             .whereRef('crew_on_oscars.crew_id', '=', 'crew.id')
             .$if(wins, qb => qb.where('oscars_nominations.won', '=', 1))
-            .groupBy('movies.id')
+            // .groupBy('movies.id')
             .orderBy('movies.release_date asc')
         ).as('movies'),
     ])
     .where('oscars_awards.category_id', 'in', crewToOscarCategory[field])
     .where(allMovieFilters(params))
-    .groupBy('crew_on_oscars.crew_id')
+    .groupBy('crew.id')
     .orderBy('total desc')
     .limit(LIMIT)
     .execute();

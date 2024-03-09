@@ -47,19 +47,19 @@ export const tokenizeOscarsCategoriesWon = (id: number, name: string): Token => 
 
 export const tokenizeRevenue = (revenue: number): Token => ({
   id: revenue,
-  name: `${moneyShort(revenue * 1000)}`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `${moneyShort(revenue)}`,
   type: 'revenue',
 });
 
 export const tokenizeRevenueGte = (revenue: number): Token => ({
   id: revenue,
-  name: `> ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `> ${moneyShort(revenue)} Box Office`,
   type: 'revenueGte',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
   id: revenue,
-  name: `< ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `< ${moneyShort(revenue)} Box Office`,
   type: 'revenueLte',
 });
 

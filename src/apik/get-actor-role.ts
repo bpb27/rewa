@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 
 export const getActorRoleParams = z.object({
   actorId: z.number(),
