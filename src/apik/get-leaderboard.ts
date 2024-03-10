@@ -26,13 +26,23 @@ type GetLeaderboardResponse = {
     image: string;
     oscarCategory?: string;
     oscarWon?: boolean;
-    releaseDate: string;
+    releaseDate: string | Date;
     title: string;
   }[];
 }[];
 
 const addPagination = (response: GetLeaderboardResponse) => {
-  const results = response.map(p => ({ ...p, total: Number(p.total) })).filter(p => p.total > 0);
+  const results = response
+    .map(person => ({
+      ...person,
+      total: Number(person.total),
+      movies: person.movies.map(movie => ({
+        ...movie,
+        releaseDate: movie.releaseDate.toString(),
+      })),
+    }))
+    .filter(person => person.total > 0);
+
   return {
     hasNext: false,
     page: 0,
@@ -141,7 +151,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
       eb => {
         let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
-          total = total.filterWhere('oscars_nominations.won', '=', 1);
+          total = total.filterWhere('oscars_nominations.won', '=', true);
         }
         return total.as('total');
       },
@@ -170,7 +180,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
             ])
             .where(allMovieFilters(params))
             .whereRef('actors_on_oscars.actor_id', '=', 'actors.id')
-            .$if(wins, qb => qb.where('oscars_nominations.won', '=', 1))
+            .$if(wins, qb => qb.where('oscars_nominations.won', '=', true))
             .orderBy('movies.release_date asc')
         ).as('movies'),
     ])
@@ -198,7 +208,7 @@ const getTopOscarCrew = (
       eb => {
         let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
-          total = total.filterWhere('oscars_nominations.won', '=', 1);
+          total = total.filterWhere('oscars_nominations.won', '=', true);
         }
         return total.as('total');
       },
@@ -221,7 +231,7 @@ const getTopOscarCrew = (
             .where('oscars_awards.category_id', 'in', crewToOscarCategory[field])
             .where(allMovieFilters(params))
             .whereRef('crew_on_oscars.crew_id', '=', 'crew.id')
-            .$if(wins, qb => qb.where('oscars_nominations.won', '=', 1))
+            .$if(wins, qb => qb.where('oscars_nominations.won', '=', true))
             // .groupBy('movies.id')
             .orderBy('movies.release_date asc')
         ).as('movies'),

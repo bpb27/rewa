@@ -1,5 +1,5 @@
 import { sql } from 'kysely';
-import { crewIdToJob } from '~/data/crew-jobs';
+import { jobIdToJobStr } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
 import { getYear } from '~/utils/format';
 import { kyselyDb } from '../../pg/db';
@@ -53,7 +53,7 @@ export const getMovies = async (params: QpSchema) => {
             .orderBy('e.episode_order', sortOrder);
         case 'ebert':
           return qb
-            .leftJoin('ebert_reviews as er', 'er.movie_id', 'movies.id')
+            .innerJoin('ebert_reviews as er', 'er.movie_id', 'movies.id')
             .orderBy('er.rating', sortOrder);
         case 'total_oscar_nominations':
           return qb.orderBy('total_oscar_nominations', sortOrder);
@@ -64,9 +64,9 @@ export const getMovies = async (params: QpSchema) => {
             eb =>
               eb
                 .case()
-                .when('movies.budget', '=', 0)
+                .when('movies.budget', '=', '0')
                 .then(0)
-                .when('movies.budget', '>', 0)
+                .when('movies.budget', '>', '0')
                 .then(sql`ROUND(((revenue * 1000 - budget) / budget) * 100, 0)`)
                 .end(),
             sortOrder
@@ -81,13 +81,16 @@ export const getMovies = async (params: QpSchema) => {
   const count = await kyselyDb
     .selectFrom('movies')
     .select(eb => eb.fn.count('movies.id').as('total'))
+    .$if(params.sort === 'ebert', qb =>
+      qb.innerJoin('ebert_reviews as er', 'er.movie_id', 'movies.id')
+    )
     .where(allMovieFilters(params))
     .executeTakeFirst();
 
   const results = response.map(movie => ({
     actors: movie.actors,
-    budget: movie.budget,
-    crew: movie.crew.map(c => ({ ...c, job: crewIdToJob[c.job_id] })),
+    budget: Number(movie.budget),
+    crew: movie.crew.map(c => ({ ...c, job: jobIdToJobStr[c.job_id] })),
     ebert: movie.ebert_review,
     episode: movie.episode,
     id: movie.id,
@@ -95,19 +98,19 @@ export const getMovies = async (params: QpSchema) => {
     imdbId: movie.imdb_id,
     keywords: movie.keywords,
     name: movie.title,
-    oscars: movie.oscars.map(o => ({ ...o, won: !!o.won })), // TODO: cast in sql
-    totalOscarNominations: movie.total_oscar_nominations ?? 0,
-    totalOscarWins: movie.total_oscar_wins ?? 0,
+    oscars: movie.oscars,
+    totalOscarNominations: Number(movie.total_oscar_nominations) || 0,
+    totalOscarWins: Number(movie.total_oscar_wins) || 0,
     description: movie.overview,
-    releaseDate: new Date(movie.release_date).toISOString() as string, // ?? TS self-referential error w/out casting
-    revenue: movie.revenue,
+    releaseDate: movie.release_date.toString(),
+    revenue: Number(movie.revenue),
     runtime: movie.runtime,
     streamers: movie.streamers,
     tagline: movie.tagline,
     year: Number(getYear(movie.release_date)),
   }));
 
-  const total = Number(count?.total ?? 0);
+  const total = Number(count?.total || 0);
 
   return {
     total,

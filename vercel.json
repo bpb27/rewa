@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "pages/api/**/*.ts": {
-      "includeFiles": "prisma/**"
-    }
-  }
+  "functions": {}
 }

@@ -1,6 +1,6 @@
 import { AppEnums } from '~/utils/enums';
 import { getYear, moneyShort, titleCase } from '~/utils/format';
-import { crewIdToJob } from './crew-jobs';
+import { jobIdToJobStr } from './crew-jobs';
 
 // TODO: can remove most of this
 
@@ -102,5 +102,5 @@ export const tokenizeYearLte = (date: string): Token => ({
 export const tokenizeCrew = (params: { id: number; name: string; job_id: number }): Token => ({
   id: params.id,
   name: params.name,
-  type: crewIdToJob[params.job_id],
+  type: jobIdToJobStr[params.job_id],
 });

@@ -58,7 +58,7 @@ const icon = (tokenType: AppEnums['token']) => {
     case 'writer':
       return <Icon.Pen />;
     case 'cinematographer':
-      return <Icon.FilmStrip />;
+      return <Icon.Video />;
     default:
       return '';
   }
