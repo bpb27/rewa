@@ -11,10 +11,10 @@ const pgConfig = {
 const plugins = [new ParseJSONResultsPlugin()];
 
 export const kyselyDb =
-  process.env.NODE_ENV === 'production'
-    ? createKysely<DB>(pgConfig, { plugins })
-    : new Kysely<DB>({
+  process.env.NODE_ENV === 'development'
+    ? new Kysely<DB>({
         dialect: new PostgresDialect({ pool: new Pool(pgConfig) }),
         log: ['query'],
         plugins,
-      });
+      })
+    : createKysely<DB>(pgConfig, { plugins });

@@ -3,9 +3,6 @@ import { FileMigrationProvider, Migrator } from 'kysely';
 import * as path from 'path';
 import { kyselyDb } from './db';
 
-// migration name should be prefixed with this (add script)
-// new Date().toISOString().replace(/[\D]/g, '')
-
 async function migrateToLatest() {
   const migrationFolder = path.join(__dirname, './migrations');
   const migrator = new Migrator({
