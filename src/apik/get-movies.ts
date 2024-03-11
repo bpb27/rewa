@@ -76,6 +76,7 @@ export const getMovies = async (params: QpSchema) => {
           throw new Error(`Unhandled sort case: ${exhaustiveCheck}`);
       }
     })
+    .orderBy('title', 'asc') // additional order by to ensure offset works on ties
     .execute();
 
   const count = await kyselyDb

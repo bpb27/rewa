@@ -4,6 +4,8 @@
 
 - paginate directors in table
 
+- uninstall git lfs
+
 - search oscar ceremony year
 
 - preview deployments are running migrations on prod db

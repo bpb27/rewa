@@ -3,8 +3,6 @@ import { Kysely, ParseJSONResultsPlugin, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 import { type DB } from './generated';
 
-console.log(process.env);
-
 const pgConfig = {
   connectionString: process.env.DATABASE_URL,
   max: 10,
