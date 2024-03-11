@@ -1,34 +1,37 @@
-# feature shit
+# Potential TODOs
+
+- saw one duplicate table result - verify this isn't an issue
+
+- search oscar ceremony year
+
+- preview deployments are running migrations on prod db
+
+- new movies in migrations
+- just put the params in there and call the script?
+- or get the JSON from TMDB and then put it in a file
+- could make a "new-movie-migration" script to generate the boilerplate
+
+- some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
 
 - trigger api even w/ preloaded to wake up lambas
-
-- consider further result filtering when sort is ebert or oscars or budget or box office
-
-- Fix the add movie script to account for new table
 
 - about w/ a google form or link to github to open an issue
 
 - mix genres into keywords
 
-- try kysely + turso + cloudflare
-- 855 jobs for 200k crew_on_movies, make into it's own table, drop index
-
-- show crew should be a modal w/ image name role, ideally clickable
-- similar for show case
+- show cast and crew should be a modal w/ image name role, ideally clickable
 
 - route with /field/subfield - should be able to just make a [...field] directory
 
 - oscar actor leaderboard supporting/lead toggle
 
-- make oscar modal title clickable, bring up spotlight
+- make oscar modal movie titles clickable, bring up spotlight
 - can't have two modals open at once
 - would be nice to have a back button
 
 - movieMode === 'oscar' but route === 'oscars'
 
-- standalone node server - cold start times aren't great, response time even in the same AZ is not super fast
-
-- search probs with accented characters - probably store normalized string alongside actual
+- search probs with accented characters - coould store normalized string alongside actual, or see if there's a pg solution
 
 - top movies of that year by popularity / revenue / tmdb avg (can be a dynamic call)
 
@@ -43,29 +46,6 @@
 - select label
 - make sure table is navigable
 
-## tech shit todo
-
 - basic smoke test
 
 - ditch css modules
-
-- migrations
-
-- may be time to switch to postgres
-- git warnings about 50mb file size, plus it has load in all serverless functions
-- free hobby PG via vercel, or can look for other cheap options
-- could use prisma accelerate and use edge functions
-
-- try out other ORMs
-
-- more table views - isRewa, isOscar, hasActingOscar, hasDirectorOscar
-
-## Add a new table
-
-- add SQL to create-tables.ts script
-- create a node script to run it (can use connectToDb + createTable utils)
-- copy the movies_with_computed_fields view in the prisma schema and paste somewhere for reference
-- run `npx prisma db pull`
-- paste the view back into the schema (prisma changes stuff to unsupported, unclear how to avoid)
-- run `npx prisma generate`
-- you should be able to access it via normal prisma client calls

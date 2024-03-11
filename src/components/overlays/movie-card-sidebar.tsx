@@ -1,7 +1,7 @@
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
-import { formatDate, titleCase } from '~/utils/format';
+import { newFormatDate, titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { useMovieMode } from '~/utils/use-movie-mode';
 import { useToggle } from '~/utils/use-toggle';
@@ -94,7 +94,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
           <Text bold icon="Clock">
             Release Date
           </Text>
-          <Text>{formatDate(movie.releaseDate)}</Text>
+          <Text>{newFormatDate(movie.releaseDate, 'slash')}</Text>
         </Crate>
         <Crate column>
           <Text bold icon="Link">

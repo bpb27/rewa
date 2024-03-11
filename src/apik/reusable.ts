@@ -1,14 +1,14 @@
 import { expressionBuilder, sql } from 'kysely';
-import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/sqlite';
+import { jsonArrayFrom, jsonObjectFrom } from 'kysely/helpers/postgres';
 import { crewJobs } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
 import { AppEnums } from '~/utils/enums';
-import { type KyselyDB } from '../../prisma/kysley';
+import { type DB } from '../../pg/generated';
 
 export const reusableSQL = {
   where: {
     moviesWithActor: (actorId: number) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
         selectFrom('actors_on_movies as jt')
           .select(['jt.movie_id'])
@@ -17,7 +17,7 @@ export const reusableSQL = {
       );
     },
     movieMode: (mode: AppEnums['movieMode']) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       if (mode === 'oscar') {
         return eb('movies.id', 'in', ({ selectFrom }) => {
           return selectFrom('oscars_nominations as nom')
@@ -35,7 +35,7 @@ export const reusableSQL = {
       }
     },
     moviesWithAnyOscar: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) => {
         return selectFrom('oscars_nominations as nom')
           .select(['nom.movie_id'])
@@ -43,28 +43,26 @@ export const reusableSQL = {
       });
     },
     moviesWithAnyEpisode: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) => {
         return selectFrom('episodes as e')
           .select(['e.movie_id'])
           .where('e.movie_id', 'is not', null);
       });
     },
-    // TODO: pretty sure this is off
-    // TODO: scalar, e.g. 10k should be +-5k, b but 1b should be +-250b
     moviesWithBudget: (budget: number, comp: '~' | '>=' | '<=') => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       if (comp === '~') {
         return eb.and([
-          eb('movies.budget', '<=', budget + 5000000),
-          eb('movies.budget', '>=', budget - 5000000),
+          eb('movies.budget', '<=', Math.round(budget + budget * 0.1).toString()),
+          eb('movies.budget', '>=', Math.round(budget - budget * 0.1).toString()),
         ]);
       } else {
-        return eb('movies.budget', comp, budget);
+        return eb('movies.budget', comp, budget.toString());
       }
     },
     moviesWithCrew: (crewId: number, crewKey: keyof typeof crewJobs) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
         selectFrom('crew_on_movies as jt')
           .select(['jt.movie_id'])
@@ -74,7 +72,7 @@ export const reusableSQL = {
       );
     },
     moviesWithHost: (hostId: number) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
         selectFrom('episodes as e')
           .innerJoin('hosts_on_episodes as jt', 'jt.episode_id', 'e.id')
@@ -84,7 +82,7 @@ export const reusableSQL = {
       );
     },
     moviesWithKeyword: (keywordId: number) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
         selectFrom('keywords_on_movies as jt')
           .select(['jt.movie_id'])
@@ -93,31 +91,30 @@ export const reusableSQL = {
       );
     },
     moviesWithOscar: (categoryId: number, won?: boolean) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) => {
         let ex = selectFrom('oscars_nominations as nom')
           .innerJoin('oscars_awards as aw', 'aw.id', 'nom.award_id')
           .select(['nom.movie_id'])
           .where('aw.category_id', '=', categoryId)
           .where('nom.movie_id', 'is not', null);
-        if (won) ex = ex.where('nom.won', '=', 1);
+        if (won) ex = ex.where('nom.won', '=', true);
         return ex;
       });
     },
-    // TODO: scalar, e.g. 10k should be +-5k, b but 1b should be +-250b
     moviesWithRevenue: (revenue: number, comp: '~' | '>=' | '<=') => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       if (comp === '~') {
         return eb.and([
-          eb('movies.revenue', '<=', revenue + 5000), // NB: Stored as / 1000 due to BigInt shit
-          eb('movies.revenue', '>=', revenue - 5000), // NB: Stored as / 1000 due to BigInt shit
+          eb('movies.revenue', '<=', Math.round(revenue + revenue * 0.1).toString()),
+          eb('movies.revenue', '>=', Math.round(revenue - revenue * 0.1).toString()),
         ]);
       } else {
-        return eb('movies.revenue', comp, revenue);
+        return eb('movies.revenue', comp, revenue.toString());
       }
     },
     moviesWithRuntime: (runtime: number, comp: '~' | '>=' | '<=') => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       if (comp === '~') {
         return eb.and([
           eb('movies.runtime', '<=', runtime + 5),
@@ -128,7 +125,7 @@ export const reusableSQL = {
       }
     },
     moviesWithStreamer: (streamerId: number) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
         selectFrom('streamers_on_movies as jt')
           .select(['jt.movie_id'])
@@ -137,18 +134,16 @@ export const reusableSQL = {
       );
     },
     moviesWithYear: (year: string | number, comp: 'like' | '>=' | '<=') => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
-      return eb('movies.release_date', comp, comp == 'like' ? `${year}%` : String(year));
-    },
-    // TODO: make this more typesafe - unclear if it works
-    textMatch: (column: string, search: string) => {
-      const eb = expressionBuilder<KyselyDB, any>();
-      return eb(sql.raw(`lower(${column})`), 'like', `%${search.toLowerCase()}%`);
+      const eb = expressionBuilder<DB, 'movies'>();
+      if (comp === 'like') {
+        return eb(sql`EXTRACT(YEAR FROM movies.release_date)`, '=', year);
+      }
+      return eb('movies.release_date', comp, new Date(`${year}-01-01`));
     },
   },
   select: {
     movieActors: (limit: number) => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('actors_on_movies as jt')
@@ -160,7 +155,7 @@ export const reusableSQL = {
       ).as('actors');
     },
     movieCrew: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('crew_on_movies as jt')
@@ -171,7 +166,7 @@ export const reusableSQL = {
       ).as('crew');
     },
     movieEbertReview: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonObjectFrom(
         eb
           .selectFrom('ebert_reviews as er')
@@ -180,7 +175,7 @@ export const reusableSQL = {
       ).as('ebert_review');
     },
     movieEpisode: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonObjectFrom(
         eb
           .selectFrom('episodes as e')
@@ -202,7 +197,7 @@ export const reusableSQL = {
       ).as('episode');
     },
     movieOscars: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('oscars_nominations')
@@ -219,7 +214,7 @@ export const reusableSQL = {
       ).as('oscars');
     },
     movieGenres: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('genres_on_movies as jt')
@@ -229,7 +224,7 @@ export const reusableSQL = {
       ).as('genres');
     },
     movieKeywords: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('keywords_on_movies as jt')
@@ -240,7 +235,7 @@ export const reusableSQL = {
       ).as('keywords');
     },
     movieStreamers: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return jsonArrayFrom(
         eb
           .selectFrom('streamers_on_movies as jt')
@@ -251,19 +246,19 @@ export const reusableSQL = {
       ).as('streamers');
     },
     movieTotalOscarNominations: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
+        .select(eb => eb.fn.countAll().as('total'))
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_nominations');
     },
     movieTotalOscarWins: () => {
-      const eb = expressionBuilder<KyselyDB, 'movies'>();
+      const eb = expressionBuilder<DB, 'movies'>();
       return eb
         .selectFrom('oscars_nominations as on')
-        .select(eb => eb.fn.countAll().$castTo<number>().as('total'))
-        .where('on.won', '=', 1)
+        .select(eb => eb.fn.countAll().as('total'))
+        .where('on.won', '=', true)
         .whereRef('on.movie_id', '=', 'movies.id')
         .as('total_oscar_wins');
     },
@@ -272,7 +267,7 @@ export const reusableSQL = {
 
 export const allMovieFilters = (params: QpSchema) => {
   const { where } = reusableSQL;
-  const eb = expressionBuilder<KyselyDB, 'movies'>();
+  const eb = expressionBuilder<DB, 'movies'>();
   const searches = [
     ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
     ...params.cinematographer.map(id => where.moviesWithCrew(id, 'cinematographer')),

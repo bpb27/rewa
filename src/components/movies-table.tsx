@@ -73,7 +73,7 @@ export const MoviesTable = ({
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick('year', m.year)}>
+              <Text noWrap onClick={() => onTokenClick('year', Number(m.year))}>
                 {m.year}
               </Text>
             </Table.Data>
@@ -144,13 +144,13 @@ export const MoviesTable = ({
               </Table.Data>
             )}
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick('budget', m.budget)}>
-                {moneyShort(m.budget)}
+              <Text noWrap onClick={() => onTokenClick('budget', Number(m.budget))}>
+                {moneyShort(Number(m.budget))}
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick('revenue', m.revenue)}>
-                {moneyShort(m.revenue * 1000)}
+              <Text noWrap onClick={() => onTokenClick('revenue', Number(m.revenue))}>
+                {moneyShort(Number(m.revenue))}
               </Text>
             </Table.Data>
             <Table.Data>

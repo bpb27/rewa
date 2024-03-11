@@ -2,7 +2,7 @@ import { sql } from 'kysely';
 import { QpSchema } from '~/data/query-params';
 import { AppEnums, appEnums } from '~/utils/enums';
 import { moneyShort, titleCase } from '~/utils/format';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 
 export const getTokens = async (params: QpSchema) => {
   const response: { type: AppEnums['token']; name: string; id: number }[][] = await Promise.all(
@@ -14,27 +14,27 @@ export const getTokens = async (params: QpSchema) => {
         case 'budget':
           return ids.map(id => ({ type: tokenType, id, name: moneyShort(id) }));
         case 'budgetLte':
-          return ids.map(id => ({ type: tokenType, id, name: `< ${moneyShort(id)}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `<= ${moneyShort(id)}` }));
         case 'budgetGte':
-          return ids.map(id => ({ type: tokenType, id, name: `> ${moneyShort(id)}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `>= ${moneyShort(id)}` }));
         case 'revenue':
-          return ids.map(id => ({ type: tokenType, id, name: moneyShort(id * 1000) }));
+          return ids.map(id => ({ type: tokenType, id, name: moneyShort(id) }));
         case 'revenueLte':
-          return ids.map(id => ({ type: tokenType, id, name: `< ${moneyShort(id * 1000)}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `<= ${moneyShort(id)}` }));
         case 'revenueGte':
-          return ids.map(id => ({ type: tokenType, id, name: `> ${moneyShort(id * 1000)}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `>= ${moneyShort(id)}` }));
         case 'runtime':
           return ids.map(id => ({ type: tokenType, id, name: `${id} mins` }));
         case 'runtimeLte':
-          return ids.map(id => ({ type: tokenType, id, name: `< ${id} mins` }));
+          return ids.map(id => ({ type: tokenType, id, name: `<= ${id} mins` }));
         case 'runtimeGte':
-          return ids.map(id => ({ type: tokenType, id, name: `> ${id} mins` }));
+          return ids.map(id => ({ type: tokenType, id, name: `>= ${id} mins` }));
         case 'year':
           return ids.map(id => ({ type: tokenType, id, name: id.toString() }));
         case 'yearLte':
-          return ids.map(id => ({ type: tokenType, id, name: `< ${id.toString()}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `<= ${id.toString()}` }));
         case 'yearGte':
-          return ids.map(id => ({ type: tokenType, id, name: `> ${id.toString()}` }));
+          return ids.map(id => ({ type: tokenType, id, name: `>= ${id.toString()}` }));
         case 'actor':
           return kyselyDb
             .selectFrom('actors')

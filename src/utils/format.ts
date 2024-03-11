@@ -1,3 +1,6 @@
+import { isDate, isNumber, isString } from 'remeda';
+import { isYear } from './validate';
+
 export const numberWithCommas = (x: number) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
@@ -15,9 +18,41 @@ export const moneyShort = (x: number) => {
   }
 };
 
-export const formatDate = (d: string) => {
-  const split = d.split('-');
-  return `${split[1]}/${split[2]}/${split[0]}`;
+export const newFormatDate = (d: number | string | Date, f: 'year' | 'slash' | 'dash'): string => {
+  const components = {
+    year: '',
+    month: '',
+    day: '',
+  };
+  if (isDate(d)) {
+    components.year = d.getFullYear().toString();
+    components.month = d.getMonth() < 10 ? `${0}${d.getMonth()}` : d.getMonth().toString();
+    components.day = d.getDate().toString();
+  } else if (isNumber(d) && isYear(d.toString())) {
+    components.year = d.toString();
+    components.month = '01';
+    components.day = '01';
+  } else if (isString(d) && isYear(d)) {
+    components.year = d;
+    components.month = '01';
+    components.day = '01';
+  } else if (isString(d) && d.length === 10 && d.includes('-')) {
+    [components.year, components.month, components.day] = d.split('-');
+  } else {
+    console.error(`Unsupported date input ${d}`);
+    return d.toString();
+  }
+
+  if (f === 'year') {
+    return components.year;
+  } else if (f === 'slash') {
+    return `${components.month}/${components.day}/${components.year}`;
+  } else if (f === 'dash') {
+    return `${components.year}-${components.month}-${components.day}`;
+  } else {
+    const _exhaustive: never = f;
+    throw new Error(`Unknown date format ${f}`);
+  }
 };
 
 export const capitalize = (s: string) => {
@@ -29,9 +64,5 @@ export const capitalize = (s: string) => {
 };
 
 export const titleCase = (s: string) => s.replaceAll('_', ' ').split(' ').map(capitalize).join(' ');
-
-export const getYear = (d: string) => {
-  return d.length === 4 ? d : d.split('-')[0];
-};
 
 export const formatRuntime = (mins: number) => `${mins} mins`;

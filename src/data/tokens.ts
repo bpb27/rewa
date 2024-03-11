@@ -1,8 +1,8 @@
 import { AppEnums } from '~/utils/enums';
-import { getYear, moneyShort, titleCase } from '~/utils/format';
-import { crewIdToJob } from './crew-jobs';
+import { moneyShort, newFormatDate, titleCase } from '~/utils/format';
+import { jobIdToJobStr } from './crew-jobs';
 
-// TODO: can remove most of this
+// TODO: most of this is unused - can remove
 
 export type Token = { type: AppEnums['token']; id: number; name: string };
 
@@ -47,19 +47,19 @@ export const tokenizeOscarsCategoriesWon = (id: number, name: string): Token => 
 
 export const tokenizeRevenue = (revenue: number): Token => ({
   id: revenue,
-  name: `${moneyShort(revenue * 1000)}`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `${moneyShort(revenue)}`,
   type: 'revenue',
 });
 
 export const tokenizeRevenueGte = (revenue: number): Token => ({
   id: revenue,
-  name: `> ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `> ${moneyShort(revenue)} Box Office`,
   type: 'revenueGte',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
   id: revenue,
-  name: `< ${moneyShort(revenue * 1000)} Box Office`, // NB: stored in DB as / 1000 due to BigInt shit
+  name: `< ${moneyShort(revenue)} Box Office`,
   type: 'revenueLte',
 });
 
@@ -82,25 +82,25 @@ export const tokenizeRuntimeLte = (runtime: number): Token => ({
 });
 
 export const tokenizeYear = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: getYear(date),
+  id: Number(newFormatDate(date, 'year')),
+  name: newFormatDate(date, 'year'),
   type: 'year',
 });
 
 export const tokenizeYearGte = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: `> ${getYear(date)}`,
+  id: Number(newFormatDate(date, 'year')),
+  name: `> ${newFormatDate(date, 'year')}`,
   type: 'yearGte',
 });
 
 export const tokenizeYearLte = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: `< ${getYear(date)}`,
+  id: Number(newFormatDate(date, 'year')),
+  name: `< ${newFormatDate(date, 'year')}`,
   type: 'yearLte',
 });
 
 export const tokenizeCrew = (params: { id: number; name: string; job_id: number }): Token => ({
   id: params.id,
   name: params.name,
-  type: crewIdToJob[params.job_id],
+  type: jobIdToJobStr[params.job_id],
 });

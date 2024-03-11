@@ -10,9 +10,9 @@ import {
   tokenizeYearLte,
 } from '~/data/tokens';
 import { appEnums } from '~/utils/enums';
-import { getYear } from '~/utils/format';
+import { newFormatDate } from '~/utils/format';
 import { isInteger, isYear } from '~/utils/validate';
-import { kyselyDb } from '../../prisma/kysley';
+import { kyselyDb } from '../../pg/db';
 import { reusableSQL } from './reusable';
 
 export const searchTokensParams = z.object({
@@ -27,7 +27,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
     kyselyDb
       .selectFrom('movies')
       .select(['id', 'title as name', 'release_date'])
-      .where(sql.raw('lower(title)'), 'like', search)
+      .where('title', 'ilike', search)
       .where(movieMode)
       .orderBy(
         eb => eb.case().when(sql.raw('lower(title)'), '=', params.search).then(0).else(1).end(),
@@ -45,7 +45,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
         'actors.name',
         eb => eb.fn.count('actors_on_movies.actor_id').as('count'),
       ])
-      .where(sql.raw('lower(actors.name)'), 'like', search)
+      .where('actors.name', 'ilike', search)
       .where(movieMode)
       .groupBy('actors.id')
       .orderBy('count desc')
@@ -62,9 +62,9 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
         eb => eb.fn.count('crew_on_movies.crew_id').as('count'),
       ])
       .where('crew_on_movies.job_id', 'in', relevantCrewIds)
-      .where(sql.raw('lower(crew.name)'), 'like', search)
+      .where('crew.name', 'ilike', search)
       .where(movieMode)
-      .groupBy('crew.id')
+      .groupBy(['crew.id', 'crew_on_movies.job_id']) // TODO: verify
       .orderBy('count desc')
       .limit(3)
       .execute(),
@@ -72,7 +72,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('hosts')
       .innerJoin('hosts_on_episodes as jt', 'jt.host_id', 'hosts.id')
       .select(['hosts.id', 'hosts.name', eb => eb.fn.count('jt.episode_id').as('count')])
-      .where(sql.raw('lower(hosts.name)'), 'like', search)
+      .where('hosts.name', 'ilike', search)
       .groupBy('hosts.id')
       .orderBy('count desc')
       .limit(3)
@@ -86,13 +86,9 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
         'keywords.name',
         eb => eb.fn.count('keywords_on_movies.movie_id').as('count'),
       ])
-      .where(sql.raw('lower(keywords.name)'), 'like', search)
+      .where('keywords.name', 'ilike', search)
       .where(movieMode)
       .groupBy('keywords.id')
-      .orderBy(
-        eb => eb.case().when(sql.raw('lower(title)'), '=', params.search).then(0).else(1).end(),
-        'asc'
-      )
       .orderBy('count desc')
       .limit(3)
       .execute(),
@@ -100,14 +96,14 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('streamers')
       .select(['streamers.id', 'streamers.name'])
       .where('name', 'in', relevantStreamers)
-      .where(sql.raw('lower(streamers.name)'), 'like', search)
+      .where('streamers.name', 'like', search)
       .limit(3)
       .execute(),
   ]);
 
   const results = [
     ...movies.map(t =>
-      tokenize('movie', { id: t.id, name: `${t.name} (${getYear(t.release_date)})` })
+      tokenize('movie', { id: t.id, name: `${t.name} (${newFormatDate(t.release_date, 'year')})` })
     ),
     ...actors.map(t => tokenize('actor', t)),
     ...crew.map(tokenizeCrew),
