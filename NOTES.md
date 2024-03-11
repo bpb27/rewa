@@ -2,6 +2,8 @@
 
 - saw one duplicate table result - verify this isn't an issue
 
+- paginate directors in table
+
 - search oscar ceremony year
 
 - preview deployments are running migrations on prod db
