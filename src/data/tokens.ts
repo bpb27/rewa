@@ -1,8 +1,8 @@
 import { AppEnums } from '~/utils/enums';
-import { getYear, moneyShort, titleCase } from '~/utils/format';
+import { moneyShort, newFormatDate, titleCase } from '~/utils/format';
 import { jobIdToJobStr } from './crew-jobs';
 
-// TODO: can remove most of this
+// TODO: most of this is unused - can remove
 
 export type Token = { type: AppEnums['token']; id: number; name: string };
 
@@ -82,20 +82,20 @@ export const tokenizeRuntimeLte = (runtime: number): Token => ({
 });
 
 export const tokenizeYear = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: getYear(date),
+  id: Number(newFormatDate(date, 'year')),
+  name: newFormatDate(date, 'year'),
   type: 'year',
 });
 
 export const tokenizeYearGte = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: `> ${getYear(date)}`,
+  id: Number(newFormatDate(date, 'year')),
+  name: `> ${newFormatDate(date, 'year')}`,
   type: 'yearGte',
 });
 
 export const tokenizeYearLte = (date: string): Token => ({
-  id: Number(getYear(date)),
-  name: `< ${getYear(date)}`,
+  id: Number(newFormatDate(date, 'year')),
+  name: `< ${newFormatDate(date, 'year')}`,
   type: 'yearLte',
 });
 

@@ -1,6 +1,6 @@
 import { Sidebar } from '~/components/ui/sidebar';
 import { ApiResponses } from '~/trpc/router';
-import { getYear, titleCase } from '~/utils/format';
+import { newFormatDate, titleCase } from '~/utils/format';
 import { bookends } from '~/utils/object';
 import { Crate } from '../ui/box';
 import { Spotlight } from '../ui/spotlight';
@@ -17,7 +17,7 @@ export const PersonCardSidebar = ({ onClose, onSelectMovie, person }: PersonCard
 
   const handleClick = (params: { id: number }) => () => onSelectMovie(params.id);
   const [firstYear, lastYear] = bookends(person.movies).map(m =>
-    m ? Number(getYear(m.releaseDate)) : 0
+    m ? Number(newFormatDate(m.releaseDate, 'year')) : 0
   );
   const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
@@ -40,7 +40,7 @@ export const PersonCardSidebar = ({ onClose, onSelectMovie, person }: PersonCard
         {person.movies.map(movie => (
           <Crate key={movie.id} column my={1}>
             <Text bold onClick={handleClick(movie)} tag="span" icon="FilmStrip">
-              {movie.title} ({getYear(movie.releaseDate)})
+              {movie.title} ({newFormatDate(movie.releaseDate, 'year')})
             </Text>
             {movie.character && <Text>{movie.character}</Text>}
             {movie.oscarCategory && (

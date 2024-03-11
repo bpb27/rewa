@@ -4,6 +4,8 @@ Explore movie data from The Oscars and The Rewatchables podcast
 
 ## Running locally
 
+NB: You'll need to have Postgres locally installed and running with a DB called "rewa".
+
 1. `npm i`
 2. `npm run dev`
 
@@ -13,7 +15,8 @@ Branches are auto-deployed via Vercel (production tracks main branch)
 
 ## Stack
 
-React, Next, Radix, Tailwind, XState, Zod, Prisma, TRPC, SQLite, Vercel
+Frontend: React, Next, Radix, XState, Zod, Tailwind
+Backend: Next, TRPC, Kysely, Postgres, Vercel
 
 ## Data
 

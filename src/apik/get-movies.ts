@@ -1,7 +1,7 @@
 import { sql } from 'kysely';
 import { jobIdToJobStr } from '~/data/crew-jobs';
 import { QpSchema } from '~/data/query-params';
-import { getYear } from '~/utils/format';
+import { newFormatDate } from '~/utils/format';
 import { kyselyDb } from '../../pg/db';
 import { allMovieFilters, reusableSQL } from './reusable';
 
@@ -102,12 +102,12 @@ export const getMovies = async (params: QpSchema) => {
     totalOscarNominations: Number(movie.total_oscar_nominations) || 0,
     totalOscarWins: Number(movie.total_oscar_wins) || 0,
     description: movie.overview,
-    releaseDate: movie.release_date.toString(),
+    releaseDate: newFormatDate(movie.release_date, 'dash'),
     revenue: Number(movie.revenue),
     runtime: movie.runtime,
     streamers: movie.streamers,
     tagline: movie.tagline,
-    year: Number(getYear(movie.release_date)),
+    year: newFormatDate(movie.release_date, 'year'),
   }));
 
   const total = Number(count?.total || 0);

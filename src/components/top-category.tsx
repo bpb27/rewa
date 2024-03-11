@@ -8,7 +8,7 @@ import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { AppEnums } from '~/utils/enums';
-import { getYear } from '~/utils/format';
+import { newFormatDate } from '~/utils/format';
 import { isSameObject } from '~/utils/object';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
@@ -98,8 +98,8 @@ export const TopCategory = ({
           return a.bestCreditOrder - b.bestCreditOrder;
         } else {
           return (
-            Number(getYear(b.movies[a.movies.length - 1].releaseDate)) -
-            Number(getYear(a.movies[a.movies.length - 1].releaseDate))
+            Number(newFormatDate(b.movies[a.movies.length - 1].releaseDate, 'year')) -
+            Number(newFormatDate(a.movies[a.movies.length - 1].releaseDate, 'year'))
           );
         }
       }).map(person => (

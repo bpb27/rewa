@@ -10,7 +10,7 @@ import {
   tokenizeYearLte,
 } from '~/data/tokens';
 import { appEnums } from '~/utils/enums';
-import { getYear } from '~/utils/format';
+import { newFormatDate } from '~/utils/format';
 import { isInteger, isYear } from '~/utils/validate';
 import { kyselyDb } from '../../pg/db';
 import { reusableSQL } from './reusable';
@@ -103,7 +103,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
 
   const results = [
     ...movies.map(t =>
-      tokenize('movie', { id: t.id, name: `${t.name} (${getYear(t.release_date)})` })
+      tokenize('movie', { id: t.id, name: `${t.name} (${newFormatDate(t.release_date, 'year')})` })
     ),
     ...actors.map(t => tokenize('actor', t)),
     ...crew.map(tokenizeCrew),

@@ -54,8 +54,8 @@ export const reusableSQL = {
       const eb = expressionBuilder<DB, 'movies'>();
       if (comp === '~') {
         return eb.and([
-          eb('movies.budget', '<=', (budget + 5000000).toString()), // TODO: verify
-          eb('movies.budget', '>=', (budget - 5000000).toString()),
+          eb('movies.budget', '<=', Math.round(budget + budget * 0.1).toString()),
+          eb('movies.budget', '>=', Math.round(budget - budget * 0.1).toString()),
         ]);
       } else {
         return eb('movies.budget', comp, budget.toString());
@@ -106,8 +106,8 @@ export const reusableSQL = {
       const eb = expressionBuilder<DB, 'movies'>();
       if (comp === '~') {
         return eb.and([
-          eb('movies.revenue', '<=', (revenue + 5000).toString()), // TODO: verify
-          eb('movies.revenue', '>=', (revenue - 5000).toString()),
+          eb('movies.revenue', '<=', Math.round(revenue + revenue * 0.1).toString()),
+          eb('movies.revenue', '>=', Math.round(revenue - revenue * 0.1).toString()),
         ]);
       } else {
         return eb('movies.revenue', comp, revenue.toString());

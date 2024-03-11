@@ -73,7 +73,7 @@ export const MoviesTable = ({
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick('year', m.year)}>
+              <Text noWrap onClick={() => onTokenClick('year', Number(m.year))}>
                 {m.year}
               </Text>
             </Table.Data>

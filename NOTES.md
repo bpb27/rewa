@@ -1,13 +1,17 @@
 # Potential TODOs
 
+- saw one duplicate table result - verify this isn't an issue
+
+- search oscar ceremony year
+
+- preview deployments are running migrations on prod db
+
 - new movies in migrations
 - just put the params in there and call the script?
 - or get the JSON from TMDB and then put it in a file
 - could make a "new-movie-migration" script to generate the boilerplate
 
 - some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
-
-- scalar budget comps
 
 - trigger api even w/ preloaded to wake up lambas
 
