@@ -11,6 +11,9 @@
 - preview deployments are running migrations on prod db
 
 - new movies in migrations
+  - script that fetches from the API
+  - checks for existing records and
+  -
 - just put the params in there and call the script?
 - or get the JSON from TMDB and then put it in a file
 - could make a "new-movie-migration" script to generate the boilerplate

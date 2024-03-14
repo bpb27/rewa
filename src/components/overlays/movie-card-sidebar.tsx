@@ -26,8 +26,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
 
   if (!movie) return null;
   return (
-    <Sidebar>
-      <Sidebar.CloseButton onClose={onClose} />
+    <Sidebar onClose={onClose}>
       <Crate my={3}>
         <Spotlight {...movie} />
       </Crate>

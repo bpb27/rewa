@@ -1,5 +1,4 @@
-import * as Tooltip from '@radix-ui/react-tooltip';
-import { useCallback, type PropsWithChildren } from 'react';
+import { useCallback } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
@@ -7,7 +6,7 @@ import { streamerShortName } from '~/data/streamers';
 import { AppEnums } from '~/utils/enums';
 import { capitalize, formatRuntime, moneyShort } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
-import { MoviePoster, PersonPoster } from './images';
+import { MoviePoster } from './images';
 import { Crate } from './ui/box';
 import { PopoverMenu } from './ui/popover';
 import { StarRating } from './ui/stars';
@@ -19,6 +18,8 @@ type MoviesTableProps = {
   movies: MoviesPageMovie[];
   onSortClick: (sort: AppEnums['sort']) => void;
   onTokenClick: (tokenType: AppEnums['token'], tokenId: number) => void;
+  onShowCastClick: (movieId: number) => void;
+  onShowCrewClick: (movieId: number) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
   onMovieTitleClick: (id: number) => void;
 };
@@ -28,6 +29,8 @@ export const MoviesTable = ({
   movies,
   onMovieTitleClick,
   onOscarYearClick,
+  onShowCastClick,
+  onShowCrewClick,
   onSortClick,
   onTokenClick,
 }: MoviesTableProps) => {
@@ -86,20 +89,21 @@ export const MoviesTable = ({
                       {d.name}
                     </Text>
                   ))}
-                <PopoverMenu content={<CrewPopover items={m.crew} onClick={onTokenClick} />}>
-                  <Text secondary>Show crew</Text>
-                </PopoverMenu>
+                <Text secondary onClick={() => onShowCrewClick(m.id)}>
+                  Show crew
+                </Text>
               </Crate>
             </Table.Data>
             <Table.Data>
               <Crate column>
                 {m.actors.map(a => (
-                  <ImageTooltip key={a.id} path={a.image} name={a.name}>
-                    <Text noWrap onClick={() => onTokenClick('actor', a.id)} tag="span">
-                      {a.name}
-                    </Text>
-                  </ImageTooltip>
+                  <Text noWrap onClick={() => onTokenClick('actor', a.id)} tag="span" key={a.id}>
+                    {a.name}
+                  </Text>
                 ))}
+                <Text secondary onClick={() => onShowCastClick(m.id)}>
+                  Show cast
+                </Text>
               </Crate>
             </Table.Data>
             <Table.Data>
@@ -250,26 +254,3 @@ const StandardPopover = ({
     ))}
   </Crate>
 );
-
-const ImageTooltip = ({
-  name,
-  children,
-  path,
-}: PropsWithChildren<{ name: string; path: string | null }>) => {
-  if (!path) return null;
-  return (
-    <Tooltip.Provider delayDuration={1200}>
-      <Tooltip.Root>
-        <Tooltip.Trigger>{children}</Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content sideOffset={5}>
-            <div className="rounded shadow-xl">
-              <PersonPoster name={name} image={path} variant="tooltip" />
-            </div>
-            <Tooltip.Arrow className="fill-black" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
-  );
-};

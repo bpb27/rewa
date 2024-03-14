@@ -10,13 +10,15 @@ import { Select } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
+import { isSameObject } from '~/utils/object';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { useVizSensor } from '~/utils/use-viz-sensor';
+import { MovieCardSidebar } from './overlays/movie-card-sidebar';
+import { MovieCastSidebar } from './overlays/movie-cast-modal';
+import { MovieCrewSidebar } from './overlays/movie-crew-sidebar';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-modal';
-import { Modal } from './ui/modal';
-import { Spotlight } from './ui/spotlight';
 
 export type MoviesPageMovie = ApiResponses['getMovies']['results'][number];
 
@@ -24,11 +26,20 @@ type MoviesPageProps = {
   preloaded: { url: string; data: ApiResponses['getMovies'] };
 };
 
+type PageSider =
+  | { variant: 'movieDescription'; movieId: number }
+  | { variant: 'movieCast'; movieId: number }
+  | { variant: 'movieCrew'; movieId: number }
+  | { variant: 'oscarYear'; movieId: number; year: number }
+  | { variant: 'closed' };
+
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
-  const [oscarsModal, setOscarsModal] = useState<{ year: number; movieId: number } | undefined>();
-  const [movieModal, setMovieModal] = useState<MoviesPageMovie | undefined>();
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
+  const [sidebar, setSidebar] = useState<PageSider>({ variant: 'closed' });
+  const closeSidebar = () => setSidebar({ variant: 'closed' });
+  const openSidebar = (params: PageSider): void =>
+    isSameObject(params, sidebar) ? closeSidebar() : setSidebar(params);
 
   return (
     <Layout title="All movies">
@@ -63,23 +74,33 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
       <MoviesTable
         mode={data.movieMode}
         movies={data.results}
+        onShowCastClick={movieId => openSidebar({ variant: 'movieCast', movieId })}
+        onShowCrewClick={movieId => openSidebar({ variant: 'movieCrew', movieId })}
         onTokenClick={actions.toggleToken}
         onSortClick={actions.sort}
-        onOscarYearClick={setOscarsModal}
-        onMovieTitleClick={id => setMovieModal(data.results.find(m => m.id === id))}
+        onOscarYearClick={params => openSidebar({ variant: 'oscarYear', ...params })}
+        onMovieTitleClick={movieId => openSidebar({ variant: 'movieDescription', movieId })}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
-      {!!oscarsModal && (
-        <OscarYearModal
-          {...oscarsModal}
-          isOpen={!!oscarsModal}
-          onClose={() => setOscarsModal(undefined)}
+      {sidebar?.variant === 'oscarYear' && (
+        <OscarYearModal movieId={sidebar.movieId} onClose={closeSidebar} year={sidebar.year} />
+      )}
+      {sidebar?.variant === 'movieDescription' && (
+        <MovieCardSidebar movieId={sidebar.movieId} onClose={closeSidebar} />
+      )}
+      {sidebar.variant === 'movieCast' && (
+        <MovieCastSidebar
+          movieId={sidebar.movieId}
+          onTokenClick={actions.toggleToken}
+          onClose={closeSidebar}
         />
       )}
-      {!!movieModal && (
-        <Modal isOpen={!!movieModal} onClose={() => setMovieModal(undefined)}>
-          <Spotlight {...movieModal} />
-        </Modal>
+      {sidebar.variant === 'movieCrew' && (
+        <MovieCrewSidebar
+          movieId={sidebar.movieId}
+          onTokenClick={actions.toggleToken}
+          onClose={closeSidebar}
+        />
       )}
       <Button
         variant="icon"

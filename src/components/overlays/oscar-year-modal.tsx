@@ -2,29 +2,33 @@ import { useRef, useState } from 'react';
 import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
-import { Modal, type ModalProps } from '~/components/ui/modal';
 import { Text } from '~/components/ui/text';
 import { trpc } from '~/trpc/client';
 import { titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { Crate } from '../ui/box';
+import { Sidebar } from '../ui/sidebar';
 
 /*
  this would be better as a dedicated page and table
 */
 
-type OscarYearModalProps = { movieId: number; year: number } & ModalProps;
+type OscarYearModalProps = {
+  movieId: number;
+  onClose: () => void;
+  year: number;
+};
 
-export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalProps) => {
+export const OscarYearModal = ({ movieId, onClose, year }: OscarYearModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
   const movieSpotlight = data.filter(a => a.movieId === movieId);
   return (
-    <Modal {...modalProps} className="p-3">
-      <div className="my-8 flex items-center justify-between" ref={containerRef}>
+    <Sidebar onClose={onClose}>
+      <div className="my-4 flex items-center justify-between" ref={containerRef}>
         <Button
           disabled={selectedYear <= 1928}
           onClick={() => setYear(selectedYear - 1)}
@@ -36,7 +40,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
           The {selectedYear} Oscars
         </Text>
         <Button
-          disabled={selectedYear >= 2023}
+          disabled={selectedYear >= 2024}
           onClick={() => setYear(selectedYear + 1)}
           variant="icon"
         >
@@ -81,7 +85,7 @@ export const OscarYearModal = ({ movieId, year, ...modalProps }: OscarYearModalP
           Show {limitAwards ? 'more' : 'fewer'}
         </Button>
       </div>
-    </Modal>
+    </Sidebar>
   );
 };
 

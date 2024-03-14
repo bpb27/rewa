@@ -1,4 +1,5 @@
 import { AppEnums } from '~/utils/enums';
+import { keys } from '~/utils/object';
 
 export const crewJobs = {
   director: [8],
@@ -6,6 +7,9 @@ export const crewJobs = {
   cinematographer: [467, 18],
   writer: [13, 77],
 };
+
+export const crewJobIdToTokenType = (jobId: number) =>
+  keys(crewJobs).find(job => crewJobs[job].includes(jobId));
 
 export const relevantCrewIds = Object.values(crewJobs).flat();
 

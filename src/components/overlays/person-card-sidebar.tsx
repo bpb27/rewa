@@ -22,8 +22,7 @@ export const PersonCardSidebar = ({ onClose, onSelectMovie, person }: PersonCard
   const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
   return (
-    <Sidebar>
-      <Sidebar.CloseButton onClose={onClose} />
+    <Sidebar onClose={onClose}>
       <Crate my={3} className="w-full">
         <Spotlight
           image={person.image!}

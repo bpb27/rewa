@@ -2,6 +2,8 @@ import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { z } from 'zod';
 import { getActorRole, getActorRoleParams } from '~/apik/get-actor-role';
 import { getLeaderboard, getLeaderboardParams } from '~/apik/get-leaderboard';
+import { getMovieCast, getMovieCastParams } from '~/apik/get-movie-cast';
+import { getMovieCrew, getMovieCrewParams } from '~/apik/get-movie-crew';
 import { getMovies } from '~/apik/get-movies';
 import { getOscarCategories } from '~/apik/get-oscar-categories';
 import { getOscarsByYear, getOscarsByYearParams } from '~/apik/get-oscars-by-year';
@@ -25,6 +27,12 @@ export const appRouter = router({
   getMovies: procedure.input(parsedQpSchema).query(async ({ input }) => {
     const [movies, tokens] = await Promise.all([getMovies(input), getTokens(input)]);
     return { ...movies, tokens };
+  }),
+  getMovieCast: procedure.input(getMovieCastParams).query(async ({ input }) => {
+    return getMovieCast(input);
+  }),
+  getMovieCrew: procedure.input(getMovieCrewParams).query(async ({ input }) => {
+    return getMovieCrew(input);
   }),
   getOscarCategories: procedure.query(async () => {
     return getOscarCategories();
