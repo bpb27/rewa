@@ -36,23 +36,3 @@ export const Sidebar = ({
     </div>
   );
 };
-
-const Content = ({ children }: PropsWithChildren<{}>) => (
-  <div className="my-2 flex flex-col items-center space-y-1.5 text-left">{children}</div>
-);
-
-const Separator = () => <hr className="my-2 border-slate-300" />;
-
-const StarBar = ({ children }: PropsWithChildren<{}>) => (
-  <div className="my-3 flex justify-center">
-    <p className="flex items-center space-x-3 text-center text-lg">
-      <Icon.Star className="text-yellow-500" />
-      {children}
-      <Icon.Star className="text-yellow-500" />
-    </p>
-  </div>
-);
-
-Sidebar.Content = Content;
-Sidebar.Separator = Separator;
-Sidebar.StarBar = StarBar;

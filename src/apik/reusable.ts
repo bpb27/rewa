@@ -150,7 +150,7 @@ export const reusableSQL = {
           .innerJoin('actors', 'actors.id', 'jt.actor_id')
           .select(['actors.id', 'actors.name', 'actors.profile_path as image'])
           .whereRef('jt.movie_id', '=', 'movies.id')
-          .orderBy('jt.credit_id asc')
+          .orderBy('jt.credit_order asc')
           .limit(limit)
       ).as('actors');
     },

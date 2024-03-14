@@ -1,13 +1,3 @@
-/*
-    movie or person
-    name
-    image + theater
-    tagline
-    description
-    character
-    award?
-*/
-
 import { MoviePoster, PersonPoster } from '../images';
 import { Crate } from './box';
 import { Text } from './text';
