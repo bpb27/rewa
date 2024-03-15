@@ -5,7 +5,9 @@ import { cn } from '~/utils/style';
 export type Box = React.FC<PropsWithChildren<{}>>;
 export type Boxes = Record<string, Box>;
 
-type NumericalSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+// if adding options, make sure to add to tailwind.config.js safelist
+// otherwise tailwind won't know to bundle these dynamic styles
+type NumericalSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 type SpaceDirection = 'x' | 'y' | 't' | 'b' | 'l' | 'r';
 type Padding = 'p' | `p${SpaceDirection}`;
 type Margin = 'm' | `m${SpaceDirection}`;

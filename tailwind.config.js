@@ -8,9 +8,9 @@ module.exports = {
     './src/**/*.{ts,tsx}',
   ],
   safelist: [
-    { pattern: /p(?:[lrtbyx])?-(?:[1-8])/ },
-    { pattern: /m(?:[lrtbyx])?-(?:[1-8])/ },
-    { pattern: /gap-(?:[1-8])/ },
+    { pattern: /p(?:[lrtbyx])?-\d+/ },
+    { pattern: /m(?:[lrtbyx])?-\d+/ },
+    { pattern: /gap-\d+/ },
   ],
   theme: {
     container: {

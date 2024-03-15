@@ -60,6 +60,8 @@ type FetchParams<T extends Variant> = T extends 'leaderboard'
   ? { field: AppEnums['topCategory']; subField: AppEnums['topCategorySub'] }
   : never;
 
+// when this changes, the useUrlChange hook in useQueryParamsMachine will
+// send the machine a URL_HAS_CHANGED event
 const updateUrl = (context: Context, newQueryParams: Partial<QpSchema>) => {
   const newUrl = assembleUrl(context.url, {
     ...context.queryParams,
@@ -104,7 +106,7 @@ export const machine = createMachine({
             data: context.preloaded.data,
             queryParams: urlToParsedParams(context.preloaded.url, qpSchema),
           })),
-          target: 'idle',
+          target: 'fetching', // going to fetching to wake up lambdas - should be the same data as preloaded though
         },
         {
           // when a using a shared link with page > 0, all the data won't be there due to inifinite scroll, so just reset page
@@ -197,6 +199,8 @@ export const machine = createMachine({
     },
     fetching: {
       on: {
+        // cancel fetch, switch to idle state, forward event to idle event handlers
+        // e.g. if fetching and a token changes, cancel the prior fetch and start a new one
         '*': {
           target: 'idle',
           actions: raise(({ event }) => event),
@@ -309,6 +313,11 @@ export const useQueryParamsMachine = <T extends Variant>({
   }, [variant]);
 
   const [state, send] = useMachine(machineInstance, {
+    inspect: inspectionEvent => {
+      if (inspectionEvent.type === '@xstate.event') {
+        console.log(inspectionEvent.event);
+      }
+    },
     id: fetchParams?.field || variant,
     input: {
       fetchParams: fetchParams || {},
