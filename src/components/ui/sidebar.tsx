@@ -6,12 +6,13 @@ import { Icon } from './icons';
 export const Sidebar = ({
   children,
   onClose,
-  unfixedWidth,
-}: PropsWithChildren<{ onClose: () => void; unfixedWidth?: boolean }>) => {
+  thin,
+}: PropsWithChildren<{ onClose: () => void; thin?: boolean }>) => {
   return (
     <div
       className={cn(
-        !unfixedWidth && 'w-3/4 md:w-1/2 lg:w-1/3',
+        'w-3/4 md:w-1/2',
+        thin ? 'lg:w-1/4' : 'lg:w-1/3',
         'fixed right-0 top-8 z-10 mb-4 h-full animate-enterFromRight overflow-y-scroll border-l-2 border-l-slate-300 bg-slate-100 text-center shadow-xl'
       )}
     >

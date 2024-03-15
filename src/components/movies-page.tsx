@@ -15,7 +15,7 @@ import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { cn } from '~/utils/style';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieCardSidebar } from './overlays/movie-card-sidebar';
-import { MovieCastSidebar } from './overlays/movie-cast-modal';
+import { MovieCastSidebar } from './overlays/movie-cast-sidebar';
 import { MovieCrewSidebar } from './overlays/movie-crew-sidebar';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-modal';

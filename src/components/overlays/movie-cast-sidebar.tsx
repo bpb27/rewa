@@ -17,7 +17,7 @@ export const MovieCastSidebar = ({ movieId, onTokenClick, onClose }: MovieCastSi
   const movieMode = useMovieMode();
   const cast = trpc.getMovieCast.useQuery({ movieId, movieMode });
   return (
-    <Sidebar unfixedWidth onClose={onClose}>
+    <Sidebar onClose={onClose} thin>
       <Crate column>
         {(cast.data || []).map(actor => (
           <Crate key={actor.id} alignCenter gap={2} my={1}>

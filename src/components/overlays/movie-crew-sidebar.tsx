@@ -45,7 +45,7 @@ export const MovieCrewSidebar = ({ movieId, onTokenClick, onClose }: MovieCrewSi
   }, [crew.data]);
 
   return (
-    <Sidebar unfixedWidth onClose={onClose}>
+    <Sidebar onClose={onClose} thin>
       <Crate column>
         {sorted?.map(person => (
           <Crate key={person.id} alignCenter gap={2} my={1}>
