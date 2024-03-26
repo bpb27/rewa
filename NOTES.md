@@ -1,12 +1,12 @@
 # Potential TODOs
 
-- saw one duplicate table result - verify this isn't an issue
+- sort options in cast overlay
 
-- paginate directors in table
+- table sidebars need to be more clickable
 
-- uninstall git lfs
+- link to IMDB/TMDB (they did all the work)
 
-- search oscar ceremony year
+- search overlay option: oscar ceremony year
 
 - preview deployments are running migrations on prod db
 
@@ -20,13 +20,9 @@
 
 - some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
 
-- trigger api even w/ preloaded to wake up lambas
-
 - about w/ a google form or link to github to open an issue
 
 - mix genres into keywords
-
-- show cast and crew should be a modal w/ image name role, ideally clickable
 
 - route with /field/subfield - should be able to just make a [...field] directory
 

@@ -65,6 +65,40 @@ const movieSchema = z.object({
   }),
 });
 
+const discoverMoviesSchema = z
+  .object({
+    page: z.number(),
+    results: z
+      .object({
+        adult: z.boolean(),
+        backdrop_path: z.string().nullable(),
+        genre_ids: z.number().array(),
+        id: z.number(),
+        original_language: z.string(),
+        original_title: z.string(),
+        overview: z.string(),
+        popularity: z.number(),
+        poster_path: z.string(),
+        release_date: z.string(),
+        title: z.string(),
+        video: z.boolean(),
+        vote_average: z.number(),
+        vote_count: z.number(),
+      })
+      .array(),
+    total_pages: z.number(),
+    total_results: z.number(),
+  })
+  .transform(({ results }) => {
+    return results.map(m => ({
+      tmdbId: m.id,
+      name: m.title,
+      image: m.poster_path,
+      overview: m.overview,
+      releaseDate: m.release_date,
+    }));
+  });
+
 const streamerSchema = z.object({
   results: z.object({
     US: z.object({
@@ -93,4 +127,25 @@ const getMovieStreamers = async ({ tmdbId }: Params) => {
   return parsed.results.US.flatrate.map(p => p.provider_name);
 };
 
-export const tmdbApi = { getMovieById, getMovieStreamers };
+const getMoviesBy = async ({
+  sortBy,
+  year,
+}: {
+  sortBy: 'vote_count' | 'revenue';
+  year: string | number;
+}) => {
+  const route = [
+    `${apiBase}/discover/movie?`,
+    'include_adult=false',
+    'include_video=false',
+    'language=en-US',
+    'page=1',
+    `primary_release_year=${year}`,
+    `sort_by=${sortBy}.desc`,
+    `api_key=${API_KEY}`,
+  ].join('&');
+  const response = await fetch(route).then(response => response.json());
+  return discoverMoviesSchema.parse(response);
+};
+
+export const tmdbApi = { getMovieById, getMovieStreamers, getMoviesBy };

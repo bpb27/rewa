@@ -19,6 +19,7 @@ import { MovieCastSidebar } from './overlays/movie-cast-sidebar';
 import { MovieCrewSidebar } from './overlays/movie-crew-sidebar';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-modal';
+import { PopularMoviesByYear } from './overlays/popular-movies-by-year';
 
 export type MoviesPageMovie = ApiResponses['getMovies']['results'][number];
 
@@ -26,19 +27,20 @@ type MoviesPageProps = {
   preloaded: { url: string; data: ApiResponses['getMovies'] };
 };
 
-type PageSider =
+type PageSidebar =
   | { variant: 'movieDescription'; movieId: number }
   | { variant: 'movieCast'; movieId: number }
   | { variant: 'movieCrew'; movieId: number }
   | { variant: 'oscarYear'; movieId: number; year: number }
+  | { variant: 'popularMoviesByYear'; year: string }
   | { variant: 'closed' };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
-  const [sidebar, setSidebar] = useState<PageSider>({ variant: 'closed' });
+  const [sidebar, setSidebar] = useState<PageSidebar>({ variant: 'closed' });
   const closeSidebar = () => setSidebar({ variant: 'closed' });
-  const openSidebar = (params: PageSider): void =>
+  const openSidebar = (params: PageSidebar): void =>
     isSameObject(params, sidebar) ? closeSidebar() : setSidebar(params);
 
   return (
@@ -80,6 +82,7 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onSortClick={actions.sort}
         onOscarYearClick={params => openSidebar({ variant: 'oscarYear', ...params })}
         onMovieTitleClick={movieId => openSidebar({ variant: 'movieDescription', movieId })}
+        onShowPopularMoviesClick={year => openSidebar({ variant: 'popularMoviesByYear', year })}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
       {sidebar?.variant === 'oscarYear' && (
@@ -101,6 +104,9 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
           onTokenClick={actions.toggleToken}
           onClose={closeSidebar}
         />
+      )}
+      {sidebar.variant === 'popularMoviesByYear' && (
+        <PopularMoviesByYear year={sidebar.year} onClose={closeSidebar} />
       )}
       <Button
         variant="icon"

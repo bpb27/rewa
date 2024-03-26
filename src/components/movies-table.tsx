@@ -20,6 +20,7 @@ type MoviesTableProps = {
   onTokenClick: (tokenType: AppEnums['token'], tokenId: number) => void;
   onShowCastClick: (movieId: number) => void;
   onShowCrewClick: (movieId: number) => void;
+  onShowPopularMoviesClick: (year: string) => void;
   onOscarYearClick: (params: { movieId: number; year: number }) => void;
   onMovieTitleClick: (id: number) => void;
 };
@@ -31,6 +32,7 @@ export const MoviesTable = ({
   onOscarYearClick,
   onShowCastClick,
   onShowCrewClick,
+  onShowPopularMoviesClick,
   onSortClick,
   onTokenClick,
 }: MoviesTableProps) => {
@@ -76,14 +78,20 @@ export const MoviesTable = ({
               </Text>
             </Table.Data>
             <Table.Data>
-              <Text noWrap onClick={() => onTokenClick('year', Number(m.year))}>
-                {m.year}
-              </Text>
+              <Crate column>
+                <Text noWrap onClick={() => onTokenClick('year', Number(m.year))}>
+                  {m.year}
+                </Text>
+                <Text secondary onClick={() => onShowPopularMoviesClick(m.year)} noWrap>
+                  Show
+                </Text>
+              </Crate>
             </Table.Data>
             <Table.Data>
               <Crate column>
                 {m.crew
                   .filter(c => c.job === 'director')
+                  .slice(0, 2)
                   .map(d => (
                     <Text noWrap key={d.id} onClick={() => onTokenClick('director', d.id)}>
                       {d.name}

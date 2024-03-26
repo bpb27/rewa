@@ -16,6 +16,7 @@ type MovieCastSidebarProps = {
 export const MovieCastSidebar = ({ movieId, onTokenClick, onClose }: MovieCastSidebarProps) => {
   const movieMode = useMovieMode();
   const cast = trpc.getMovieCast.useQuery({ movieId, movieMode });
+  // TODO: sort option - credit order, name, total movies
   return (
     <Sidebar onClose={onClose} thin>
       <Crate column>

@@ -16,15 +16,17 @@ const TableHead = ({ children }: PropsWithChildren<{}>) => (
 );
 
 const TableHeader = ({
+  className,
   children,
   onClick,
   sticky,
-}: PropsWithChildren<{ onClick?: () => void; sticky?: boolean }>) => (
+}: PropsWithChildren<{ className?: string; onClick?: () => void; sticky?: boolean }>) => (
   <th
     className={cn(
       onClick && 'cursor-pointer',
       sticky &&
-        'sticky left-0 cursor-pointer bg-gradient-to-r from-blue-100 from-90% to-blue-100/90'
+        'sticky left-0 cursor-pointer bg-gradient-to-r from-blue-100 from-90% to-blue-100/90',
+      className
     )}
     onClick={onClick}
   >

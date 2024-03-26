@@ -10,6 +10,7 @@ import { getOscarsByYear, getOscarsByYearParams } from '~/apik/get-oscars-by-yea
 import { getTokens } from '~/apik/get-tokens';
 import { searchTokens, searchTokensParams } from '~/apik/search-tokens';
 import { defaultQps, parsedQpSchema } from '~/data/query-params';
+import { tmdbApi } from '../../scripts/tmbd-api';
 import { procedure, router } from './trpc';
 
 export const appRouter = router({
@@ -28,6 +29,16 @@ export const appRouter = router({
     const [movies, tokens] = await Promise.all([getMovies(input), getTokens(input)]);
     return { ...movies, tokens };
   }),
+  getMoviesFromTmdb: procedure
+    .input(
+      z.object({
+        sortBy: z.enum(['vote_count', 'revenue']),
+        year: z.union([z.string(), z.number()]),
+      })
+    )
+    .query(async ({ input }) => {
+      return tmdbApi.getMoviesBy(input);
+    }),
   getMovieCast: procedure.input(getMovieCastParams).query(async ({ input }) => {
     return getMovieCast(input);
   }),
