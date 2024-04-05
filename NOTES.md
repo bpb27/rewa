@@ -1,5 +1,7 @@
 # Potential TODOs
 
+- getStaticProps will render old stuff if updating prod from script
+
 - sort options in cast overlay
 
 - table sidebars need to be more clickable
