@@ -24,6 +24,8 @@ const movieSchema = z.object({
     ),
   }),
   overview: z.string(),
+  popularity: z.number(),
+  original_language: z.string(),
   poster_path: z.string(),
   production_companies: z.array(
     z.object({
@@ -32,11 +34,25 @@ const movieSchema = z.object({
       name: z.string(),
     })
   ),
+  production_countries: z.array(
+    z.object({
+      iso_3166_1: z.string(),
+      name: z.string(),
+    })
+  ),
   release_date: z.string(),
   revenue: z.number(),
   runtime: z.number(),
+  spoken_languages: z.array(
+    z.object({
+      iso_639_1: z.string(),
+      name: z.string(),
+    })
+  ),
   tagline: z.string(),
   title: z.string(),
+  vote_average: z.number(),
+  vote_count: z.number(),
   credits: z.object({
     cast: z.array(
       z.object({
@@ -44,6 +60,7 @@ const movieSchema = z.object({
         id: z.number(),
         known_for_department: z.string(),
         name: z.string(),
+        popularity: z.number(),
         profile_path: z.string().nullable(),
         character: z.string(),
         credit_id: z.string(),
@@ -56,6 +73,7 @@ const movieSchema = z.object({
         id: z.number(),
         known_for_department: z.string(),
         name: z.string(),
+        popularity: z.number(),
         profile_path: z.string().nullable(),
         credit_id: z.string(),
         department: z.string(),

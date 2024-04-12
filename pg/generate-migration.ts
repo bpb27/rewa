@@ -10,11 +10,10 @@ if (!isString(name)) {
 
 const contents = `
 import { type Kysely } from 'kysely';
-import data from '../json/movies.json';
-import { tables } from './20240305234522486_tables';
+import { tables } from './20240412045314456_lang_and_country_on_movies_tables';
 
 export async function up(db: Kysely<any>): Promise<void> {
-  await db.insertInto(tables.enum.movies).values(data).execute();
+  await db.insertInto(tables.enum.movies).values([]).execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
