@@ -1,6 +1,7 @@
 import { Token } from '~/data/tokens';
 import { trpc } from '~/trpc/client';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { SidebarActions } from '~/utils/use-sidebar';
 import { PersonPoster } from '../images';
 import { Crate } from '../ui/box';
 import { Icon } from '../ui/icons';
@@ -10,15 +11,18 @@ import { Text } from '../ui/text';
 type MovieCastSidebarProps = {
   movieId: number;
   onTokenClick: (tokenType: Token['type'], id: number) => void;
-  onClose: () => void;
-};
+} & SidebarActions;
 
-export const MovieCastSidebar = ({ movieId, onTokenClick, onClose }: MovieCastSidebarProps) => {
+export const MovieCastSidebar = ({
+  movieId,
+  onTokenClick,
+  ...sidebarProps
+}: MovieCastSidebarProps) => {
   const movieMode = useMovieMode();
   const cast = trpc.getMovieCast.useQuery({ movieId, movieMode });
   // TODO: sort option - credit order, name, total movies
   return (
-    <Sidebar onClose={onClose} thin>
+    <Sidebar thin {...sidebarProps}>
       <Crate column>
         {(cast.data || []).map(actor => (
           <Crate key={actor.id} alignCenter gap={2} my={1}>

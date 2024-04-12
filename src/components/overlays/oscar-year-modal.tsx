@@ -7,6 +7,7 @@ import { trpc } from '~/trpc/client';
 import { titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { cn } from '~/utils/style';
+import { SidebarActions } from '~/utils/use-sidebar';
 import { Crate } from '../ui/box';
 import { Sidebar } from '../ui/sidebar';
 
@@ -16,19 +17,18 @@ import { Sidebar } from '../ui/sidebar';
 
 type OscarYearModalProps = {
   movieId: number;
-  onClose: () => void;
   year: number;
-};
+} & SidebarActions;
 
-export const OscarYearModal = ({ movieId, onClose, year }: OscarYearModalProps) => {
+export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
   const movieSpotlight = data.filter(a => a.movieId === movieId);
   return (
-    <Sidebar onClose={onClose}>
-      <div className="my-4 flex items-center justify-between" ref={containerRef}>
+    <Sidebar {...sidebarProps}>
+      <div className="flex items-center justify-between" ref={containerRef}>
         <Button
           disabled={selectedYear <= 1928}
           onClick={() => setYear(selectedYear - 1)}

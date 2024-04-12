@@ -313,11 +313,11 @@ export const useQueryParamsMachine = <T extends Variant>({
   }, [variant]);
 
   const [state, send] = useMachine(machineInstance, {
-    inspect: inspectionEvent => {
-      if (inspectionEvent.type === '@xstate.event') {
-        console.log(inspectionEvent.event);
-      }
-    },
+    // inspect: inspectionEvent => {
+    //   if (inspectionEvent.type === '@xstate.event') {
+    //     console.log(inspectionEvent.event);
+    //   }
+    // },
     id: fetchParams?.field || variant,
     input: {
       fetchParams: fetchParams || {},

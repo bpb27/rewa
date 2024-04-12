@@ -4,6 +4,7 @@ import { trpc } from '~/trpc/client';
 import { newFormatDate, titleCase } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { useMovieMode } from '~/utils/use-movie-mode';
+import { SidebarActions } from '~/utils/use-sidebar';
 import { useToggle } from '~/utils/use-toggle';
 import { Crate } from '../ui/box';
 import { Spotlight } from '../ui/spotlight';
@@ -12,10 +13,9 @@ import { Text } from '../ui/text';
 type MovieCardSidebar = {
   actorId?: number;
   movieId: number;
-  onClose: () => void;
-};
+} & SidebarActions;
 
-export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar) => {
+export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCardSidebar) => {
   const movieMode = useMovieMode();
   const awards = useToggle('hiding', 'showing');
   const { data: movie } = trpc.getMovie.useQuery({ id: movieId });
@@ -26,7 +26,7 @@ export const MovieCardSidebar = ({ actorId, movieId, onClose }: MovieCardSidebar
 
   if (!movie) return null;
   return (
-    <Sidebar onClose={onClose}>
+    <Sidebar {...sidebarProps}>
       <Crate my={3}>
         <Spotlight {...movie} />
       </Crate>

@@ -19,6 +19,7 @@ export const getMovieCrew = async (params: z.infer<typeof getMovieCrewParams>) =
       'crew.profile_path as image',
       'crew_jobs.job',
       'crew_on_movies.job_id as jobId',
+      'crew_on_movies.credit_id as creditId',
       eb =>
         eb
           .selectFrom('movies')

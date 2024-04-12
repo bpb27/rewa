@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { trpc } from '~/trpc/client';
+import { SidebarActions } from '~/utils/use-sidebar';
 import { PersonPoster } from '../images';
 import { Crate } from '../ui/box';
 import { Radio } from '../ui/radio';
@@ -8,14 +9,13 @@ import { Text } from '../ui/text';
 
 type PopularMoviesByYearProps = {
   year: string;
-  onClose: () => void;
-};
+} & SidebarActions;
 
-export const PopularMoviesByYear = ({ onClose, year }: PopularMoviesByYearProps) => {
+export const PopularMoviesByYear = ({ year, ...sidebarProps }: PopularMoviesByYearProps) => {
   const [sortBy, setSort] = useState<'vote_count' | 'revenue'>('vote_count');
   const movies = trpc.getMoviesFromTmdb.useQuery({ sortBy, year });
   return (
-    <Sidebar onClose={onClose} thin>
+    <Sidebar thin {...sidebarProps}>
       <Radio label="Order" id="popularityOrder">
         <Radio.Item
           checked={sortBy === 'vote_count'}

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Layout from '~/components/layout';
 import { MoviesTable } from '~/components/movies-table';
 import { SearchBar } from '~/components/search-bar';
@@ -10,9 +9,9 @@ import { Select } from '~/components/ui/select';
 import { Text } from '~/components/ui/text';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
-import { isSameObject } from '~/utils/object';
 import { oscarSortOptions, sortOptions } from '~/utils/sorting';
 import { cn } from '~/utils/style';
+import { useSidebar } from '~/utils/use-sidebar';
 import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieCardSidebar } from './overlays/movie-card-sidebar';
 import { MovieCastSidebar } from './overlays/movie-cast-sidebar';
@@ -32,16 +31,12 @@ type PageSidebar =
   | { variant: 'movieCast'; movieId: number }
   | { variant: 'movieCrew'; movieId: number }
   | { variant: 'oscarYear'; movieId: number; year: number }
-  | { variant: 'popularMoviesByYear'; year: string }
-  | { variant: 'closed' };
+  | { variant: 'popularMoviesByYear'; year: string };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
   const loadMoreRef = useVizSensor({ callback: actions.nextPage });
-  const [sidebar, setSidebar] = useState<PageSidebar>({ variant: 'closed' });
-  const closeSidebar = () => setSidebar({ variant: 'closed' });
-  const openSidebar = (params: PageSidebar): void =>
-    isSameObject(params, sidebar) ? closeSidebar() : setSidebar(params);
+  const { sidebar, openSidebar, ...sidebarActions } = useSidebar<PageSidebar>();
 
   return (
     <Layout title="All movies">
@@ -85,28 +80,18 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onShowPopularMoviesClick={year => openSidebar({ variant: 'popularMoviesByYear', year })}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
-      {sidebar?.variant === 'oscarYear' && (
-        <OscarYearModal movieId={sidebar.movieId} onClose={closeSidebar} year={sidebar.year} />
-      )}
+      {sidebar?.variant === 'oscarYear' && <OscarYearModal {...sidebar} {...sidebarActions} />}
       {sidebar?.variant === 'movieDescription' && (
-        <MovieCardSidebar movieId={sidebar.movieId} onClose={closeSidebar} />
+        <MovieCardSidebar {...sidebar} {...sidebarActions} />
       )}
-      {sidebar.variant === 'movieCast' && (
-        <MovieCastSidebar
-          movieId={sidebar.movieId}
-          onTokenClick={actions.toggleToken}
-          onClose={closeSidebar}
-        />
+      {sidebar?.variant === 'movieCast' && (
+        <MovieCastSidebar onTokenClick={actions.toggleToken} {...sidebar} {...sidebarActions} />
       )}
-      {sidebar.variant === 'movieCrew' && (
-        <MovieCrewSidebar
-          movieId={sidebar.movieId}
-          onTokenClick={actions.toggleToken}
-          onClose={closeSidebar}
-        />
+      {sidebar?.variant === 'movieCrew' && (
+        <MovieCrewSidebar onTokenClick={actions.toggleToken} {...sidebar} {...sidebarActions} />
       )}
-      {sidebar.variant === 'popularMoviesByYear' && (
-        <PopularMoviesByYear year={sidebar.year} onClose={closeSidebar} />
+      {sidebar?.variant === 'popularMoviesByYear' && (
+        <PopularMoviesByYear {...sidebar} {...sidebarActions} />
       )}
       <Button
         variant="icon"

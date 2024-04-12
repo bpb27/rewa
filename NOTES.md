@@ -1,6 +1,25 @@
+# Bugs
+
+text w/ onClick calls onClick twice
+
+- getting unclear what is clickable and what the clicks will do
+- need a clear "clicking this will filter" vs. "clicking this will open a modal" vs. "not clickable"
+
+- Rewa move bar cast numbers don't seem to be accurate (Matt Damon Producer 2 on Machesty)
+- Date console error on TopCategory movie sidebar
+- ModalHistory seems to be dropping first one on top cat page
+- getStaticProps will render old stuff if updating prod from script
+
 # Potential TODOs
 
-- getStaticProps will render old stuff if updating prod from script
+- need a better strategy for local and remote - ideally migration
+
+- sidebars need titles
+
+- store top movies + new table with top? - or can just query for top but would need to store tmdb vote
+
+  - think about refreshing movies with all the extra data
+  - some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
 
 - sort options in cast overlay
 
@@ -19,8 +38,6 @@
 - just put the params in there and call the script?
 - or get the JSON from TMDB and then put it in a file
 - could make a "new-movie-migration" script to generate the boilerplate
-
-- some more interesting data in TMDB - popularity, vote_average, spoken_language, production countries - can get everything thru the movie endpoint (5k)
 
 - about w/ a google form or link to github to open an issue
 

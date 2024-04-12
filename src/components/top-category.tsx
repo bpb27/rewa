@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { isNumber } from 'remeda';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
@@ -9,9 +8,9 @@ import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { AppEnums } from '~/utils/enums';
 import { newFormatDate } from '~/utils/format';
-import { isSameObject } from '~/utils/object';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
+import { useSidebar } from '~/utils/use-sidebar';
 import { SearchBar } from './search-bar';
 import { TokenBar } from './token-bar';
 import { Radio } from './ui/radio';
@@ -25,10 +24,9 @@ type TopCategoryProps = {
   preloaded: { data: ApiResponses['getLeaderboard']; url: string };
 };
 
-type Selected =
-  | { movieId: number }
-  | { movieId: number; actorId: number }
-  | ApiResponses['getLeaderboard']['results'][number];
+type Sidebar =
+  | { variant: 'movie'; movieId: number; actorId?: number }
+  | { variant: 'person'; data: ApiResponses['getLeaderboard']['results'][number] };
 
 export const TopCategory = ({
   field,
@@ -37,17 +35,13 @@ export const TopCategory = ({
   movieMode,
   preloaded,
 }: TopCategoryProps) => {
-  const [selected, select] = useState<Selected | undefined>(undefined);
-
   const { data, actions } = useQueryParamsMachine({
     fetchParams: { field, subField },
     preloaded,
     variant: 'leaderboard',
   });
 
-  const handleSelect = (selection: Selected) => {
-    select(isSameObject(selection, selected || {}) ? undefined : selection);
-  };
+  const { sidebar, openSidebar, ...sidebarActions } = useSidebar<Sidebar>();
 
   return (
     <Layout title={titles[field]}>
@@ -113,7 +107,7 @@ export const TopCategory = ({
             <Text
               size="lg"
               className="ml-1 mt-2"
-              onClick={() => handleSelect(person)}
+              onClick={() => openSidebar({ variant: 'person', data: person })}
               flex={false}
               tag="span"
             >
@@ -133,11 +127,11 @@ export const TopCategory = ({
                     variant="leaderboard"
                     title={m.title}
                     onClick={() =>
-                      handleSelect(
-                        field === 'actor'
-                          ? { actorId: person.id, movieId: m.id }
-                          : { movieId: m.id }
-                      )
+                      openSidebar({
+                        variant: 'movie',
+                        movieId: m.id,
+                        actorId: field === 'actor' ? person.id : undefined,
+                      })
                     }
                   />
                 </Box.MoviePoster>
@@ -146,23 +140,17 @@ export const TopCategory = ({
           </Crate>
         </Box.Person>
       ))}
-      {selected && 'movieId' in selected && (
-        <MovieCardSidebar
-          movieId={selected.movieId}
-          actorId={'actorId' in selected ? selected.actorId : undefined}
-          onClose={() => select(undefined)}
-        />
-      )}
-      {selected && 'movies' in selected && (
+      {sidebar?.variant === 'movie' && <MovieCardSidebar {...sidebar} {...sidebarActions} />}
+      {sidebar?.variant === 'person' && (
         <PersonCardSidebar
-          person={selected}
-          onClose={() => select(undefined)}
+          person={sidebar.data}
+          {...sidebarActions}
           onSelectMovie={movieId => {
-            if (field === 'actor') {
-              handleSelect({ actorId: selected.id, movieId });
-            } else {
-              handleSelect({ movieId });
-            }
+            openSidebar({
+              variant: 'movie',
+              movieId,
+              actorId: field === 'actor' ? sidebar.data.id : undefined,
+            });
           }}
         />
       )}

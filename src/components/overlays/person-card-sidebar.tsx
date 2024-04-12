@@ -2,17 +2,21 @@ import { Sidebar } from '~/components/ui/sidebar';
 import { ApiResponses } from '~/trpc/router';
 import { newFormatDate, titleCase } from '~/utils/format';
 import { bookends } from '~/utils/object';
+import { SidebarActions } from '~/utils/use-sidebar';
 import { Crate } from '../ui/box';
 import { Spotlight } from '../ui/spotlight';
 import { Text } from '../ui/text';
 
 type PersonCardSidebarProps = {
   person: ApiResponses['getLeaderboard']['results'][number];
-  onClose: () => void;
   onSelectMovie: (movieId: number) => void;
-};
+} & SidebarActions;
 
-export const PersonCardSidebar = ({ onClose, onSelectMovie, person }: PersonCardSidebarProps) => {
+export const PersonCardSidebar = ({
+  onSelectMovie,
+  person,
+  ...sidebarProps
+}: PersonCardSidebarProps) => {
   if (!person || !person?.movies) return null;
 
   const handleClick = (params: { id: number }) => () => onSelectMovie(params.id);
@@ -22,7 +26,7 @@ export const PersonCardSidebar = ({ onClose, onSelectMovie, person }: PersonCard
   const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
   return (
-    <Sidebar onClose={onClose}>
+    <Sidebar {...sidebarProps}>
       <Crate my={3} className="w-full">
         <Spotlight
           image={person.image!}
