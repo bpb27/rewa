@@ -288,17 +288,17 @@ const run = async (params: z.infer<typeof paramsSchema>) => {
 const hosts = z.enum(['Bill Simmons','Mallory Rubin','Van Lathan','Logan Murdock','Chris Ryan','Sean Fennessey','Juliet Litman','Amanda Dobbins','Ryen Russillo','Craig Horlbeck','Kyle Brandt','Wesley Morris','Danny Kelly','Danny Heifetz','Jodi Walker','Kate Halliwell','Brian Koppelman','Shea Serrano','Wosny Lambre','David Jacoby','Cousin Sal','Gus Ramsey','Charles Holmes','K. Austin Collins','Jimmy Kimmel','Andy Greenwald','Mina Kimes','Chuck Klosterman','Bill Hader','Bill Lawrence','Liz Kelly','Judd Apatow','Jason Concepcion','Issa Rae','Jemele Hill','Quentin Tarantino','The Safdie Brothers','Kari Simmons','Rembert Browne','Bill’s Dad','Aaron Sorkin','Andrew Gruttadaro','Micah Peters','David Shoemaker','Bryan Curtis','Justin Charity','Lindsay Zoladz','Donnie Kwak','Hannah Giorgis','Mark Titus','Dave Chang','Jennifer Lawrence','Zach Baron']).enum;
 
 run({
-  where: 'remote',
-  tmdbId: 339692,
-  // ebert: {
-  //   path: '/reviews/risky-business-1983',
-  //   rating: 4,
-  // },
+  where: 'local',
+  tmdbId: 249,
+  ebert: {
+    path: '/reviews/the-war-of-the-roses-1989',
+    rating: 3,
+  },
   episode: {
-    spotifyUrl: 'https://open.spotify.com/episode/3Zbfctc3rJ8sY16WdmEHbt?si=934dfc51cef741da',
-    title: 'Shot Caller',
-    hosts: [hosts['Bill Simmons'], hosts['Chris Ryan']],
+    spotifyUrl: 'https://open.spotify.com/episode/6eikEb3398eM59pmfpW32X?si=f120a1bc86274b3e',
+    title: 'The War of the Roses',
+    hosts: [hosts['Bill Simmons'], hosts['Mallory Rubin'], hosts['Amanda Dobbins']],
     date: 'Apr 2024',
-    episodeOrder: 335,
+    episodeOrder: 336,
   },
 });
