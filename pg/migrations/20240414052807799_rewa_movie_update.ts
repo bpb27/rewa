@@ -73,11 +73,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db
-    .deleteFrom(tables.enum.movies)
+    .deleteFrom(tables.enum.episodes)
     .where(
-      'tmdb_id',
+      'spotify_url',
       'in',
-      data.map(m => m.tmdbId)
+      data.map(m => m.episode.spotifyUrl)
     )
     .execute();
 }
