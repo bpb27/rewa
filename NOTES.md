@@ -1,3 +1,8 @@
+maybe
+
+- add to local via script
+- secondary script that pulls the relevant json, plops into a migration
+
 # Bugs
 
 text w/ onClick calls onClick twice

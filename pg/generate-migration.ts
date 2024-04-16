@@ -17,7 +17,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.deleteFrom(tables.enum.movies).execute();
+  // await db.deleteFrom('something').execute();
 }
 `;
 

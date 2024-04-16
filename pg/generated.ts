@@ -12,6 +12,7 @@ export interface Actors {
   gender: number;
   id: Generated<number>;
   name: string;
+  popularity: number | null;
   profile_path: string | null;
   tmdb_id: number;
 }
@@ -31,10 +32,17 @@ export interface ActorsOnOscars {
   oscar_id: number;
 }
 
+export interface Countries {
+  id: Generated<number>;
+  name: string;
+  short: string;
+}
+
 export interface Crew {
   gender: number;
   id: Generated<number>;
   name: string;
+  popularity: number | null;
   profile_path: string | null;
   tmdb_id: number;
 }
@@ -108,11 +116,19 @@ export interface KeywordsOnMovies {
   movie_id: number;
 }
 
+export interface Languages {
+  id: Generated<number>;
+  name: string;
+  short: string;
+}
+
 export interface Movies {
   budget: Int8;
   id: Generated<number>;
   imdb_id: string;
+  language_id: number | null;
   overview: string;
+  popularity: number | null;
   poster_path: string;
   release_date: Timestamp;
   revenue: Int8;
@@ -120,6 +136,8 @@ export interface Movies {
   tagline: string;
   title: string;
   tmdb_id: number;
+  vote_average: number | null;
+  vote_count: number | null;
 }
 
 export interface OscarsAwards {
@@ -157,6 +175,18 @@ export interface ProductionCompaniesOnMovies {
   production_company_id: number;
 }
 
+export interface ProductionCountriesOnMovies {
+  country_id: number;
+  id: Generated<number>;
+  movie_id: number;
+}
+
+export interface SpokenLanguagesOnMovies {
+  id: Generated<number>;
+  language_id: number;
+  movie_id: number;
+}
+
 export interface Streamers {
   id: Generated<number>;
   logo_path: string | null;
@@ -174,6 +204,7 @@ export interface DB {
   actors: Actors;
   actors_on_movies: ActorsOnMovies;
   actors_on_oscars: ActorsOnOscars;
+  countries: Countries;
   crew: Crew;
   crew_jobs: CrewJobs;
   crew_on_movies: CrewOnMovies;
@@ -186,12 +217,15 @@ export interface DB {
   hosts_on_episodes: HostsOnEpisodes;
   keywords: Keywords;
   keywords_on_movies: KeywordsOnMovies;
+  languages: Languages;
   movies: Movies;
   oscars_awards: OscarsAwards;
   oscars_categories: OscarsCategories;
   oscars_nominations: OscarsNominations;
   production_companies: ProductionCompanies;
   production_companies_on_movies: ProductionCompaniesOnMovies;
+  production_countries_on_movies: ProductionCountriesOnMovies;
+  spoken_languages_on_movies: SpokenLanguagesOnMovies;
   streamers: Streamers;
   streamers_on_movies: StreamersOnMovies;
 }

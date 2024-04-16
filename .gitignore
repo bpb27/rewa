@@ -38,3 +38,8 @@ yarn-error.log*
 next-env.d.ts
 /src/types.js
 /sql/*.js
+
+# db shit
+.pgsync.yml
+local_dump.sql
+prod_dump.sql

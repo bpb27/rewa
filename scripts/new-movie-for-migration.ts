@@ -44,6 +44,10 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
 
   if (!movieId) {
     console.log(`Inserting ${tmdbMovie.title}`);
+
+    const languages = await kyselyDb.selectFrom('languages').selectAll().execute();
+    const countries = await kyselyDb.selectFrom('countries').selectAll().execute();
+
     const insertedMovie = await kyselyDb
       .insertInto('movies')
       .values({
@@ -57,6 +61,10 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
         tagline: tmdbMovie.tagline,
         title: tmdbMovie.title,
         tmdb_id: tmdbMovie.id,
+        language_id: languages.find(l => tmdbMovie.original_language === l.short)?.id,
+        vote_average: tmdbMovie.vote_average,
+        vote_count: tmdbMovie.vote_count,
+        popularity: tmdbMovie.popularity,
       })
       .returning(['id'])
       .execute();
@@ -73,6 +81,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
           name: a.name,
           tmdb_id: a.id,
           profile_path: a.profile_path,
+          popularity: a.popularity,
         }))
       )
       .onConflict(c => c.doNothing())
@@ -112,6 +121,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
           name: c.name,
           tmdb_id: c.id,
           profile_path: c.profile_path,
+          popularity: c.popularity,
         }))
       )
       .onConflict(c => c.doNothing())
@@ -196,7 +206,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
       )
       .execute();
 
-    // production ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // production companies ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     const insertedCompanies = await kyselyDb
       .insertInto('production_companies')
@@ -224,7 +234,33 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
         }))
       )
       .execute();
+
+    // production countries ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    await kyselyDb
+      .insertInto('production_countries_on_movies')
+      .values(
+        tmdbMovie.production_countries.map(pc => ({
+          country_id: countries.find(c => c.short === pc.iso_3166_1)!.id,
+          movie_id: movieId,
+        }))
+      )
+      .execute();
+
+    // spoken languages ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    await kyselyDb
+      .insertInto('spoken_languages_on_movies')
+      .values(
+        tmdbMovie.spoken_languages.map(sl => ({
+          language_id: languages.find(l => l.short === sl.iso_639_1)!.id,
+          movie_id: movieId,
+        }))
+      )
+      .execute();
   }
+
+  // end movie inserts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // episode ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

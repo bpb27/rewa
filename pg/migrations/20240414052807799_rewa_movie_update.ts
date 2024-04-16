@@ -1,5 +1,6 @@
 import { type Kysely } from 'kysely';
 import { insertMovie } from '../../scripts/new-movie-for-migration';
+import { DB } from '../generated';
 import { tables } from './20240412045314456_lang_and_country_on_movies_tables';
 
 const data = [
@@ -71,7 +72,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await insertMovie(db, data[4]);
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: Kysely<DB>): Promise<void> {
   await db
     .deleteFrom(tables.enum.episodes)
     .where(
