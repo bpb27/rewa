@@ -3,6 +3,15 @@ import { z } from 'zod';
 import { DB } from '../pg/generated';
 import { tmdbApi } from './tmbd-api';
 
+/*
+  NB:
+  - be careful changing this script
+    - it's used in migrations
+    - DB schema can differ across migration history
+    - create a new script if necessary and keep this one in older migration references
+  - vercel-kysely package doesn't support transactions in migrations for some reason
+*/
+
 const paramsSchema = z.object({
   tmdbId: z.number(),
   episode: z
