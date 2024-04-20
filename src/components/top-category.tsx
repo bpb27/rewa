@@ -1,4 +1,3 @@
-import { isNumber } from 'remeda';
 import { MoviePoster, PersonPoster } from '~/components/images';
 import Layout from '~/components/layout';
 import { MovieCardSidebar } from '~/components/overlays/movie-card-sidebar';
@@ -7,7 +6,6 @@ import { Crate, type Boxes } from '~/components/ui/box';
 import { useQueryParamsMachine } from '~/data/query-params-machine';
 import { ApiResponses } from '~/trpc/router';
 import { AppEnums } from '~/utils/enums';
-import { newFormatDate } from '~/utils/format';
 import { rankByTotalMovies } from '~/utils/ranking';
 import { cn } from '~/utils/style';
 import { useSidebar } from '~/utils/use-sidebar';
@@ -87,16 +85,7 @@ export const TopCategory = ({
           </Crate>
         )}
       </Crate>
-      {rankByTotalMovies(data.results, (a, b) => {
-        if (isNumber(a.bestCreditOrder) && isNumber(b.bestCreditOrder)) {
-          return a.bestCreditOrder - b.bestCreditOrder;
-        } else {
-          return (
-            Number(newFormatDate(b.movies[a.movies.length - 1].releaseDate, 'year')) -
-            Number(newFormatDate(a.movies[a.movies.length - 1].releaseDate, 'year'))
-          );
-        }
-      }).map(person => (
+      {rankByTotalMovies(data.results, (a, b) => a.popularity - b.popularity).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>

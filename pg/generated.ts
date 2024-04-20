@@ -12,7 +12,7 @@ export interface Actors {
   gender: number;
   id: Generated<number>;
   name: string;
-  popularity: number | null;
+  popularity: number;
   profile_path: string | null;
   tmdb_id: number;
 }
@@ -42,7 +42,7 @@ export interface Crew {
   gender: number;
   id: Generated<number>;
   name: string;
-  popularity: number | null;
+  popularity: number;
   profile_path: string | null;
   tmdb_id: number;
 }
@@ -126,9 +126,9 @@ export interface Movies {
   budget: Int8;
   id: Generated<number>;
   imdb_id: string;
-  language_id: number | null;
+  language_id: number;
   overview: string;
-  popularity: number | null;
+  popularity: number;
   poster_path: string;
   release_date: Timestamp;
   revenue: Int8;
@@ -136,8 +136,8 @@ export interface Movies {
   tagline: string;
   title: string;
   tmdb_id: number;
-  vote_average: number | null;
-  vote_count: number | null;
+  vote_average: number;
+  vote_count: number;
 }
 
 export interface OscarsAwards {

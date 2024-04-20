@@ -40,32 +40,23 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .selectFrom('actors_on_movies')
       .innerJoin('actors', 'actors.id', 'actors_on_movies.actor_id')
       .innerJoin('movies', 'movies.id', 'actors_on_movies.movie_id')
-      .select([
-        'actors.id',
-        'actors.name',
-        eb => eb.fn.count('actors_on_movies.actor_id').as('count'),
-      ])
+      .select(['actors.id', 'actors.name'])
       .where('actors.name', 'ilike', search)
       .where(movieMode)
       .groupBy('actors.id')
-      .orderBy('count desc')
+      .orderBy('actors.popularity desc')
       .limit(3)
       .execute(),
     kyselyDb
       .selectFrom('crew_on_movies')
       .innerJoin('crew', 'crew.id', 'crew_on_movies.crew_id')
       .innerJoin('movies', 'movies.id', 'crew_on_movies.movie_id')
-      .select([
-        'crew.id',
-        'crew.name',
-        'crew_on_movies.job_id',
-        eb => eb.fn.count('crew_on_movies.crew_id').as('count'),
-      ])
+      .select(['crew.id', 'crew.name', 'crew_on_movies.job_id'])
       .where('crew_on_movies.job_id', 'in', relevantCrewIds)
       .where('crew.name', 'ilike', search)
       .where(movieMode)
       .groupBy(['crew.id', 'crew_on_movies.job_id']) // TODO: verify
-      .orderBy('count desc')
+      .orderBy('crew.popularity desc')
       .limit(3)
       .execute(),
     kyselyDb

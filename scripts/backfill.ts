@@ -1,70 +1,52 @@
 import dotenvFlow from 'dotenv-flow';
 import { writeFileSync } from 'fs';
-import { kyselyDb } from '../pg/db';
+import { range } from 'remeda';
 import { tmdbApi } from './tmbd-api';
 
 dotenvFlow.config();
 
-const movieJson: {
-  tmdb_id: number;
-  vote_average: number;
-  vote_count: number;
-  popularity: number;
-  language: string;
-}[] = [];
+const fetchYear = async (year: number) => {
+  const popular = await tmdbApi
+    .getMoviesBy({ sortBy: 'vote_count', year })
+    .then(movies => movies.map((movie, i) => ({ ...movie, popularity: i + 1, revenue: 0, year })));
 
-const movieLangsJson: { tmdb_id: number; language: string }[] = [];
-const movieCountryJson: { tmdb_id: number; country: string }[] = [];
-const actorJson: Record<number, number> = {};
-const crewJson: Record<number, number> = {};
+  const boxOffice = await tmdbApi
+    .getMoviesBy({ sortBy: 'revenue', year })
+    .then(movies => movies.map((movie, i) => ({ ...movie, revenue: i + 1, popularity: 0, year })));
 
-const fetchMovie = async (tmdb_id: number) => {
-  const response = await tmdbApi.getMovieById({ tmdbId: tmdb_id });
-  console.log(response.title);
+  const response = [...popular, ...boxOffice].reduce((hash, movie) => {
+    const target = hash[movie.tmdbId];
 
-  movieJson.push({
-    tmdb_id,
-    vote_average: response.vote_average,
-    vote_count: response.vote_count,
-    popularity: response.popularity,
-    language: response.original_language,
-  });
+    if (!target) return { ...hash, [movie.tmdbId]: movie };
 
-  response.spoken_languages.forEach(l => {
-    movieLangsJson.push({ language: l.iso_639_1, tmdb_id });
-  });
+    if (hash[movie.tmdbId].popularity === 0) {
+      target.popularity = movie.popularity;
+    }
+    if (hash[movie.tmdbId].revenue === 0) {
+      target.revenue = movie.revenue;
+    }
 
-  response.production_countries.forEach(pc => {
-    movieCountryJson.push({ country: pc.iso_3166_1, tmdb_id });
-  });
+    return { ...hash, [movie.tmdbId]: target };
+  }, {} as Record<number, (typeof popular)[number] & (typeof boxOffice)[number]>);
 
-  response.credits.cast.map(c => {
-    actorJson[c.id] = c.popularity;
-  });
-
-  response.credits.crew.map(c => {
-    crewJson[c.id] = c.popularity;
-  });
+  return response;
 };
 
 const run = async () => {
-  const movies = await kyselyDb.selectFrom('movies').select('tmdb_id').orderBy('id desc').execute();
+  const years = range(1950, 2024);
+  const data: unknown[] = [];
 
-  for (let movie of movies) {
+  for (let year of years) {
     try {
-      await fetchMovie(movie.tmdb_id);
+      console.log('fetching', year);
+      const yearData = await fetchYear(year);
+      data.push(yearData);
     } catch (e) {
-      console.log('failed', movie.tmdb_id, e);
+      console.log('failed', year, e);
     }
   }
 
-  writeFileSync('./pg/json/movies-additional.json', JSON.stringify(movieJson));
-  writeFileSync(
-    './pg/json/movies-lang-and-coun.json',
-    JSON.stringify({ countries: movieCountryJson, languages: movieLangsJson })
-  );
-  writeFileSync('./pg/json/actors-popularity.json', JSON.stringify(actorJson));
-  writeFileSync('./pg/json/crew-popularity.json', JSON.stringify(crewJson));
+  writeFileSync('./pg/json/top-year-movies.json', JSON.stringify(data));
 };
 
-run().then(() => kyselyDb.destroy());
+run();

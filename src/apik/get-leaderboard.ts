@@ -19,7 +19,7 @@ type GetLeaderboardResponse = {
   image: string | null;
   name: string;
   total: string | number | bigint;
-  bestCreditOrder?: number;
+  popularity: number;
   movies: {
     character?: string | null;
     id: number;
@@ -76,8 +76,8 @@ const getTopActors = (params: QpSchema) =>
       'actors.id',
       'actors.name',
       'actors.profile_path as image',
+      'actors.popularity',
       eb => eb.fn.count('actors_on_movies.actor_id').as('total'),
-      eb => eb.fn.min('actors_on_movies.credit_order').as('bestCreditOrder'),
       eb =>
         jsonArrayFrom(
           eb
@@ -100,7 +100,7 @@ const getTopActors = (params: QpSchema) =>
     .groupBy('actors.id')
     .limit(LIMIT)
     .orderBy('total desc')
-    .orderBy('bestCreditOrder asc')
+    .orderBy('actors.popularity desc')
     .execute();
 
 const getTopCrew = (params: QpSchema, jobIds: number[]) =>
@@ -112,6 +112,7 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
       'crew.id',
       'crew.name',
       'crew.profile_path as image',
+      'crew.popularity',
       eb => eb.fn.count('crew_on_movies.crew_id').as('total'),
       eb =>
         jsonArrayFrom(
@@ -136,6 +137,7 @@ const getTopCrew = (params: QpSchema, jobIds: number[]) =>
     .groupBy('crew.id')
     .limit(LIMIT)
     .orderBy('total desc')
+    .orderBy('crew.popularity desc')
     .execute();
 
 const getTopOscarActors = (params: QpSchema, wins: boolean) =>
@@ -148,6 +150,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
       'actors.name',
       'actors.id',
       'actors.profile_path as image',
+      'actors.popularity',
       eb => {
         let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
@@ -188,6 +191,7 @@ const getTopOscarActors = (params: QpSchema, wins: boolean) =>
     .groupBy('actors.id')
     .limit(LIMIT)
     .orderBy('total desc')
+    .orderBy('actors.popularity desc')
     .execute();
 
 const getTopOscarCrew = (
@@ -205,6 +209,7 @@ const getTopOscarCrew = (
       'crew.name',
       'crew.id',
       'crew.profile_path as image',
+      'crew.popularity',
       eb => {
         let total = eb.fn.count('oscars_nominations.id');
         if (wins) {
@@ -240,5 +245,6 @@ const getTopOscarCrew = (
     .where(allMovieFilters(params))
     .groupBy('crew.id')
     .orderBy('total desc')
+    .orderBy('crew.popularity desc')
     .limit(LIMIT)
     .execute();
