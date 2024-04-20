@@ -12,6 +12,8 @@ import { tmdbApi } from './tmbd-api';
   - vercel-kysely package doesn't support transactions in migrations for some reason
 */
 
+export type RewaPayload = z.infer<typeof paramsSchema>;
+
 const paramsSchema = z.object({
   tmdbId: z.number(),
   episode: z
@@ -70,7 +72,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
         tagline: tmdbMovie.tagline,
         title: tmdbMovie.title,
         tmdb_id: tmdbMovie.id,
-        language_id: languages.find(l => tmdbMovie.original_language === l.short)?.id,
+        language_id: languages.find(l => tmdbMovie.original_language === l.short)!.id,
         vote_average: tmdbMovie.vote_average,
         vote_count: tmdbMovie.vote_count,
         popularity: tmdbMovie.popularity,
