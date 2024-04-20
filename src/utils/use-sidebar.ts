@@ -9,14 +9,12 @@ export type SidebarActions = {
 export const useSidebar = <TBar extends { variant: string }>() => {
   const [sidebarHistory, setSidebarHistory] = useState<TBar[]>([]);
   const currentIndex = sidebarHistory.length - 1;
-  console.log(sidebarHistory, currentIndex);
 
   const close = (): void => {
     setSidebarHistory([]);
   };
 
   const open = (newSidebar: TBar) => {
-    console.log('OPEN called', newSidebar);
     sidebarHistory[currentIndex] && isSameObject(newSidebar, sidebarHistory[currentIndex])
       ? close()
       : setSidebarHistory(s => [...s, newSidebar]);

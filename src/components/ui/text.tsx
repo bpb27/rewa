@@ -31,7 +31,7 @@ export const Text = ({
   onClick,
   secondary,
   size,
-  tag,
+  tag = 'span',
   textAlign = 'left',
 }: TextProps) => {
   const TextIcon = icon && icon in Icon ? Icon[icon] : null;
