@@ -31,6 +31,7 @@ const token = z.enum([
   'budgetGte',
   'budgetLte',
   'cinematographer',
+  'composer',
   'director',
   'genre',
   'host',
@@ -52,7 +53,7 @@ const token = z.enum([
   'yearLte',
 ]);
 
-const tokenCrew = token.extract(['director', 'cinematographer', 'writer', 'producer']);
+const tokenCrew = token.extract(['director', 'cinematographer', 'writer', 'producer', 'composer']);
 
 export const appEnums = {
   movieMode: { schema: movieMode, values: movieMode._def.values },

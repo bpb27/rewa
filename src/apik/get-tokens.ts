@@ -42,6 +42,7 @@ export const getTokens = async (params: QpSchema) => {
             .where('id', 'in', ids)
             .execute();
         case 'cinematographer':
+        case 'composer':
         case 'director':
         case 'producer':
         case 'writer':

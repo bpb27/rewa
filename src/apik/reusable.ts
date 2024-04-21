@@ -271,6 +271,7 @@ export const allMovieFilters = (params: QpSchema) => {
   const searches = [
     ...(params.movie.length ? [eb('movies.id', 'in', params.movie)] : []),
     ...params.cinematographer.map(id => where.moviesWithCrew(id, 'cinematographer')),
+    ...params.composer.map(id => where.moviesWithCrew(id, 'composer')),
     ...params.director.map(id => where.moviesWithCrew(id, 'director')),
     ...params.producer.map(id => where.moviesWithCrew(id, 'producer')),
     ...params.writer.map(id => where.moviesWithCrew(id, 'writer')),

@@ -87,6 +87,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   {item.type === 'host' && <Icon.Mic />}
                   {item.type === 'director' && <Icon.Video />}
                   {item.type === 'cinematographer' && <Icon.FilmStrip />}
+                  {item.type === 'composer' && <Icon.Piano />}
                   {item.type === 'producer' && <Icon.Dollar />}
                   {item.type === 'writer' && <Icon.Pen />}
                   {item.type === 'streamer' && <Icon.Tv />}

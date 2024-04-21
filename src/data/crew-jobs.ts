@@ -6,6 +6,7 @@ export const crewJobs = {
   producer: [16],
   cinematographer: [467, 18],
   writer: [13, 77],
+  composer: [4],
 };
 
 export const crewJobIdToTokenType = (jobId: number) =>
@@ -22,4 +23,5 @@ export const crewToOscarCategory = {
   producer: [0],
   cinematographer: [6],
   writer: [22, 23],
+  composer: [14],
 };
