@@ -27,6 +27,7 @@ export const getMovieCrew = async (params: z.infer<typeof getMovieCrewParams>) =
           .select(eb => eb.fn.count('movies.id').distinct().as('total'))
           .where(reusableSQL.where.movieMode(params.movieMode))
           .whereRef('com_sub.crew_id', '=', 'crew.id')
+          .whereRef('com_sub.job_id', '=', 'crew_on_movies.job_id')
           .as('total'),
     ])
     .where('crew_on_movies.movie_id', '=', params.movieId)
