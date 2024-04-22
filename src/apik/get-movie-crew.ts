@@ -31,5 +31,6 @@ export const getMovieCrew = async (params: z.infer<typeof getMovieCrewParams>) =
           .as('total'),
     ])
     .where('crew_on_movies.movie_id', '=', params.movieId)
+    .orderBy('crew.popularity desc')
     .execute();
 };

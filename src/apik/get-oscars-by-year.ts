@@ -39,7 +39,7 @@ export const getOscarsByYear = async (params: z.infer<typeof getOscarsByYearPara
         ).as('crew'),
     ])
     .where('ceremony_year', '=', params.year)
-    .orderBy('rank asc')
+    .orderBy('cats.rank asc')
     .execute();
 
   return response;

@@ -9,7 +9,7 @@
 
 # Potential TODOs
 
-- rank for oscar categories and crew jobs
+- try jobId:crewId query param instead of specific categories
 
 - more clarity on what is clickable, and what will filter vs. open a modal
 
@@ -23,8 +23,6 @@
 - could store limited set in table
 
 - sidebars need titles
-
-- sort options in cast overlay
 
 - table sidebars need to be more clickable
 
