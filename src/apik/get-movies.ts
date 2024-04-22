@@ -97,7 +97,7 @@ export const getMovies = async (params: QpSchema) => {
     id: movie.id,
     image: movie.poster_path,
     imdbId: movie.imdb_id,
-    keywords: movie.keywords,
+    keywords: movie.keywords.map(k => ({ id: k.id, name: k.name })),
     name: movie.title,
     oscars: movie.oscars,
     totalOscarNominations: Number(movie.total_oscar_nominations) || 0,
