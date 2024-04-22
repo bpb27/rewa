@@ -229,9 +229,10 @@ export const reusableSQL = {
         eb
           .selectFrom('keywords_on_movies as jt')
           .innerJoin('keywords', 'keywords.id', 'jt.keyword_id')
-          .select(['keywords.id', 'keywords.name'])
+          .select(['keywords.id', 'keywords.name', eb => eb.fn.count('jt.movie_id').as('count')])
+          .groupBy('keywords.id')
           .whereRef('jt.movie_id', '=', 'movies.id')
-          .orderBy('keywords.name asc')
+          .orderBy('count desc')
       ).as('keywords');
     },
     movieStreamers: () => {

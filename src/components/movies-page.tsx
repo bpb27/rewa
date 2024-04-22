@@ -80,7 +80,13 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onShowPopularMoviesClick={year => openSidebar({ variant: 'popularMoviesByYear', year })}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
-      {sidebar?.variant === 'oscarYear' && <OscarYearModal {...sidebar} {...sidebarActions} />}
+      {sidebar?.variant === 'oscarYear' && (
+        <OscarYearModal
+          {...sidebar}
+          {...sidebarActions}
+          onMovieTitleClick={movieId => openSidebar({ variant: 'movieDescription', movieId })}
+        />
+      )}
       {sidebar?.variant === 'movieDescription' && (
         <MovieCardSidebar {...sidebar} {...sidebarActions} />
       )}

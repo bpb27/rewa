@@ -17,10 +17,16 @@ import { Sidebar } from '../ui/sidebar';
 
 type OscarYearModalProps = {
   movieId: number;
+  onMovieTitleClick: (id: number) => void;
   year: number;
 } & SidebarActions;
 
-export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModalProps) => {
+export const OscarYearModal = ({
+  movieId,
+  onMovieTitleClick,
+  year,
+  ...sidebarProps
+}: OscarYearModalProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [limitAwards, setLimitAwards] = useState(true);
   const [selectedYear, setYear] = useState(year);
@@ -53,6 +59,7 @@ export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModa
             key={movieSpotlight[0].id}
             name={movieSpotlight[0].title.toUpperCase()}
             items={movieSpotlight.map(a => ({
+              id: a.movieId,
               movie: titleCase(a.category),
               recipient: a.recipient,
               won: a.won,
@@ -68,10 +75,12 @@ export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModa
               key={group[0].id}
               name={titleCase(group[0].award)}
               items={smartSort(group, i => i.title).map(a => ({
+                id: a.movieId,
                 movie: a.title,
                 recipient: a.recipient,
                 won: a.won,
               }))}
+              onTitleClick={onMovieTitleClick}
             />
           ))}
         <Button
@@ -89,21 +98,28 @@ export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModa
 };
 
 type AwardCategoryProps = {
-  items: { movie: string; recipient: string; won: number | boolean }[];
+  items: { id: number; movie: string; recipient: string; won: number | boolean }[];
   key: number | string;
   name: string;
+  onTitleClick?: (id: number) => void;
 };
 
-const AwardCategory = ({ items, key, name }: AwardCategoryProps) => (
+const AwardCategory = ({ items, key, name, onTitleClick }: AwardCategoryProps) => (
   <div key={key} className="my-4 rounded-md border-2 border-slate-300 bg-white p-4 shadow-lg">
     <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{titleCase(name)}</h3>
-    {items.map(({ movie, recipient, won }) => (
+    {items.map(({ id, movie, recipient, won }) => (
       <div
         key={movie + recipient}
         className={cn('my-1 flex items-center justify-between space-x-2')}
       >
         <Crate column>
-          <Text bold>{movie}</Text>
+          {onTitleClick ? (
+            <Text bold onClick={() => onTitleClick(id)}>
+              {movie}
+            </Text>
+          ) : (
+            <Text bold>{movie}</Text>
+          )}
           <Text>{recipient}</Text>
         </Crate>
         {!!won && <Icon.Trophy className="flex-shrink-0" />}
