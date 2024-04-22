@@ -10,15 +10,16 @@ Explore movie data from The Oscars and The Rewatchables podcast
 ## ENVs
 
 - `touch ./.env.local`
-- Add a `DATABASE_URL`
-- Add a `TMDB_API_KEY`
+- Add a `DATABASE_URL` (create a DB locally)
+- Add a `TMDB_API_KEY` (create an account and get a key)
+- `npm run db:migrate`
 
 ## Running locally
 
 1. `npm i`
 2. `npm run dev`
 
-## Deployments
+## Deployment
 
 Branches are auto-deployed via Vercel (production tracks main branch)
 

@@ -79,7 +79,6 @@ export const OscarYearModal = ({ movieId, year, ...sidebarProps }: OscarYearModa
           variant="card"
           onClick={() => {
             setLimitAwards(l => !l);
-            containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }}
         >
           Show {limitAwards ? 'more' : 'fewer'}

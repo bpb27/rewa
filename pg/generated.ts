@@ -149,6 +149,7 @@ export interface OscarsAwards {
 export interface OscarsCategories {
   id: Generated<number>;
   name: string;
+  rank: Generated<number>;
   relevance: string;
 }
 
