@@ -85,7 +85,7 @@ export const TopCategory = ({
           </Crate>
         )}
       </Crate>
-      {rankByTotalMovies(data.results, (a, b) => a.popularity - b.popularity).map(person => (
+      {rankByTotalMovies(data.results, (a, b) => b.popularity - a.popularity).map(person => (
         <Box.Person key={person.id}>
           {!hideProfileImage && (
             <Box.ProfilePic>
