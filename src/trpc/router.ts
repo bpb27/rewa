@@ -10,6 +10,7 @@ import { getOscarsByYear, getOscarsByYearParams } from '~/apik/get-oscars-by-yea
 import { getTokens } from '~/apik/get-tokens';
 import { searchTokens, searchTokensParams } from '~/apik/search-tokens';
 import { defaultQps, parsedQpSchema } from '~/data/query-params';
+import topMovieRevenueLookup from '../../pg/json/top-movie-revenue-lookup.json';
 import { tmdbApi } from '../../scripts/tmbd-api';
 import { procedure, router } from './trpc';
 
@@ -37,7 +38,14 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return tmdbApi.getMoviesBy(input);
+      return tmdbApi.getMoviesBy(input).then(movies =>
+        movies.map(movie => ({
+          ...movie,
+          revenue: (topMovieRevenueLookup as unknown as Record<number, string>)[movie.tmdbId] as
+            | string
+            | undefined,
+        }))
+      );
     }),
   getMovieCast: procedure.input(getMovieCastParams).query(async ({ input }) => {
     return getMovieCast(input);

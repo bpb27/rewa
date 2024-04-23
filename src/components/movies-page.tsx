@@ -18,7 +18,7 @@ import { MovieCastSidebar } from './overlays/movie-cast-sidebar';
 import { MovieCrewSidebar } from './overlays/movie-crew-sidebar';
 import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
 import { OscarYearModal } from './overlays/oscar-year-sidebar';
-import { PopularMoviesByYear } from './overlays/popular-movies-by-year-sdebar';
+import { PopularMoviesByYear } from './overlays/popular-movies-by-year-sidebar';
 
 export type MoviesPageMovie = ApiResponses['getMovies']['results'][number];
 
