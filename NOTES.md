@@ -3,13 +3,11 @@
 - getStaticProps will render old stuff if updating prod from script, so better to always add via migration
 - preview deployments are running migrations on prod db
 
-# Bugs
-
-- Date console error on TopCategory movie sidebar
-
 # Potential TODOs
 
 - try jobId:crewId query param instead of specific categories
+
+- mix genres into keywords
 
 - click to see description for top movie by year
 
@@ -35,8 +33,6 @@
 - search overlay option: oscar ceremony year
 
 - about w/ a google form or link to github to open an issue
-
-- mix genres into keywords
 
 - route with /field/subfield - should be able to just make a [...field] directory
 

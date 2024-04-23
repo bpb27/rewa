@@ -71,6 +71,15 @@ export const reusableSQL = {
           .where('jt.movie_id', 'is not', null)
       );
     },
+    moviesWithGenre: (genreId: number) => {
+      const eb = expressionBuilder<DB, 'movies'>();
+      return eb('movies.id', 'in', ({ selectFrom }) =>
+        selectFrom('genres_on_movies as jt')
+          .select(['jt.movie_id'])
+          .where('jt.genre_id', '=', genreId)
+          .where('jt.movie_id', 'is not', null)
+      );
+    },
     moviesWithHost: (hostId: number) => {
       const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
@@ -278,6 +287,7 @@ export const allMovieFilters = (params: QpSchema) => {
     ...params.writer.map(id => where.moviesWithCrew(id, 'writer')),
     ...params.actor.map(id => where.moviesWithActor(id)),
     ...params.keyword.map(id => where.moviesWithKeyword(id)),
+    ...params.genre.map(id => where.moviesWithGenre(id)),
     ...params.streamer.map(id => where.moviesWithStreamer(id)),
     ...params.host.map(id => where.moviesWithHost(id)),
     ...params.oscarsCategoriesNom.map(id => where.moviesWithOscar(id)),

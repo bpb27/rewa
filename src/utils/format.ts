@@ -36,7 +36,7 @@ export const newFormatDate = (d: number | string | Date, f: 'year' | 'slash' | '
     components.year = d;
     components.month = '01';
     components.day = '01';
-  } else if (isString(d) && d.length === 10 && d.includes('-')) {
+  } else if (isString(d) && [9, 9, 10].includes(d.length) && d.includes('-')) {
     [components.year, components.month, components.day] = d.split('-');
   } else {
     console.error(`Unsupported date input ${d}`);

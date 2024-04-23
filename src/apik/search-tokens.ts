@@ -23,7 +23,7 @@ export const searchTokensParams = z.object({
 export const searchTokens = async (params: z.infer<typeof searchTokensParams>) => {
   const search = `%${params.search.toLowerCase()}%`;
   const movieMode = reusableSQL.where.movieMode(params.filter);
-  const [movies, actors, crew, hosts, keywords, streamers] = await Promise.all([
+  const [movies, actors, crew, hosts, keywords, genres, streamers] = await Promise.all([
     kyselyDb
       .selectFrom('movies')
       .select(['id', 'title as name', 'release_date'])
@@ -84,6 +84,21 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .limit(3)
       .execute(),
     kyselyDb
+      .selectFrom('genres_on_movies')
+      .innerJoin('genres', 'genres.id', 'genres_on_movies.id')
+      .innerJoin('movies', 'movies.id', 'genres_on_movies.movie_id')
+      .select([
+        'genres.id',
+        'genres.name',
+        eb => eb.fn.count('genres_on_movies.movie_id').as('count'),
+      ])
+      .where('genres.name', 'ilike', search)
+      .where(movieMode)
+      .groupBy('genres.id')
+      .orderBy('count desc')
+      .limit(3)
+      .execute(),
+    kyselyDb
       .selectFrom('streamers')
       .select(['streamers.id', 'streamers.name'])
       .where('name', 'in', relevantStreamers)
@@ -100,6 +115,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
     ...crew.map(tokenizeCrew),
     ...hosts.map(t => tokenize('host', t)),
     ...keywords.map(t => tokenize('keyword', t)),
+    ...genres.map(t => tokenize('genre', t)),
     ...streamers.map(t => tokenize('streamer', t)),
   ];
 
