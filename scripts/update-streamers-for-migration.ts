@@ -23,6 +23,11 @@ export const updateStreamers = async (data: Data, db: Kysely<DB>) => {
   }
 
   const streamers = await db.selectFrom('streamers').selectAll().execute();
+  const movies = await db
+    .selectFrom('movies')
+    .select(['id', 'tmdb_id'])
+    .where('tmdb_id', 'in', data.map(p => p.movie_ids).flat())
+    .execute();
 
   await db.deleteFrom('streamers_on_movies').execute();
 
@@ -30,7 +35,7 @@ export const updateStreamers = async (data: Data, db: Kysely<DB>) => {
     .map(streamer =>
       streamer.movie_ids.map(movie_id => ({
         streamer_id: streamers.find(s => s.tmdb_id === streamer.provider_id)!.id,
-        movie_id,
+        movie_id: movies.find(m => m.tmdb_id === movie_id)!.id,
       }))
     )
     .flat()

@@ -50,9 +50,9 @@ const run = async () => {
       const streamers = await tmdbApi.getMovieStreamers({ tmdbId: movie.tmdbId });
       streamers.map(streamer => {
         if (list[streamer.provider_id]) {
-          list[streamer.provider_id].movie_ids.push(movie.movieId);
+          list[streamer.provider_id].movie_ids.push(movie.tmdbId);
         } else {
-          list[streamer.provider_id] = { ...streamer, movie_ids: [movie.movieId] };
+          list[streamer.provider_id] = { ...streamer, movie_ids: [movie.tmdbId] };
         }
       });
     } catch (e) {
