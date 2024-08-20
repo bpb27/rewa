@@ -7,9 +7,14 @@ export const Table = ({ children }: PropsWithChildren<{}>) => (
   </div>
 );
 
-const TableHead = ({ children }: PropsWithChildren<{}>) => (
+const TableHead = ({ children, className }: PropsWithChildren<{ className?: string }>) => (
   <thead>
-    <tr className="border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:whitespace-nowrap [&>th]:p-2">
+    <tr
+      className={cn(
+        'border-b-slate-200 bg-blue-100 text-left shadow-md [&>th]:whitespace-nowrap [&>th]:p-2',
+        className
+      )}
+    >
       {children}
     </tr>
   </thead>
@@ -36,13 +41,29 @@ const TableHeader = ({
 
 const TableBody = ({ children }: PropsWithChildren<{}>) => <tbody>{children}</tbody>;
 
-const TableRow = ({ children }: PropsWithChildren<{}>) => (
+const TableRow = ({
+  children,
+  className,
+  margin = 4,
+}: PropsWithChildren<{ className?: string; margin?: 1 | 2 | 3 | 4 }>) => (
   <Fragment>
-    <tr className="rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md">
+    <tr
+      className={cn(
+        'rounded-xl border-2 border-slate-300 bg-slate-50 p-2 text-left shadow-md',
+        className
+      )}
+    >
       {children}
     </tr>
     {/* NB: can't add padding or margin to trs - need to use an empty row as a spacer */}
-    <tr className="h-4"></tr>
+    <tr
+      className={cn(
+        margin === 1 && 'h-1',
+        margin === 2 && 'h-2',
+        margin === 3 && 'h-3',
+        margin === 4 && 'h-4'
+      )}
+    ></tr>
   </Fragment>
 );
 

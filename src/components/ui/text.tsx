@@ -5,7 +5,7 @@ import { Icon } from './icons';
 type TextProps = PropsWithChildren<{
   bold?: boolean;
   className?: string;
-  ellipsis?: boolean;
+  ellipsisAt?: number;
   hide?: boolean;
   icon?: keyof typeof Icon;
   iconOrientation?: 'left' | 'right';
@@ -22,7 +22,7 @@ export const Text = ({
   bold,
   children,
   className,
-  ellipsis,
+  ellipsisAt,
   flex = true,
   hide,
   icon,
@@ -49,7 +49,8 @@ export const Text = ({
         size === 'lg' && 'text-xl',
         size === 'xl' && 'text-2xl',
         icon && 'items-center',
-        ellipsis && 'overflow-ellipsis',
+        ellipsisAt &&
+          `block overflow-ellipsis max-w-[${ellipsisAt}px] overflow-hidden whitespace-nowrap`,
         className
       )}
       {...(tag !== 'button' && onClick ? { onClick } : undefined)}

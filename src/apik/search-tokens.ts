@@ -1,7 +1,6 @@
 import { sql } from 'kysely';
 import { z } from 'zod';
 import { relevantCrewIds } from '~/data/crew-jobs';
-import { relevantStreamers } from '~/data/streamers';
 import {
   tokenize,
   tokenizeCrew,
@@ -100,9 +99,15 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .execute(),
     kyselyDb
       .selectFrom('streamers')
-      .select(['streamers.id', 'streamers.name'])
-      .where('name', 'in', relevantStreamers)
-      .where('streamers.name', 'like', search)
+      .leftJoin('streamers_on_movies', 'streamers_on_movies.streamer_id', 'streamers.id')
+      .select([
+        'streamers.id',
+        'streamers.name',
+        eb => eb.fn.count('streamers_on_movies.movie_id').as('count'),
+      ])
+      .where('streamers.name', 'ilike', search)
+      .groupBy('streamers.id')
+      .orderBy('count desc')
       .limit(3)
       .execute(),
   ]);

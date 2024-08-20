@@ -120,11 +120,15 @@ const discoverMoviesSchema = z
 const streamerSchema = z.object({
   results: z.object({
     US: z.object({
-      flatrate: z.array(
-        z.object({
-          provider_name: z.string(),
-        })
-      ),
+      flatrate: z
+        .array(
+          z.object({
+            provider_name: z.string(),
+            logo_path: z.string(),
+            provider_id: z.number(),
+          })
+        )
+        .optional(),
     }),
   }),
 });
@@ -142,7 +146,7 @@ const getMovieStreamers = async ({ tmdbId }: Params) => {
   const route = `${apiBase}/movie/${tmdbId}/watch/providers?api_key=${API_KEY}`;
   const response = await fetch(route).then(response => response.json());
   const parsed = streamerSchema.strip().parse(response);
-  return parsed.results.US.flatrate.map(p => p.provider_name);
+  return parsed.results.US.flatrate || [];
 };
 
 const getMoviesBy = async ({

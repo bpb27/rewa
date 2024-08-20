@@ -2,9 +2,8 @@ import { useCallback } from 'react';
 import { EbertLink, ImdbLink, SpotifyLink } from '~/components/external-links';
 import { type MoviesPageMovie } from '~/components/movies-page';
 import { Icon } from '~/components/ui/icons';
-import { streamerShortName } from '~/data/streamers';
 import { AppEnums } from '~/utils/enums';
-import { capitalize, formatRuntime, moneyShort } from '~/utils/format';
+import { formatRuntime, moneyShort } from '~/utils/format';
 import { smartSort } from '~/utils/sorting';
 import { MoviePoster } from './images';
 import { Crate } from './ui/box';
@@ -200,11 +199,30 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                {m.streamers.map(s => (
-                  <Text noWrap key={s.id} onClick={() => onTokenClick('streamer', s.id)}>
-                    {streamerShortName(s.name)}
+                {m.streamers.slice(0, 3).map(k => (
+                  <Text
+                    noWrap
+                    key={k.id}
+                    onClick={() => onTokenClick('streamer', k.id)}
+                    ellipsisAt={150}
+                  >
+                    {k.name}
                   </Text>
                 ))}
+                {m.streamers.length > 3 && (
+                  <PopoverMenu
+                    content={
+                      <StandardPopover
+                        items={m.streamers}
+                        onClick={id => onTokenClick('streamer', id)}
+                      />
+                    }
+                  >
+                    <Text noWrap secondary>
+                      {m.streamers.length - 3} more
+                    </Text>
+                  </PopoverMenu>
+                )}
               </Crate>
             </Table.Data>
             <Table.Data>
@@ -231,29 +249,12 @@ export const MoviesTable = ({
   );
 };
 
-const CrewPopover = ({
-  items,
-  onClick,
-}: {
-  items: { id: number; name: string; job: AppEnums['tokenCrew'] }[];
-  onClick: (tokenType: AppEnums['token'], tokenId: number) => void;
-}) => (
-  <Crate column>
-    {smartSort(items, i => i.job).map(c => (
-      <Text noWrap key={c.id + c.job} onClick={() => onClick(c.job, c.id)}>
-        <b>{capitalize(c.job)}:</b> {c.name}
-      </Text>
-    ))}
-  </Crate>
-);
-
-const StandardPopover = ({
-  items,
-  onClick,
-}: {
+type StandardPopoverProps = {
   items: { id: number; name: string }[];
   onClick: (id: number) => void;
-}) => (
+};
+
+const StandardPopover = ({ items, onClick }: StandardPopoverProps) => (
   <Crate column>
     {smartSort(items, t => t.name).map(t => (
       <Text noWrap key={t.id} onClick={() => onClick(t.id)}>
