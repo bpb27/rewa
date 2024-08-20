@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { isString } from 'remeda';
+import { timestamp } from './migration-name';
 
 const name = process.argv[2];
 if (!isString(name)) {
@@ -21,5 +22,4 @@ export async function down(db: Kysely<any>): Promise<void> {
 }
 `;
 
-const timestamp = new Date().toISOString().replace(/[\D]/g, '');
-fs.writeFileSync(`./pg/migrations/${timestamp}_${name}.ts`, contents);
+fs.writeFileSync(`./pg/migrations/${timestamp()}_${name}.ts`, contents);
