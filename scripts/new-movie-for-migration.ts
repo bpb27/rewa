@@ -10,6 +10,7 @@ import { tmdbApi } from './tmbd-api';
     - DB schema can differ across migration history
     - create a new script if necessary and keep this one in older migration references
   - vercel-kysely package doesn't support transactions in migrations for some reason
+  - names of stuff like production companies or actors can change
 */
 
 export type RewaPayload = z.infer<typeof paramsSchema>;
@@ -38,6 +39,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
 
   let movieId: number = 0;
   const tmdbMovie = await tmdbApi.getMovieById(params);
+  console.log(`Fetched ${tmdbMovie.title}`);
 
   const existingMovie = await kyselyDb
     .selectFrom('movies')
@@ -239,7 +241,7 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
       .values(
         tmdbMovie.production_companies.map(c => ({
           production_company_id: [...insertedCompanies, ...allCompanies].find(
-            pc => pc.name === c.name
+            pc => pc.tmdb_id === c.id
           )!.id,
           movie_id: movieId,
         }))
