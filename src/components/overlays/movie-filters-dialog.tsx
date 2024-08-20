@@ -12,6 +12,7 @@ import { isYear } from '~/utils/validate';
 import { Crate } from '../ui/box';
 import { Checkbox } from '../ui/checkbox';
 import { Input } from '../ui/input';
+import { Table } from '../ui/table';
 
 type MovieFiltersDialogProps = {
   ranges: InitialState;
@@ -103,35 +104,50 @@ export const MovieFiltersDialog = ({
         onClose={dialog.setClosed}
         className="rounded-md border-2 border-slate-500 bg-white p-4 shadow-xl"
       >
+        <Table>
+          <Table.Head className="bg-lime-100">
+            <Table.Header>Nom</Table.Header>
+            <Table.Header>Won</Table.Header>
+            <Table.Header>Award</Table.Header>
+          </Table.Head>
+          <Table.Body>
+            <Table.Row margin={3} className="border-0" />
+            {categories.map(c => (
+              <Table.Row key={c.id} margin={3} className="border-0 bg-white p-2">
+                <Table.Data>
+                  <Checkbox
+                    checked={oscarsCategoriesNom.includes(c.id)}
+                    id={c.id}
+                    label=""
+                    onCheck={() => toggleToken('oscarsCategoriesNom', c.id)}
+                    className="mb-2"
+                  />
+                </Table.Data>
+                <Table.Data>
+                  <Checkbox
+                    checked={oscarsCategoriesWon.includes(c.id)}
+                    id={c.id}
+                    label=""
+                    onCheck={() => toggleToken('oscarsCategoriesWon', c.id)}
+                    className="mb-2"
+                  />
+                </Table.Data>
+                <Table.Data className="flex">{titleCase(c.name)}</Table.Data>
+              </Table.Row>
+            ))}
+            <Table.Data></Table.Data>
+          </Table.Body>
+        </Table>
         <Crate column gap={2}>
           <Crate column>
-            <label className="font-semibold">Nominated | Won Oscars</label>
-            {categories.map(({ id, name }) => (
-              <Crate key={id} my={1}>
-                <Checkbox
-                  checked={oscarsCategoriesNom.includes(id)}
-                  id={id}
-                  label=""
-                  onCheck={() => toggleToken('oscarsCategoriesNom', id)}
-                />
-                <Checkbox
-                  checked={oscarsCategoriesWon.includes(id)}
-                  id={id}
-                  label={titleCase(name)}
-                  onCheck={() => toggleToken('oscarsCategoriesWon', id)}
-                />
-              </Crate>
-            ))}
             <Button
               variant="card"
               onClick={() => setFilterCategories(!filterCategories)}
-              className="mt-2"
+              className="mb-2"
             >
               {filterCategories ? 'More' : 'Fewer'} categories...
             </Button>
-          </Crate>
-          <Crate column>
-            <label className="font-semibold">Year</label>
+            <label>Year</label>
             <Crate gap={2} alignCenter>
               <Input name="yearGte" value={state.yearGte} {...rangeProps} />
               <span>-</span>
@@ -139,7 +155,7 @@ export const MovieFiltersDialog = ({
             </Crate>
           </Crate>
           <Crate column>
-            <label className="font-semibold">Box Office</label>
+            <label>Box Office</label>
             <Crate gap={2} alignCenter>
               <Input name="revenueGte" value={state.revenueGte} {...rangeProps} />
               <span>-</span>
@@ -147,7 +163,7 @@ export const MovieFiltersDialog = ({
             </Crate>
           </Crate>
           <Crate column>
-            <label className="font-semibold">Budget</label>
+            <label>Budget</label>
             <Crate gap={2} alignCenter>
               <Input name="budgetGte" value={state.budgetGte} {...rangeProps} />
               <span>-</span>
@@ -155,7 +171,7 @@ export const MovieFiltersDialog = ({
             </Crate>
           </Crate>
           <Crate column>
-            <label className="font-semibold">Runtime</label>
+            <label>Runtime</label>
             <Crate gap={2} alignCenter>
               <Input name="runtimeGte" value={state.runtimeGte} {...rangeProps} />
               <span>-</span>
