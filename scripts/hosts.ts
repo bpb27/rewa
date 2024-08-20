@@ -54,4 +54,5 @@ export const hosts = z.enum([
   'Dave Chang',
   'Jennifer Lawrence',
   'Zach Baron',
+  'Joe House',
 ]).enum;
