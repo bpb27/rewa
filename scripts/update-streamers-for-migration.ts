@@ -34,13 +34,16 @@ export const updateStreamers = async (data: Data, db: Kysely<DB>) => {
   const mapped = data
     .map(streamer =>
       streamer.movie_ids.map(movie_id => ({
-        streamer_id: streamers.find(s => s.tmdb_id === streamer.provider_id)!.id,
-        movie_id: movies.find(m => m.tmdb_id === movie_id)!.id,
+        streamer_id: streamers.find(s => s.tmdb_id === streamer.provider_id)?.id as number,
+        movie_id: movies.find(m => m.tmdb_id === movie_id)?.id as number,
       }))
     )
     .flat()
     .filter(entry => {
-      if (!entry.streamer_id) console.log('miss on', entry);
+      if (!entry.streamer_id || !entry.movie_id) {
+        console.log('miss on', entry);
+        return false;
+      }
       return true;
     });
 
