@@ -40,6 +40,12 @@ export const updateStreamers = async (data: Data, db: Kysely<DB>) => {
     });
 
   await Promise.all(
-    chunk(mapped, 5000).map(group => db.insertInto('streamers_on_movies').values(group).execute())
+    chunk(mapped, 5000).map(group =>
+      db
+        .insertInto('streamers_on_movies')
+        .values(group)
+        .onConflict(c => c.doNothing())
+        .execute()
+    )
   );
 };
