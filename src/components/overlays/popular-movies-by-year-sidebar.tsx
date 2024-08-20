@@ -26,7 +26,7 @@ export const PopularMoviesByYear = ({ year, ...sidebarProps }: PopularMoviesByYe
           onSelect={value => setSort(value)}
           options={[
             { label: 'Box office', value: 'revenue' },
-            { label: 'TMDD Votes', value: 'vote_count' },
+            { label: 'TMDB Votes', value: 'vote_count' },
           ]}
           value={sortBy}
         />
