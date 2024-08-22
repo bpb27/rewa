@@ -42,8 +42,19 @@ const run = async () => {
   const movies = await kyselyDb
     .selectFrom('movies')
     .select(['movies.id as movieId', 'movies.tmdb_id as tmdbId', 'movies.title'])
-    .innerJoin('episodes', 'episodes.movie_id', 'movies.id')
+    .leftJoin('episodes', 'episodes.movie_id', 'movies.id')
+    .leftJoin('oscars_nominations', 'oscars_nominations.movie_id', 'movies.id')
+    .leftJoin('oscars_awards', 'oscars_awards.id', 'oscars_nominations.award_id')
+    .leftJoin('oscars_categories', 'oscars_categories.id', 'oscars_awards.category_id')
+    .distinctOn('movies.id')
+    .where(eb =>
+      eb
+        .or([eb('relevance', '=', 'high'), eb('episodes.id', 'is not', null)])
+        .and('popularity', '>', 7)
+    )
     .execute();
+
+  console.log(`finding streamers for ${movies.length} movies`);
 
   for (let movie of movies) {
     try {
