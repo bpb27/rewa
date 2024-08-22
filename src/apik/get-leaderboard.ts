@@ -1,4 +1,5 @@
 import { jsonArrayFrom } from 'kysely/helpers/postgres';
+import { uniqBy } from 'remeda';
 import { z } from 'zod';
 import { crewJobs, crewToOscarCategory } from '~/data/crew-jobs';
 import { QpSchema, parsedQpSchema } from '~/data/query-params';
@@ -36,10 +37,13 @@ const addPagination = (response: GetLeaderboardResponse) => {
     .map(person => ({
       ...person,
       total: Number(person.total),
-      movies: person.movies.map(movie => ({
-        ...movie,
-        releaseDate: movie.releaseDate.toString(),
-      })),
+      movies: uniqBy(
+        person.movies.map(movie => ({
+          ...movie,
+          releaseDate: movie.releaseDate.toString(),
+        })),
+        m => m.id
+      ),
     }))
     .filter(person => person.total > 0);
 

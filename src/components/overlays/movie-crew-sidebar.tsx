@@ -23,6 +23,7 @@ export const MovieCrewSidebar = ({
 }: MovieCrewSidebarProps) => {
   const movieMode = useMovieMode();
   const crew = trpc.getMovieCrew.useQuery({ movieId, movieMode });
+  console.log(crew.data);
 
   // TODO: crewId qp
   const handleClick = useCallback(

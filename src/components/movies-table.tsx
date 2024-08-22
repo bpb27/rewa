@@ -115,8 +115,12 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                <Text noWrap>{m.totalOscarNominations} noms</Text>
-                <Text noWrap>{m.totalOscarWins} wins</Text>
+                <Text noWrap>
+                  {m.totalOscarNominations} nom{m.totalOscarNominations === 1 ? '' : 's'}
+                </Text>
+                <Text noWrap>
+                  {m.totalOscarWins} win{m.totalOscarWins === 1 ? '' : 's'}
+                </Text>
                 <Text
                   noWrap
                   hide={!m.totalOscarNominations}
