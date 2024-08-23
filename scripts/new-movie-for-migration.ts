@@ -328,5 +328,43 @@ export const insertMovie = async (db: Kysely<any>, params: z.infer<typeof params
       .onConflict(c => c.doNothing())
       .execute();
   }
+
+  // streamers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  try {
+    const movieStreamers = await tmdbApi.getMovieStreamers({ tmdbId: params.tmdbId });
+    await db
+      .insertInto('streamers')
+      .values(
+        movieStreamers.map(streamer => ({
+          name: streamer.provider_name,
+          tmdb_id: streamer.provider_id,
+          logo_path: streamer.logo_path,
+        }))
+      )
+      .onConflict(c => c.doNothing())
+      .execute();
+    await kyselyDb.deleteFrom('streamers_on_movies').where('movie_id', '=', movieId).execute();
+    const streamers = await kyselyDb
+      .selectFrom('streamers')
+      .selectAll()
+      .where(
+        'streamers.tmdb_id',
+        'in',
+        movieStreamers.map(ms => ms.provider_id)
+      )
+      .execute();
+    await kyselyDb
+      .insertInto('streamers_on_movies')
+      .values(
+        movieStreamers.map(ms => ({
+          movie_id: movieId,
+          streamer_id: streamers.find(s => s.tmdb_id === ms.provider_id)!.id,
+        }))
+      )
+      .execute();
+  } catch (e) {
+    console.log('streamers failed', e);
+  }
   // });
 };
