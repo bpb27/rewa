@@ -45,6 +45,7 @@ export const getMovies = async (params: QpSchema) => {
         case 'revenue':
         case 'release_date':
         case 'runtime':
+        case 'popularity':
         case 'title':
           return qb.orderBy(`movies.${params.sort}`, sortOrder);
         case 'episodeNumber':

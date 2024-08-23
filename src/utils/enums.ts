@@ -8,6 +8,7 @@ const sort = z.enum([
   'budget',
   'ebert',
   'episodeNumber',
+  'popularity',
   'profit',
   'release_date',
   'revenue',

@@ -9,6 +9,7 @@ export const sortOptions = [
   { value: 'runtime', label: 'Runtime' },
   { value: 'revenue', label: 'Box Office' },
   { value: 'budget', label: 'Budget' },
+  { value: 'popularity', label: 'Popularity (TMBD)' },
   { value: 'profit', label: 'Profit %' },
   { value: 'total_oscar_nominations', label: 'Oscar noms' },
   { value: 'total_oscar_wins', label: 'Oscar wins' },
