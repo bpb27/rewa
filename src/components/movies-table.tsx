@@ -195,7 +195,7 @@ export const MoviesTable = ({
                     }
                   >
                     <Text noWrap secondary>
-                      {m.keywords.length - 3} more
+                      Show {m.keywords.length - 3} more
                     </Text>
                   </PopoverMenu>
                 )}
@@ -203,16 +203,19 @@ export const MoviesTable = ({
             </Table.Data>
             <Table.Data>
               <Crate column>
-                {m.streamers.slice(0, 3).map(k => (
-                  <Text
-                    noWrap
-                    key={k.id}
-                    onClick={() => onTokenClick('streamer', k.id)}
-                    ellipsisAt={150}
-                  >
-                    {k.name}
-                  </Text>
-                ))}
+                {m.streamers
+                  .filter(({ name }) => !name.includes('Channel') && !name.includes('with Ads'))
+                  .slice(0, 3)
+                  .map(k => (
+                    <Text
+                      noWrap
+                      key={k.id}
+                      onClick={() => onTokenClick('streamer', k.id)}
+                      ellipsisAt={150}
+                    >
+                      {k.name}
+                    </Text>
+                  ))}
                 {m.streamers.length > 3 && (
                   <PopoverMenu
                     content={
@@ -223,7 +226,7 @@ export const MoviesTable = ({
                     }
                   >
                     <Text noWrap secondary>
-                      {m.streamers.length - 3} more
+                      Show more
                     </Text>
                   </PopoverMenu>
                 )}

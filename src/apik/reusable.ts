@@ -252,7 +252,7 @@ export const reusableSQL = {
           .innerJoin('streamers', 'streamers.id', 'jt.streamer_id')
           .select(['streamers.id', 'streamers.name'])
           .whereRef('jt.movie_id', '=', 'movies.id')
-          .orderBy('streamers.name asc')
+          .orderBy('streamers.id asc')
       ).as('streamers');
     },
     movieTotalOscarNominations: () => {
