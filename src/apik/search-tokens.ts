@@ -69,7 +69,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .execute(),
     kyselyDb
       .selectFrom('keywords_on_movies')
-      .innerJoin('keywords', 'keywords.id', 'keywords_on_movies.id')
+      .innerJoin('keywords', 'keywords.id', 'keywords_on_movies.keyword_id')
       .innerJoin('movies', 'movies.id', 'keywords_on_movies.movie_id')
       .select([
         'keywords.id',
@@ -84,7 +84,7 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
       .execute(),
     kyselyDb
       .selectFrom('genres_on_movies')
-      .innerJoin('genres', 'genres.id', 'genres_on_movies.id')
+      .innerJoin('genres', 'genres.id', 'genres_on_movies.genre_id')
       .innerJoin('movies', 'movies.id', 'genres_on_movies.movie_id')
       .select([
         'genres.id',
