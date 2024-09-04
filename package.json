@@ -12,7 +12,6 @@
     "db:generate": "node -r esbuild-register -r dotenv/config ./pg/generate-migration.ts",
     "db:migrate": "node -r esbuild-register -r dotenv/config ./pg/migrate.ts",
     "db:migrateDown": "node -r esbuild-register -r dotenv/config ./pg/migrate-down.ts",
-    "newmovie": "node -r esbuild-register -r dotenv/config ./scripts/new-movie.ts",
     "streamers": "node -r esbuild-register -r dotenv/config ./scripts/new-streamers.ts",
     "check": "next lint && tsc"
   },
