@@ -67,7 +67,7 @@ const run = async () => {
         }
       });
     } catch (e) {
-      console.error(`Error fetching ${movie.title}`);
+      console.error(`Error fetching ${movie.title} - ${movie.tmdbId}`);
     }
   }
 
