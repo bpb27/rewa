@@ -13,44 +13,32 @@ export const Sidebar = ({ backSidebar, children, closeSidebar, thin }: SidebarPr
       className={cn(
         'w-3/4 md:w-1/2',
         thin ? 'lg:w-1/4' : 'lg:w-1/3',
-        'fixed right-0 top-8 z-10 mb-4 h-full animate-enterFromRight overflow-y-scroll border-l-2 border-l-slate-300 bg-slate-100 text-center shadow-xl'
+        'fixed right-0 top-8 z-10 mb-4 h-full animate-enterFromRight overflow-y-scroll bg-slate-800 text-center text-white shadow-xl'
       )}
     >
       <button
-        className="fixed top-1/2 flex h-20 cursor-pointer items-center rounded-r-2xl border-2 border-l-0 border-slate-300 bg-slate-100 text-slate-400 hover:border-red-500 hover:bg-red-300 hover:text-red-100"
+        className="fixed flex h-full cursor-pointer items-center bg-sky-800 text-slate-300 hover:bg-sky-700"
         role="button"
         onClick={closeSidebar}
       >
         <Icon.CaretRight />
       </button>
-      <Crate column fullWidth pt={5} pb={10} px={8} gap={3}>
+      <Crate column fullWidth pt={5} pb={10} pr={8} pl={10} gap={3}>
         <Crate className="justify-between">
           <Button
             onClick={backSidebar}
             variant="icon"
-            className="bg-blue-100 text-blue-400 ring-2 ring-inset ring-blue-200 hover:bg-blue-200"
+            className="bg-transparent text-sky-400 ring-2 ring-inset ring-sky-800 hover:bg-sky-700"
           >
             <Icon.ArrowLeft />
           </Button>
           <Button
             onClick={closeSidebar}
             variant="icon"
-            className="bg-red-100 text-red-400 ring-2 ring-inset ring-red-200 hover:bg-red-200"
+            className="bg-transparent text-red-600 ring-2 ring-inset ring-red-800 hover:bg-red-400"
           >
             <Icon.Close />
           </Button>
-          {/* <button
-            className="mb-2 rounded-md bg-red-300 p-1 text-red-50 ring-2 ring-inset ring-red-500 hover:bg-red-400"
-            onClick={onClose}
-          >
-            Close
-          </button>
-          <button
-            className="mb-2 rounded-md bg-red-300 p-1 text-red-50 ring-2 ring-inset ring-red-500 hover:bg-red-400"
-            onClick={onClose}
-          >
-            Close
-          </button> */}
         </Crate>
         {children}
       </Crate>

@@ -1,3 +1,4 @@
+import { ComponentProps, PropsWithChildren } from 'react';
 import { ImdbLink, SpotifyLink } from '~/components/external-links';
 import { Sidebar } from '~/components/ui/sidebar';
 import { trpc } from '~/trpc/client';
@@ -30,33 +31,25 @@ export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCar
       <Crate my={3}>
         <Spotlight {...movie} />
       </Crate>
-      <Crate mb={5} column gap={2}>
+      <Crate mb={5} column gap={3}>
         {actor && (
           <Crate column>
-            <Text bold icon="Star">
-              Role
-            </Text>
+            <Header icon="Star">Role</Header>
             <Text>{actor.character}</Text>
           </Crate>
         )}
         {movieMode === 'rewa' && movie.episode && (
           <Crate column>
-            <Text bold icon="Mic">
-              Hosts
-            </Text>
+            <Header icon="Mic">Hosts</Header>
             <Text>{movie.episode.hosts.map(h => h.name).join(', ')}</Text>
           </Crate>
         )}
         <Crate column>
-          <Text bold icon="Actor">
-            Cast
-          </Text>
+          <Header icon="Actor">Cast</Header>
           <Text>{movie.actors.map(a => a.name).join(', ')}</Text>
         </Crate>
         <Crate column>
-          <Text bold icon="Video">
-            Director
-          </Text>
+          <Header icon="Video">Director</Header>
           <Text>
             {movie.crew
               .filter(c => c.job === 'director')
@@ -66,9 +59,7 @@ export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCar
         </Crate>
         {movie.totalOscarNominations > 0 && (
           <Crate column>
-            <Text bold icon="Trophy">
-              Oscars
-            </Text>
+            <Header icon="Trophy">Oscars</Header>
             <Text
               tag="button"
               icon={awards.isShowing ? 'CaretUp' : 'CaretDown'}
@@ -90,15 +81,11 @@ export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCar
           </Crate>
         )}
         <Crate column>
-          <Text bold icon="Clock">
-            Release Date
-          </Text>
+          <Header icon="Clock">Release Date</Header>
           <Text>{newFormatDate(movie.releaseDate, 'slash')}</Text>
         </Crate>
         <Crate column>
-          <Text bold icon="Link">
-            External Links
-          </Text>
+          <Header icon="Link">External Links</Header>
           <Crate gap={1}>
             <ImdbLink id={movie.imdbId} className="hover:underline">
               IMDB{movie.episode ? ',' : ''}
@@ -112,5 +99,16 @@ export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCar
         </Crate>
       </Crate>
     </Sidebar>
+  );
+};
+
+const Header = ({
+  children,
+  icon,
+}: PropsWithChildren<{ icon: ComponentProps<typeof Text>['icon'] }>) => {
+  return (
+    <Text bold icon={icon} className="mb-2 ">
+      {children}
+    </Text>
   );
 };

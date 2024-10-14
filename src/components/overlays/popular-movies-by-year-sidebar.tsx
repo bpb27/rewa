@@ -55,7 +55,7 @@ const Movie = ({ name, overview, image, revenue }: Movie) => {
         </Crate>
       </Crate>
       {showPlot && (
-        <Crate className="rounded-md border-2 border-slate-400 bg-slate-50 p-1">
+        <Crate className="rounded-md border-2 border-slate-400 p-1">
           <Text>{overview}</Text>
         </Crate>
       )}
