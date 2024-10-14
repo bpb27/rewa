@@ -26,8 +26,9 @@ export const newFormatDate = (d: number | string | Date, f: 'year' | 'slash' | '
   };
   if (isDate(d)) {
     components.year = d.getFullYear().toString();
-    components.month = d.getMonth() < 10 ? `${0}${d.getMonth()}` : d.getMonth().toString();
-    components.day = d.getDate().toString();
+    components.month =
+      d.getMonth() < 10 ? `${0}${d.getMonth() + 1}` : (d.getMonth() + 1).toString();
+    components.day = d.getDate() < 10 ? `${0}${d.getDate() || 1}` : d.getDate().toString();
   } else if (isNumber(d) && isYear(d.toString())) {
     components.year = d.toString();
     components.month = '01';
