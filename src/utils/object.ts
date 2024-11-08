@@ -6,7 +6,5 @@ export const bookends = <TObject extends object>(list: TObject[]) => {
 };
 
 export const isSameObject = (one: object, two: object) => {
-  const first = Object.entries(one).flat().sort();
-  const second = Object.entries(two).flat().sort();
-  return first.every((item, i) => second.indexOf(item) === i);
+  return JSON.stringify(one) === JSON.stringify(two);
 };

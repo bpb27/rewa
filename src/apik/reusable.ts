@@ -80,6 +80,24 @@ export const reusableSQL = {
           .where('jt.movie_id', 'is not', null)
       );
     },
+    moviesWithCountry: (countryId: number) => {
+      const eb = expressionBuilder<DB, 'movies'>();
+      return eb('movies.id', 'in', ({ selectFrom }) =>
+        selectFrom('production_countries_on_movies as jt')
+          .select(['jt.movie_id'])
+          .where('jt.country_id', '=', countryId)
+          .where('jt.movie_id', 'is not', null)
+      );
+    },
+    moviesWithLanguage: (languageId: number) => {
+      const eb = expressionBuilder<DB, 'movies'>();
+      return eb('movies.id', 'in', ({ selectFrom }) =>
+        selectFrom('spoken_languages_on_movies as jt')
+          .select(['jt.movie_id'])
+          .where('jt.language_id', '=', languageId)
+          .where('jt.movie_id', 'is not', null)
+      );
+    },
     moviesWithHost: (hostId: number) => {
       const eb = expressionBuilder<DB, 'movies'>();
       return eb('movies.id', 'in', ({ selectFrom }) =>
@@ -288,6 +306,8 @@ export const allMovieFilters = (params: QpSchema) => {
     ...params.actor.map(id => where.moviesWithActor(id)),
     ...params.keyword.map(id => where.moviesWithKeyword(id)),
     ...params.genre.map(id => where.moviesWithGenre(id)),
+    ...params.language.map(id => where.moviesWithLanguage(id)),
+    ...params.country.map(id => where.moviesWithCountry(id)),
     ...params.streamer.map(id => where.moviesWithStreamer(id)),
     ...params.host.map(id => where.moviesWithHost(id)),
     ...params.oscarsCategoriesNom.map(id => where.moviesWithOscar(id)),

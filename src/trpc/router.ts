@@ -1,6 +1,8 @@
 import { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { z } from 'zod';
 import { getActorRole, getActorRoleParams } from '~/apik/get-actor-role';
+import { getCountries, getCountriesParams } from '~/apik/get-countries';
+import { getLanguages, getLanguagesParams } from '~/apik/get-languages';
 import { getLeaderboard, getLeaderboardParams } from '~/apik/get-leaderboard';
 import { getMovieCast, getMovieCastParams } from '~/apik/get-movie-cast';
 import { getMovieCrew, getMovieCrewParams } from '~/apik/get-movie-crew';
@@ -17,6 +19,12 @@ import { procedure, router } from './trpc';
 export const appRouter = router({
   getActorRole: procedure.input(getActorRoleParams).query(async ({ input }) => {
     return getActorRole(input);
+  }),
+  getCountries: procedure.input(getCountriesParams).query(async ({ input }) => {
+    return getCountries(input);
+  }),
+  getLanguages: procedure.input(getLanguagesParams).query(async ({ input }) => {
+    return getLanguages(input);
   }),
   getLeaderboard: procedure.input(getLeaderboardParams).query(async ({ input }) => {
     const [people, tokens] = await Promise.all([getLeaderboard(input), getTokens(input.params)]);

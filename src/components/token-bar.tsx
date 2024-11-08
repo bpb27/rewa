@@ -60,6 +60,6 @@ const icon = (tokenType: AppEnums['token']) => {
     case 'cinematographer':
       return <Icon.Video />;
     default:
-      return '';
+      return null;
   }
 };

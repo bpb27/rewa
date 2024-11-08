@@ -19,14 +19,22 @@ export const Navbar = () => {
     >
       <Nav.List className="relative flex space-x-3 px-2">
         <Nav.Item>
-          <Nav.Trigger className="group flex space-x-2 py-2">
+          <Nav.Trigger className="group flex space-x-1 py-2">
             <Icon.FilmStrip
               className={cn(
+                'mr-1',
                 mode === 'rewa' && 'text-green-300',
                 mode === 'oscar' && 'text-yellow-300'
               )}
             />
             <span>{capitalize(mode)}</span>
+            <Icon.CaretDown
+              className={cn(
+                'ml-1',
+                'transition-transform duration-200 ease-in group-data-[state=open]:-rotate-180'
+              )}
+              aria-hidden
+            />
           </Nav.Trigger>
           <Nav.Content className="absolute rounded-b-md bg-slate-600 shadow-lg">
             <Menu

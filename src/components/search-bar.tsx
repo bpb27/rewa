@@ -31,6 +31,9 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
   const byCategory = Object.entries(
     groupBy(data || [], item => {
       if (item.type === 'yearGte' || item.type === 'yearLte') return 'year';
+      if (item.type === 'runtimeGte' || item.type === 'runtimeLte') return 'runtime';
+      if (item.type === 'budgetGte' || item.type === 'budgetLte') return 'budget';
+      if (item.type === 'revenueGte' || item.type === 'revenueLte') return 'revenue';
       return item.type;
     })
   );
@@ -94,6 +97,9 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
                   {item.type === 'keyword' && <Icon.Key />}
                   {item.type === 'genre' && <Icon.Book />}
                   {item.type.includes('year') && <Icon.Calendar />}
+                  {item.type.includes('runtime') && <Icon.Clock />}
+                  {item.type.includes('budget') && <Icon.Dollar />}
+                  {item.type.includes('revenue') && <Icon.Dollar />}
                   <span className="ml-2">{item.name}</span>
                 </button>
               ))}

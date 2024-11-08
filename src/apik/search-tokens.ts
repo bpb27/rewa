@@ -3,7 +3,16 @@ import { z } from 'zod';
 import { relevantCrewIds } from '~/data/crew-jobs';
 import {
   tokenize,
+  tokenizeBudget,
+  tokenizeBudgetGte,
+  tokenizeBudgetLte,
   tokenizeCrew,
+  tokenizeRevenue,
+  tokenizeRevenueGte,
+  tokenizeRevenueLte,
+  tokenizeRuntime,
+  tokenizeRuntimeGte,
+  tokenizeRuntimeLte,
   tokenizeYear,
   tokenizeYearGte,
   tokenizeYearLte,
@@ -124,18 +133,62 @@ export const searchTokens = async (params: z.infer<typeof searchTokensParams>) =
     ...streamers.map(t => tokenize('streamer', t)),
   ];
 
-  if (isInteger(params.search) && pickYear(params.search)) {
-    const year = pickYear(params.search);
+  const year = pickYear(params.search);
+  if (year) {
     results.push(tokenizeYear(year));
     results.push(tokenizeYearGte(year));
     results.push(tokenizeYearLte(year));
   }
 
+  const runtime = pickRuntime(params.search);
+  if (runtime) {
+    results.push(tokenizeRuntime(runtime));
+    results.push(tokenizeRuntimeGte(runtime));
+    results.push(tokenizeRuntimeLte(runtime));
+  }
+
+  const budget = pickBudget(params.search);
+  if (budget) {
+    results.push(tokenizeBudget(budget));
+    results.push(tokenizeBudgetGte(budget));
+    results.push(tokenizeBudgetLte(budget));
+  }
+
+  const revenue = pickRevenue(params.search);
+  if (revenue) {
+    results.push(tokenizeRevenue(revenue));
+    results.push(tokenizeRevenueGte(revenue));
+    results.push(tokenizeRevenueLte(revenue));
+  }
+
   return results;
 };
 
-const pickYear = (str: string) => {
-  if (isYear(str)) {
+const pickRuntime = (str: string): number | undefined => {
+  if (isInteger(str)) {
+    const num = Number(str);
+    if (num > 0 && num < 500) return num;
+  }
+};
+
+const pickBudget = (str: string): number | undefined => {
+  if (isInteger(str)) {
+    const num = Number(str);
+    if (num > 0 && num < 100_000_000_000) return num;
+  }
+};
+
+const pickRevenue = (str: string): number | undefined => {
+  if (isInteger(str)) {
+    const num = Number(str);
+    if (num > 0 && num < 500_000_000_000) return num;
+  }
+};
+
+const pickYear = (str: string): string | undefined => {
+  if (!isInteger(str)) {
+    return undefined;
+  } else if (isYear(str)) {
     return str;
   } else if (str === '1' || str === '19') {
     return '1999';
@@ -144,6 +197,6 @@ const pickYear = (str: string) => {
   } else if (str.length === 3 && !!(str.startsWith('19') || str.startsWith('20'))) {
     return str + '0';
   } else {
-    return '';
+    return undefined;
   }
 };

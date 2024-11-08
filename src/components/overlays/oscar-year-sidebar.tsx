@@ -84,7 +84,7 @@ export const OscarYearModal = ({
             />
           ))}
         <Button
-          className="w-full"
+          className="w-full bg-transparent"
           variant="card"
           onClick={() => {
             setLimitAwards(l => !l);
@@ -105,12 +105,15 @@ type AwardCategoryProps = {
 };
 
 const AwardCategory = ({ items, key, name, onTitleClick }: AwardCategoryProps) => (
-  <div key={key} className="my-4 rounded-md border-2 border-slate-300 bg-white p-4 shadow-lg">
+  <div key={key} className="my-4 rounded-md border-2 border-slate-300 p-4 shadow-lg">
     <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{titleCase(name)}</h3>
     {items.map(({ id, movie, recipient, won }) => (
       <div
         key={movie + recipient}
-        className={cn('my-1 flex items-center justify-between space-x-2')}
+        className={cn(
+          'my-1 flex items-center justify-between space-x-2 p-1',
+          won && 'bg-slate-700'
+        )}
       >
         <Crate column>
           {onTitleClick ? (
@@ -122,7 +125,7 @@ const AwardCategory = ({ items, key, name, onTitleClick }: AwardCategoryProps) =
           )}
           <Text>{recipient}</Text>
         </Crate>
-        {!!won && <Icon.Trophy className="flex-shrink-0" />}
+        {!!won && <Icon.Trophy className="flex-shrink-0 text-yellow-400" />}
       </div>
     ))}
   </div>

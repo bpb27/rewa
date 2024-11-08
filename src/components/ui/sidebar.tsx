@@ -17,7 +17,7 @@ export const Sidebar = ({ backSidebar, children, closeSidebar, thin }: SidebarPr
       )}
     >
       <button
-        className="fixed flex h-full cursor-pointer items-center bg-sky-800 text-slate-300 hover:bg-sky-700"
+        className="fixed flex h-full cursor-pointer items-center bg-sky-900 text-slate-300 hover:bg-sky-700"
         role="button"
         onClick={closeSidebar}
       >

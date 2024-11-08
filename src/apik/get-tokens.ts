@@ -57,6 +57,18 @@ export const getTokens = async (params: QpSchema) => {
             .select(['id', 'name', sql.lit(tokenType).as('type')])
             .where('id', 'in', ids)
             .execute();
+        case 'language':
+          return kyselyDb
+            .selectFrom('languages')
+            .select(['id', 'name', sql.lit(tokenType).as('type')])
+            .where('id', 'in', ids)
+            .execute();
+        case 'country':
+          return kyselyDb
+            .selectFrom('countries')
+            .select(['id', 'name', sql.lit(tokenType).as('type')])
+            .where('id', 'in', ids)
+            .execute();
         case 'keyword':
           return kyselyDb
             .selectFrom('keywords')

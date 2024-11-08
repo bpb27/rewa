@@ -23,13 +23,13 @@ export const tokenizeBudget = (budget: number): Token => ({
 
 export const tokenizeBudgetGte = (budget: number): Token => ({
   id: budget,
-  name: `> ${moneyShort(budget)} budget`,
+  name: `>= ${moneyShort(budget)} budget`,
   type: 'budgetGte',
 });
 
 export const tokenizeBudgetLte = (budget: number): Token => ({
   id: budget,
-  name: `< ${moneyShort(budget)} budget`,
+  name: `<= ${moneyShort(budget)} budget`,
   type: 'budgetLte',
 });
 
@@ -53,13 +53,13 @@ export const tokenizeRevenue = (revenue: number): Token => ({
 
 export const tokenizeRevenueGte = (revenue: number): Token => ({
   id: revenue,
-  name: `> ${moneyShort(revenue)} Box Office`,
+  name: `>= ${moneyShort(revenue)} Box Office`,
   type: 'revenueGte',
 });
 
 export const tokenizeRevenueLte = (revenue: number): Token => ({
   id: revenue,
-  name: `< ${moneyShort(revenue)} Box Office`,
+  name: `<= ${moneyShort(revenue)} Box Office`,
   type: 'revenueLte',
 });
 
@@ -71,13 +71,13 @@ export const tokenizeRuntime = (runtime: number): Token => ({
 
 export const tokenizeRuntimeGte = (runtime: number): Token => ({
   id: runtime,
-  name: `> ${runtime} mins`,
+  name: `>= ${runtime} mins`,
   type: 'runtimeGte',
 });
 
 export const tokenizeRuntimeLte = (runtime: number): Token => ({
   id: runtime,
-  name: `< ${runtime} mins`,
+  name: `<= ${runtime} mins`,
   type: 'runtimeLte',
 });
 
@@ -89,13 +89,13 @@ export const tokenizeYear = (date: string): Token => ({
 
 export const tokenizeYearGte = (date: string): Token => ({
   id: Number(newFormatDate(date, 'year')),
-  name: `> ${newFormatDate(date, 'year')}`,
+  name: `>= ${newFormatDate(date, 'year')}`,
   type: 'yearGte',
 });
 
 export const tokenizeYearLte = (date: string): Token => ({
   id: Number(newFormatDate(date, 'year')),
-  name: `< ${newFormatDate(date, 'year')}`,
+  name: `<= ${newFormatDate(date, 'year')}`,
   type: 'yearLte',
 });
 

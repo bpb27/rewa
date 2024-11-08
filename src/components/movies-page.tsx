@@ -16,7 +16,7 @@ import { useVizSensor } from '~/utils/use-viz-sensor';
 import { MovieCardSidebar } from './overlays/movie-card-sidebar';
 import { MovieCastSidebar } from './overlays/movie-cast-sidebar';
 import { MovieCrewSidebar } from './overlays/movie-crew-sidebar';
-import { MovieFiltersDialog } from './overlays/movie-filters-dialog';
+import { MovieFilterSidebar } from './overlays/movie-filter-sidebar';
 import { OscarYearModal } from './overlays/oscar-year-sidebar';
 import { PopularMoviesByYear } from './overlays/popular-movies-by-year-sidebar';
 
@@ -31,7 +31,8 @@ type PageSidebar =
   | { variant: 'movieCast'; movieId: number }
   | { variant: 'movieCrew'; movieId: number }
   | { variant: 'oscarYear'; movieId: number; year: number }
-  | { variant: 'popularMoviesByYear'; year: string };
+  | { variant: 'popularMoviesByYear'; year: string }
+  | { variant: 'movieFilters' };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
   const { data, actions } = useQueryParamsMachine({ preloaded, variant: 'movies' });
@@ -65,7 +66,9 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
               {data.asc ? <Icon.ArrowUp /> : <Icon.ArrowDown />}
             </Button>
           </Crate>
-          <MovieFiltersDialog {...data} {...actions} />
+          <Button onClick={() => openSidebar({ variant: 'movieFilters' })} variant="icon">
+            <Icon.FilterSlider />
+          </Button>
         </Crate>
       </Crate>
       <MoviesTable
@@ -80,6 +83,13 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onShowPopularMoviesClick={year => openSidebar({ variant: 'popularMoviesByYear', year })}
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
+      <Button
+        variant="icon"
+        onClick={() => window?.scrollTo(0, 0)}
+        className="fixed bottom-1 right-1 bg-slate-800 text-white opacity-50"
+      >
+        <Icon.ArrowUp />
+      </Button>
       {sidebar?.variant === 'oscarYear' && (
         <OscarYearModal
           {...sidebar}
@@ -99,13 +109,15 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
       {sidebar?.variant === 'popularMoviesByYear' && (
         <PopularMoviesByYear {...sidebar} {...sidebarActions} />
       )}
-      <Button
-        variant="icon"
-        onClick={() => window?.scrollTo(0, 0)}
-        className="fixed bottom-1 right-1 bg-slate-800 text-white opacity-50"
-      >
-        <Icon.ArrowUp />
-      </Button>
+      {sidebar?.variant === 'movieFilters' && (
+        <MovieFilterSidebar
+          {...sidebar}
+          {...sidebarActions}
+          oscarsCategoriesNom={data.oscarsCategoriesNom}
+          oscarsCategoriesWon={data.oscarsCategoriesWon}
+          toggleToken={actions.toggleToken}
+        />
+      )}
     </Layout>
   );
 };

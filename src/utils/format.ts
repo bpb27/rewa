@@ -7,14 +7,17 @@ export const numberWithCommas = (x: number) => {
 
 export const moneyShort = (x: number) => {
   const nwc = numberWithCommas(x).split(',');
-  if (x >= 1000000000) {
+  if (x >= 1_000_000_000) {
     const decimal = `.${nwc[1].slice(0, 2)}`;
     return `$${nwc[0]}${decimal !== '.00' ? decimal : ''}b`;
-  } else if (x >= 1000000) {
+  } else if (x >= 1_000_000) {
     const decimal = `.${nwc[1].slice(0, 1)}`;
     return `$${nwc[0]}${decimal !== '.0' ? decimal : ''}m`;
+  } else if (x >= 1_000) {
+    const decimal = `.${nwc[1].slice(0, 1)}`;
+    return `$${nwc[0]}${decimal !== '.0' ? decimal : ''}k`;
   } else {
-    return `$${nwc[0]}k`;
+    return `$${nwc[0]}`;
   }
 };
 
