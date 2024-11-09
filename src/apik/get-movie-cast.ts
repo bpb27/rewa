@@ -17,6 +17,7 @@ export const getMovieCast = async (params: z.infer<typeof getMovieCastParams>) =
       'actors.name',
       'actors.profile_path as image',
       'actors_on_movies.character as role',
+      'actors_on_movies.credit_order as creditOrder',
       eb =>
         eb
           .selectFrom('movies')

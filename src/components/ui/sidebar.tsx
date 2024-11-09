@@ -4,16 +4,17 @@ import { SidebarActions } from '~/utils/use-sidebar';
 import { Crate } from './box';
 import { Button } from './button';
 import { Icon } from './icons';
+import { Text } from './text';
 
-type SidebarProps = PropsWithChildren<{ thin?: boolean } & SidebarActions>;
+type SidebarProps = PropsWithChildren<{ thin?: boolean; title: string } & SidebarActions>;
 
-export const Sidebar = ({ backSidebar, children, closeSidebar, thin }: SidebarProps) => {
+export const Sidebar = ({ backSidebar, children, closeSidebar, thin, title }: SidebarProps) => {
   return (
     <div
       className={cn(
         'w-3/4 md:w-1/2',
         thin ? 'lg:w-1/4' : 'lg:w-1/3',
-        'fixed right-0 top-8 z-10 mb-4 h-full animate-enterFromRight overflow-y-scroll bg-slate-800 text-center text-white shadow-xl'
+        'fixed right-0 top-8 z-10 mb-4 h-full animate-enterFromRight overflow-y-scroll bg-slate-800 text-center text-slate-100 shadow-xl'
       )}
     >
       <button
@@ -24,7 +25,7 @@ export const Sidebar = ({ backSidebar, children, closeSidebar, thin }: SidebarPr
         <Icon.CaretRight />
       </button>
       <Crate column fullWidth pt={5} pb={10} pr={8} pl={10} gap={3}>
-        <Crate className="justify-between">
+        <Crate className="justify-between" alignCenter gap={3}>
           <Button
             onClick={backSidebar}
             variant="icon"
@@ -32,6 +33,9 @@ export const Sidebar = ({ backSidebar, children, closeSidebar, thin }: SidebarPr
           >
             <Icon.ArrowLeft />
           </Button>
+          <Text bold className="text-md text-center sm:text-lg">
+            {title}
+          </Text>
           <Button
             onClick={closeSidebar}
             variant="icon"

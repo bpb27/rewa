@@ -33,24 +33,25 @@ export const OscarYearModal = ({
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
   const movieSpotlight = data.filter(a => a.movieId === movieId);
   return (
-    <Sidebar {...sidebarProps}>
+    <Sidebar {...sidebarProps} title={`${selectedYear} Oscars`}>
       <div className="flex items-center justify-between" ref={containerRef}>
         <Button
+          className="border-2 border-slate-200 bg-transparent text-slate-200 hover:bg-slate-700"
           disabled={selectedYear <= 1928}
           onClick={() => setYear(selectedYear - 1)}
           variant="icon"
         >
-          <Icon.ArrowLeft />
+          <Icon.ArrowLeft className="mr-2" />
+          <span>{selectedYear - 1}</span>
         </Button>
-        <Text size="xl" bold>
-          The {selectedYear} Oscars
-        </Text>
         <Button
+          className="border-2 border-slate-200 bg-transparent text-slate-200 hover:bg-slate-700"
           disabled={selectedYear >= 2024}
           onClick={() => setYear(selectedYear + 1)}
           variant="icon"
         >
-          <Icon.ArrowRight />
+          <span>{selectedYear + 1}</span>
+          <Icon.ArrowRight className="ml-2" />
         </Button>
       </div>
       <div>

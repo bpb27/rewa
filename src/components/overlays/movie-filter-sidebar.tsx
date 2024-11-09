@@ -21,10 +21,10 @@ export const MovieFilterSidebar = ({
 }: MovieFilterSidebar) => {
   const movieMode = useMovieMode();
   const categories = trpc.getOscarCategories.useQuery();
-  const countries = trpc.getCountries.useQuery({ movieMode });
+  // const countries = trpc.getCountries.useQuery({ movieMode });
   const languages = trpc.getLanguages.useQuery({ movieMode });
   return (
-    <Sidebar {...sidebarActions}>
+    <Sidebar {...sidebarActions} title="Movie filters">
       <div className="border-4 border-slate-700 p-2 text-left">
         <table>
           <thead>

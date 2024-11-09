@@ -19,10 +19,10 @@ export const PopularMoviesByYear = ({ year, ...sidebarProps }: PopularMoviesByYe
   const [sortBy, setSort] = useState<'vote_count' | 'revenue'>('revenue');
   const movies = trpc.getMoviesFromTmdb.useQuery({ sortBy, year });
   return (
-    <Sidebar thin {...sidebarProps}>
+    <Sidebar thin {...sidebarProps} title={`Top movies ${year}`}>
       <Crate>
         <Select
-          className="w-full border-2 border-slate-300"
+          className="w-full"
           onSelect={value => setSort(value)}
           options={[
             { label: 'Box office', value: 'revenue' },

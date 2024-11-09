@@ -26,7 +26,7 @@ export const PersonCardSidebar = ({
   const runLength = lastYear && firstYear ? lastYear - firstYear : 1;
 
   return (
-    <Sidebar {...sidebarProps}>
+    <Sidebar {...sidebarProps} title="Person overview">
       <Crate my={3} className="w-full">
         <Spotlight
           image={person.image!}

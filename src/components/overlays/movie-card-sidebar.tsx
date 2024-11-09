@@ -27,7 +27,7 @@ export const MovieCardSidebar = ({ actorId, movieId, ...sidebarProps }: MovieCar
 
   if (!movie) return null;
   return (
-    <Sidebar {...sidebarProps}>
+    <Sidebar {...sidebarProps} title="Movie overview">
       <Crate my={3}>
         <Spotlight {...movie} />
       </Crate>

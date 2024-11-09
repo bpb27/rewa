@@ -5,6 +5,9 @@
 
 # Potential TODOs
 
+- better to define all token stuff in a single place - lot of files to jump through
+- lean toward single exports w/ autocomplete
+
 - try jobId:crewId query param instead of specific categories
 
 - mix genres into keywords

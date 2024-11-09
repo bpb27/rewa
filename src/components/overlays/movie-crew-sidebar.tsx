@@ -47,7 +47,7 @@ export const MovieCrewSidebar = ({
   );
 
   return (
-    <Sidebar thin {...sidebarProps}>
+    <Sidebar thin {...sidebarProps} title="Movie crew">
       <Crate column>
         {sorted?.map(person => (
           <Crate key={person.creditId} alignCenter gap={2} my={1}>
