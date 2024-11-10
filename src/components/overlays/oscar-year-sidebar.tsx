@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { groupBy } from 'remeda';
 import { Button } from '~/components/ui/button';
 import { Icon } from '~/components/ui/icons';
@@ -10,10 +10,6 @@ import { cn } from '~/utils/style';
 import { SidebarActions } from '~/utils/use-sidebar';
 import { Crate } from '../ui/box';
 import { Sidebar } from '../ui/sidebar';
-
-/*
- this would be better as a dedicated page and table
-*/
 
 type OscarYearModalProps = {
   movieId: number;
@@ -32,6 +28,9 @@ export const OscarYearModal = ({
   const [selectedYear, setYear] = useState(year);
   const { data = [] } = trpc.getOscarsByYear.useQuery({ year: selectedYear });
   const movieSpotlight = data.filter(a => a.movieId === movieId);
+
+  useEffect(() => setYear(year), [year]);
+
   return (
     <Sidebar {...sidebarProps} title={`${selectedYear} Oscars`}>
       <div className="flex items-center justify-between" ref={containerRef}>
@@ -57,7 +56,7 @@ export const OscarYearModal = ({
       <div>
         {movieSpotlight.length > 0 && (
           <AwardCategory
-            key={movieSpotlight[0].id}
+            id={movieSpotlight[0].id}
             name={movieSpotlight[0].title.toUpperCase()}
             items={movieSpotlight.map(a => ({
               id: a.movieId,
@@ -74,6 +73,7 @@ export const OscarYearModal = ({
           .map(group => (
             <AwardCategory
               key={group[0].id}
+              id={group[0].id}
               name={titleCase(group[0].award)}
               items={smartSort(group, i => i.title).map(a => ({
                 id: a.movieId,
@@ -100,13 +100,13 @@ export const OscarYearModal = ({
 
 type AwardCategoryProps = {
   items: { id: number; movie: string; recipient: string; won: number | boolean }[];
-  key: number | string;
+  id: number | string;
   name: string;
   onTitleClick?: (id: number) => void;
 };
 
-const AwardCategory = ({ items, key, name, onTitleClick }: AwardCategoryProps) => (
-  <div key={key} className="my-4 rounded-md border-2 border-slate-300 p-4 shadow-lg">
+const AwardCategory = ({ items, id, name, onTitleClick }: AwardCategoryProps) => (
+  <div key={id} className="my-4 rounded-md border-2 border-slate-300 p-4 shadow-lg">
     <h3 className="border-b-4 border-yellow-400 text-xl font-bold">{titleCase(name)}</h3>
     {items.map(({ id, movie, recipient, won }) => (
       <div

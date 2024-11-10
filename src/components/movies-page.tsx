@@ -31,7 +31,7 @@ type PageSidebar =
   | { variant: 'movieCast'; movieId: number }
   | { variant: 'movieCrew'; movieId: number }
   | { variant: 'oscarYear'; movieId: number; year: number }
-  | { variant: 'popularMoviesByYear'; year: string }
+  | { variant: 'popularMoviesByYear'; year: number }
   | { variant: 'movieFilters' };
 
 export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
@@ -80,7 +80,9 @@ export const MoviesPage = ({ preloaded }: MoviesPageProps) => {
         onSortClick={actions.sort}
         onOscarYearClick={params => openSidebar({ variant: 'oscarYear', ...params })}
         onMovieTitleClick={movieId => openSidebar({ variant: 'movieDescription', movieId })}
-        onShowPopularMoviesClick={year => openSidebar({ variant: 'popularMoviesByYear', year })}
+        onShowPopularMoviesClick={year =>
+          openSidebar({ variant: 'popularMoviesByYear', year: Number(year) })
+        }
       />
       {data.showVizSensor && <div ref={loadMoreRef} />}
       <Button

@@ -246,16 +246,6 @@ export const machineData = <T extends Variant>(state: StateFrom<typeof machine>)
     sort: queryParams.sort,
     tokens: data.tokens,
     total: data.total,
-    ranges: {
-      budgetGte: queryParams.budgetGte[0]?.toString() || '',
-      budgetLte: queryParams.budgetLte[0]?.toString() || '',
-      revenueGte: queryParams.revenueGte[0]?.toString() || '',
-      revenueLte: queryParams.revenueLte[0]?.toString() || '',
-      runtimeGte: queryParams.runtimeGte[0]?.toString() || '',
-      runtimeLte: queryParams.runtimeLte[0]?.toString() || '',
-      yearGte: queryParams.yearGte[0]?.toString() || '',
-      yearLte: queryParams.yearLte[0]?.toString() || '',
-    },
   };
 };
 

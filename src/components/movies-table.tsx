@@ -123,9 +123,11 @@ export const MoviesTable = ({
                 </Text>
                 <Text
                   noWrap
-                  hide={!m.totalOscarNominations}
                   onClick={() =>
-                    onOscarYearClick({ movieId: m.id, year: m.oscars[0].ceremonyYear })
+                    onOscarYearClick({
+                      movieId: m.id,
+                      year: m.oscars[0]?.ceremonyYear ?? Number(m.year),
+                    })
                   }
                   secondary
                 >

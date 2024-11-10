@@ -4,6 +4,7 @@ import { cn } from '~/utils/style';
 import { useOverflowedOffScreen } from '~/utils/use-overflowed-off-screen';
 
 type DialogOverlayProps = PropsWithChildren<{
+  // ariaTitle: string;
   className?: string;
   container: HTMLElement | null;
   isOpen: boolean;

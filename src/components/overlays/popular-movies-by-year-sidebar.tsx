@@ -1,25 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { trpc } from '~/trpc/client';
 import { ApiResponses } from '~/trpc/router';
 import { moneyShort } from '~/utils/format';
 import { SidebarActions } from '~/utils/use-sidebar';
 import { PersonPoster } from '../images';
 import { Crate } from '../ui/box';
+import { Button } from '../ui/button';
+import { Icon } from '../ui/icons';
 import { Select } from '../ui/select';
 import { Sidebar } from '../ui/sidebar';
 import { Text } from '../ui/text';
 
 type PopularMoviesByYearProps = {
-  year: string;
+  year: number;
 } & SidebarActions;
 
 type Movie = ApiResponses['getMoviesFromTmdb'][number];
 
 export const PopularMoviesByYear = ({ year, ...sidebarProps }: PopularMoviesByYearProps) => {
   const [sortBy, setSort] = useState<'vote_count' | 'revenue'>('revenue');
-  const movies = trpc.getMoviesFromTmdb.useQuery({ sortBy, year });
+  const [selectedYear, setYear] = useState(year);
+  const movies = trpc.getMoviesFromTmdb.useQuery({ sortBy, year: selectedYear });
+
+  useEffect(() => setYear(year), [year]);
+
   return (
-    <Sidebar thin {...sidebarProps} title={`Top movies ${year}`}>
+    <Sidebar {...sidebarProps} title={`Top movies ${selectedYear}`}>
+      <div className="flex items-center justify-between">
+        <Button
+          className="border-2 border-slate-200 bg-transparent text-slate-200 hover:bg-slate-700"
+          disabled={selectedYear <= 1928}
+          onClick={() => setYear(selectedYear - 1)}
+          variant="icon"
+        >
+          <Icon.ArrowLeft className="mr-2" />
+          <span>{selectedYear - 1}</span>
+        </Button>
+        <Button
+          className="border-2 border-slate-200 bg-transparent text-slate-200 hover:bg-slate-700"
+          disabled={selectedYear >= 2024}
+          onClick={() => setYear(selectedYear + 1)}
+          variant="icon"
+        >
+          <span>{selectedYear + 1}</span>
+          <Icon.ArrowRight className="ml-2" />
+        </Button>
+      </div>
       <Crate>
         <Select
           className="w-full"

@@ -15,6 +15,7 @@ export const useSidebar = <TBar extends { variant: string }>() => {
   };
 
   const open = (newSidebar: TBar) => {
+    console.log(newSidebar);
     sidebarHistory[currentIndex] && isSameObject(newSidebar, sidebarHistory[currentIndex])
       ? close()
       : setSidebarHistory(s => [...s, newSidebar]);
