@@ -1,4 +1,5 @@
 import { Kysely } from 'kysely';
+import { uniq } from 'remeda';
 import { z } from 'zod';
 import { DB } from '../pg/generated';
 import { tmdbApi } from './tmbd-api';
@@ -14,6 +15,15 @@ import { tmdbApi } from './tmbd-api';
 */
 
 export type RewaPayload = z.infer<typeof paramsSchema>;
+
+export const verifyRewaList = (data: RewaPayload[]): RewaPayload[] => {
+  if (uniq(data.map(m => m.tmdbId)).length !== data.length) throw new Error('Dupe tmdbId');
+  if (uniq(data.map(m => m.episode!.episodeOrder)).length !== data.length)
+    throw new Error('Dupe episode order');
+  if (uniq(data.map(m => m.episode!.spotifyUrl)).length !== data.length)
+    throw new Error('Dupe spotify url');
+  return data;
+};
 
 const paramsSchema = z.object({
   tmdbId: z.number(),
