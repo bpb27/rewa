@@ -1,7 +1,6 @@
 import * as Nav from '@radix-ui/react-navigation-menu';
 import Link from 'next/link';
 import { Icon } from '~/components/ui/icons';
-import { capitalize } from '~/utils/format';
 import { NAV } from '~/utils/nav-routes';
 import { cn } from '~/utils/style';
 import { useMovieMode } from '~/utils/use-movie-mode';
@@ -27,7 +26,8 @@ export const Navbar = () => {
                 mode === 'oscar' && 'text-yellow-300'
               )}
             />
-            <span>{capitalize(mode)}</span>
+            {mode === 'oscar' && <span>Oscars</span>}
+            {mode === 'rewa' && <span>Rewa</span>}
             <Icon.CaretDown
               className={cn(
                 'ml-1',
