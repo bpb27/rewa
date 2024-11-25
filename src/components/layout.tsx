@@ -2,11 +2,11 @@ import Head from 'next/head';
 import { type PropsWithChildren } from 'react';
 import { Navbar } from '~/components/ui/nav';
 
-const metaName = 'Rewa';
-const metaTitle = 'Rewa Movies';
-const metaDesc = 'Explore movies from the podcast';
-const metaSite = 'https://rewa.vercel.app';
-const metaImg = 'https://rewa.vercel.app/site.webp';
+const metaName = 'Oscar Movies';
+const metaTitle = 'Oscar Movies';
+const metaDesc = 'Explore all Academy Award nominated movies';
+const metaSite = 'https://oscarmovies.app';
+const metaImg = 'https://oscarmovies.app/site.webp';
 
 export default function Layout({ children, title }: PropsWithChildren<{ title: string }>) {
   return (
