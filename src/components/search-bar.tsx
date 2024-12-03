@@ -74,7 +74,7 @@ export const SearchBar = ({ filter, onSelect }: SearchBarProps) => {
         )}
         {byCategory.map(([categoryName, entries]) => (
           <div key={categoryName} className="mb-2">
-            <h6 className="mb-1">{capitalize(categoryName)}</h6>
+            <h6 className="mb-1 font-bold underline">{capitalize(categoryName)}</h6>
             <div className="flex-col">
               {entries.map(item => (
                 <button
